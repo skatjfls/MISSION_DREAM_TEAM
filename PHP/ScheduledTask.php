@@ -33,9 +33,11 @@ if (date('H') == '05') {
 
         // Update the point status if the mission is uncompleted
         if ($failed_mission > 0) {
-            $sql = "UPDATE overall SET point = ? WHERE id = ?";
+            // Update the member point status
+            $date = date('Y-m-d', strtotime('-1 day'));
+            $sql = "UPDATE overall SET point = ?, date = ? WHERE id = ?";
             $stmt = $db->prepare($sql);
-            $stmt->bind_param("is", $failed_mission, $member['id']);
+            $stmt->bind_param("iss", $failed_mission, $date, $member['id']);
             $stmt->execute();
             
 
