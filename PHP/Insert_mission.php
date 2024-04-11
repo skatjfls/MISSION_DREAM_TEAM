@@ -1,4 +1,6 @@
 <?php
+// 2024.04.11 nimo
+
 require_once 'dbConfig.php';
 
 session_start();
