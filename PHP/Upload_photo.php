@@ -22,16 +22,9 @@ if ($photo == null) {
     exit();
 }
 
-// Prepare the SQL statement
 $sql = "UPDATE missions SET photo = ? WHERE id = ? AND mission_idx = ?";
-
-// Create a prepared statement
 $stmt = $db->prepare($sql);
-
-// Bind the parameters
 $stmt->bind_param("ssi", $photo, $id, $mission_idx);
-
-// Execute the statement
 $stmt->execute();
 
 // Close the statement and connection
