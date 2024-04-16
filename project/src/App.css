@@ -14,7 +14,7 @@ div {
   box-sizing: border-box;
 }
 
-.nav {
+.nav-bar {
   display: flex;
   background: white;
   width: 100%;
@@ -24,7 +24,7 @@ div {
   align-items: center;
 }
 
-.nav div {
+.nav-bar div {
   display: flex;
   align-items: center;
   gap: 20px;
@@ -35,14 +35,15 @@ div {
   padding-top: 40px;
 }
 
-.tap {
-  display: flex;
-  gap: 10px;
-}
-
 .main-bottom h6 {
   padding: 6px;
 }
+
+.tap {
+  background-color: transparent;
+  padding-bottom: 0;
+}
+
 .mission {
   display: flex;
   padding: 2px 15px;

@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react';
+import { Nav } from 'react-bootstrap';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import Group from './pages/Group.js';
@@ -23,7 +24,7 @@ function App() {
       <Routes>
         <Route path="/" element={
           <div>
-            <div className="nav">
+            <div className="nav-bar">
               <h4 onClick={()=>{navigate('/')}}>미션드림팀 로고</h4>
               <div>
                 <h6>{ userName }</h6>
@@ -42,10 +43,14 @@ function App() {
               <h1>To do list</h1>
               <input type="text" onChange={(e)=>{ setMissionInput(e.target.value) }}placeholder="오늘의 할 일을 작성하세요!"></input>
               <button onClick={()=>{ if (missionInput.trim() !== "") {let copy = [...missionList]; copy.push(missionInput); setMissionList(copy);} }}>+</button>
-              <div className="tap">
-                <h3>to do</h3>
-                <h3>calendar</h3>
-              </div>
+              <Nav variant="tabs" className="tap">
+                <Nav.Item>
+                  <Nav.Link eventKey="todo">to do</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="calendar">calendar</Nav.Link>
+                </Nav.Item>
+              </Nav>
             </div>
             <div className="main-bottom">
               <div className="row">
@@ -95,6 +100,9 @@ function App() {
   );
 }
 
+function Calendar() {
+  
+}
 function CreateGroup(props) {
   return (
     <div className="myModal">
