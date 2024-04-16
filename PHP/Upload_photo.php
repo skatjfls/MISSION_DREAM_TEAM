@@ -14,12 +14,11 @@ if (!isset($_SESSION['id'])) {
 // Assuming you have the mission ID and photo stored in variables
 $id = $_SESSION['id'];
 $mission_idx = $_POST['mission_idx'];
-$photo = isset($_POST['photo']) ? $_POST['photo'] : null;
+$photo = isset($_FILES['photo']) ? $_FILES['photo'] : null;
 
 // Check if the photo is null
 if ($photo == null) {
-    echo "Photo is required";
-    exit();
+    die('Photo is required');
 }
 
 $sql = "UPDATE missions SET photo = ? WHERE id = ? AND mission_idx = ?";
