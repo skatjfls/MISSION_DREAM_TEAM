@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>파일 업로드 폼</title>
+</head>
+<body>
+  <form name="fileUpload" method="post" action="./PHP/ImageUpload.php" enctype="multipart/form-data">
+    <label for="mission">Mission:</label>
+    <input type="text" id="missionName" name="missionName"><br><br>
+
+    <input type="file" name="imgsFile" id = 'imgFile' />
+    <input type="submit" name = "upload" value="업로드" />
+  </form>
+</body>
+</html>
+
+<!--    
+    Image Files Structure
+    - imgFile
+      - name
+      - full_path
+      - type
+      - tmp_name
+      - error
+      - size
+
+    array(1) {
+    ["imgFile"]=>
+    array(6) {
+        ["name"]=>
+        string(10) "4_3404.png"
+        ["full_path"]=>
+        string(10) "4_3404.png"
+        ["type"]=>
+        string(9) "image/png"
+        ["tmp_name"]=>
+        string(24) "F:\xampp\tmp\phpBFDE.tmp"
+        ["error"]=>
+        int(0)
+        ["size"]=>
+        int(337412)(bytes)
+  }
+}
+-->
