@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mission Dream Team</title>
+</head>
+<body>
+    <h1>Mission Dream Team</h1>
+    
+    <form action="./PHP/Insert_mission.php" method="post" enctype="multipart/form-data">
+        <label for="mission">Mission:</label>
+        <input type="text" id="missionName" name="missionName" required><br><br>
+        
+        <label for="photo">Photo:</label>
+        <input type="file" id="photo" name="photo" accept="image/*">
+        <br><br>
+        
+        <input type="checkbox" id="post" name="post" value="true">
+        <label for="post">Post</label><br><br>
+        
+        <input type="submit" value="Submit">
+    </form>
+
+    <button onclick="window.location.href = './TESTPAGE.html';">Go to Another Page</button>
+</body>
+</html> 

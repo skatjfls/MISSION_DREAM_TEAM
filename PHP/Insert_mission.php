@@ -11,26 +11,25 @@ if (!isset($_SESSION['id'])) {
     exit;
 }
 
-// Assuming you have the mission name, photo, and check values stored in variables
+// Assuming you have the mission name, photo, and complete values stored in variables
 $id = $_SESSION['id'];
 $missionName = $_POST['missionName'];
-$photo = null; // Set the default image to null
-$check = false;
+$photo = isset($_POST['photo']) ? $_POST['photo'] : null; // Set the default image to null
+$complete = $_POST['complete'];
 
 if ($missionName == null) {
     echo "Mission name is required";
     exit();
 }
 
-
 // Prepare the SQL statement
-$sql = "INSERT INTO missions (id, mission, photo, check) VALUES (?, ?, ?, ?)";
+$sql = "INSERT INTO missions (id, mission, photo, complete) VALUES (?, ?, ?, ?)";
 
 // Create a prepared statement
 $stmt = $db->prepare($sql);
 
 // Bind the parameters
-$stmt->bind_param("ssbi",$id ,$missionName, $photo, $check);
+$stmt->bind_param("ssbi",$id ,$missionName, $photo, $complete);
 
 // Execute the statement
 $stmt->execute();
@@ -39,4 +38,5 @@ $stmt->execute();
 $stmt->close();
 $db->close();
 
+echo "Mission added successfully";
 ?>

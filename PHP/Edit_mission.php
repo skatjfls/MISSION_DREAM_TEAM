@@ -18,7 +18,7 @@ $mission_idx = $_POST['mission_idx'];
 // Assuming you have the mission name, photo, and check values stored in variables
 $missionName = isset($_POST['missionName']) ? $_POST['missionName'] : null;
 $photo = isset($_POST['photo']) ? $_POST['photo'] : null;
-$check = isset($_POST['check']) ? $_POST['check'] : null;
+$complete = isset($_POST['complete']) ? $_POST['complete'] : null;
 
 // Check if the mission name, photo, and check values are null
 if ($missionName == null) {
@@ -30,17 +30,17 @@ if ($photo == null) {
 }
 
 if ($check == null) {
-    $check = $_POST['check'];
+    $complete = $_POST['complete'];
 }
 
 // Prepare the SQL statement
-$sql = "UPDATE missions SET mission = ?, photo = ?, check = ? WHERE id = ? AND mission_idx = ?";
+$sql = "UPDATE missions SET mission = ?, photo = ?, complete = ? WHERE id = ? AND mission_idx = ?";
 
 // Create a prepared statement
 $stmt = $db->prepare($sql);
 
 // Bind the parameters
-$stmt->bind_param("sbii", $missionName, $photo, $check, $id, $mission_idx);
+$stmt->bind_param("sbii", $missionName, $photo, $complete, $id, $mission_idx);
 
 // Execute the statement
 $stmt->execute();

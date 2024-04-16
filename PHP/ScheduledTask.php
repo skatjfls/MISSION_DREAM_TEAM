@@ -23,7 +23,7 @@ if (date('H') == '05') {
 
     // Check mission status and update the point status if the mission is uncompleted
     while ($member = $member_list->fetch_assoc()){
-        $sql = "SELECT mission_idx FROM missions WHERE id = ? AND check = 0";
+        $sql = "SELECT mission_idx FROM missions WHERE id = ? AND complete = 0";
         $stmt = $db->prepare($sql);
         $stmt->bind_param("s", $member['id']);
         $stmt->execute();

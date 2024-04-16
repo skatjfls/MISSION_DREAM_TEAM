@@ -1,131 +1,38 @@
-<<<<<<< Updated upstream
-:root {
-  --gra-color1: #FAF29D;
-  --gra-color2: #F5FFDB;
-  --gra-color3: #CCFFE6;
-  --main-color: #87F6A6;
-}
-
-=======
-<<<<<<< HEAD
->>>>>>> Stashed changes
 .App {
   text-align: center;
-  user-select: none;
 }
 
-div {
-  box-sizing: border-box;
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
 }
 
-.nav-bar {
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
   display: flex;
-  background: white;
-  width: 100%;
-  color: black;
-  padding: 20px 30px;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
-.nav-bar div {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.App-link {
+  color: #61dafb;
 }
 
-.main-top {
-  background: linear-gradient(to bottom right, var(--gra-color1), var(--gra-color2), var(--gra-color3));
-  padding-top: 40px;
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
-<<<<<<< Updated upstream
-=======
-=======
-:root {
-  --gra-color1: #FAF29D;
-  --gra-color2: #F5FFDB;
-  --gra-color3: #CCFFE6;
-  --main-color: #87F6A6;
-}
-
-.App {
-  text-align: center;
-  user-select: none;
-}
-
-div {
-  box-sizing: border-box;
-}
-
-.nav-bar {
-  display: flex;
-  background: white;
-  width: 100%;
-  color: black;
-  padding: 20px 30px;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nav-bar div {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.main-top {
-  background: linear-gradient(to bottom right, var(--gra-color1), var(--gra-color2), var(--gra-color3));
-  padding-top: 40px;
-}
->>>>>>> Stashed changes
-
-.main-bottom h6 {
-  padding: 6px;
-}
-
-.tap {
-  background-color: transparent;
-  padding-bottom: 0;
-}
-
-.mission {
-  display: flex;
-  padding: 2px 15px;
-  margin: 20px;
-  border: 1px solid grey;
-  gap: 10px;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.mission h6 {
-  width: 80%;
-}
-
-.myGroup {
-  width: fit-content;
-  margin: 20px;
-}
-
-.myGroup-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.myModal {
-  margin: 20px;
-  padding: 20px;
-  background: #eee;
-  text-align: left;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-<<<<<<< Updated upstream
-}
-=======
-}
->>>>>>> nimo
->>>>>>> Stashed changes
