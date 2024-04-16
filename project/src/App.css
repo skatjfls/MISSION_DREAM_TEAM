@@ -1,38 +1,82 @@
+:root {
+  --gra-color1: #FAF29D;
+  --gra-color2: #F5FFDB;
+  --gra-color3: #CCFFE6;
+  --main-color: #87F6A6;
+}
+
 .App {
   text-align: center;
+  user-select: none;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+div {
+  box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.nav-bar {
   display: flex;
-  flex-direction: column;
+  background: white;
+  width: 100%;
+  color: black;
+  padding: 20px 30px;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.nav-bar div {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.main-top {
+  background: linear-gradient(to bottom right, var(--gra-color1), var(--gra-color2), var(--gra-color3));
+  padding-top: 40px;
+}
+
+.main-bottom h6 {
+  padding: 6px;
+}
+
+.tap {
+  background-color: transparent;
+  padding-bottom: 0;
+}
+
+.mission {
+  display: flex;
+  padding: 2px 15px;
+  margin: 20px;
+  border: 1px solid grey;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mission h6 {
+  width: 80%;
+}
+
+.myGroup {
+  width: fit-content;
+  margin: 20px;
+}
+
+.myGroup-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.myModal {
+  margin: 20px;
+  padding: 20px;
+  background: #eee;
+  text-align: left;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
