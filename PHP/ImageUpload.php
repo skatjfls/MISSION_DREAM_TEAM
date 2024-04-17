@@ -10,21 +10,25 @@
             checkImage();
             uploade();
             echo json_encode(array('success' => '이미지 업로드 성공'));
+            exit;
         }
         catch(Exception $e){
             echo json_encode(array('error' => $e->getMessage() . '</h4>'));
+            exit;
         }
     }
 
     
 
-function checkImage(){
+function checkImage(){ 
     // 이미지 파일이 첨부되었는지 확인
     if(! isset($_FILES['imgFile'])){
         echo json_encode(array('error' => '파일이 첨부되지 않았습니다.'));
+        exit;
     }
     if (! isset($_FILES['image']['error']) || ! is_int($_FILES['imgFile'])) {
-        die('Invalid parameters.');
+        echo json_encode(array('error' => '파일 업로드 에러가 발생하였습니다.'));
+        exit;
     }
     else{
         // 업로드 파일 검수 시작
@@ -56,7 +60,7 @@ function checkImage(){
             int(337412)(bytes)
          * *****************************/
 
-        // Organize variables
+        // 변수 정리
         $error = $_FILES['imgFile']['error'];
         $name = $_FILES['imgFile']['name'];
         $ext = explode('.', $name);
@@ -104,7 +108,7 @@ function uploade(){
         // 이미지 크기 확인
         $size = getimagesize($_FILES['imgFile']['tmp_name']);
 
-        // 변수 할당
+        // 변수 정리
         $type = $size['mime'];
         $imgfp = fopen($_FILES['imgFile']['tmp_name'], 'rb');
         $size = $size[3];
@@ -128,14 +132,17 @@ function uploade(){
 
             if($stmt->execute()){
                 echo json_encode(array('success' => '이미지 업로드 성공'));
+                exit;
             }
             else{
                 echo json_encode(array('error' => '이미지 업로드 실패'));
+                exit;
             }
         }
     }
     else{
         echo json_encode(array('error' => '이미지 파일이 아닙니다.'));
+        exit;
     }
 }
 ?>
