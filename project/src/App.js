@@ -7,6 +7,7 @@ import Group from './pages/Group.js';
 import LogIn from './pages/LogIn.js';
 import SignUp from './pages/SignUp.js';
 
+
 function App() {
   
   let [missionList, setMissionList] = useState(['5,000원만 쓰기', '6,000원만 쓰기', '7,000원만 쓰기']);
@@ -17,7 +18,9 @@ function App() {
   let [userName] = useState('이지민');
   let [point] = useState(-2);
   let [missionInput, setMissionInput] = useState('');
+  let [tap, setTap] = useState(0);
   let navigate = useNavigate();
+  let [userCount] = useState(32)
 
   return (
     <div className="App">
@@ -41,57 +44,30 @@ function App() {
             }
             <div className="main-top">
               <h1>To do list</h1>
-              <input type="text" onChange={(e)=>{ setMissionInput(e.target.value) }}placeholder="오늘의 할 일을 작성하세요!"></input>
-              <button onClick={()=>{ if (missionInput.trim() !== "") {let copy = [...missionList]; copy.push(missionInput); setMissionList(copy);} }}>+</button>
-              <Nav variant="tabs" className="tap">
+              {
+                tap == 0? <>
+                  <input type="text" onChange={(e)=>{ setMissionInput(e.target.value) }}placeholder="오늘의 할 일을 작성하세요!"></input>
+                  <button onClick={()=>{ if (missionInput.trim() !== "") {let copy = [...missionList]; copy.push(missionInput); setMissionList(copy);} }}>+</button>
+                </> : null
+              }
+              <Nav variant="tabs" defaultActiveKey="todo" className="tap">
                 <Nav.Item>
-                  <Nav.Link eventKey="todo">to do</Nav.Link>
+                  <Nav.Link onClick={()=>{ setTap(0) }} eventKey="todo">to do</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link eventKey="calendar">calendar</Nav.Link>
+                  <Nav.Link onClick={()=>{ setTap(1) }} eventKey="calendar">calendar</Nav.Link>
                 </Nav.Item>
               </Nav>
             </div>
-            <div className="main-bottom">
-              <div className="row">
-                <div className="col-md-4"></div>
-                <div className="col-md-4">
-                  {
-                    missionList.map(function(content, i){
-                      return (
-                        <div className="mission" key={i}>
-                          <input type="checkbox"/>
-                          <h6 id={ content }>{ content }</h6>
-                          <button>샷</button>
-                          <button onClick={()=>{ let copy = [...missionList]; copy.splice(i, 1); setMissionList(copy); }}>X</button>
-                        </div>
-                      )
-                    })
-                  }
-                </div>
-                <div className="col-md-4">
-                  <div className="myGroup">
-                    <div className="myGroup-top">
-                      <h4>나의 그룹</h4>
-                      <button onClick={()=>{ setCreate(true) }}>+</button>
-                    </div>
-                    {
-                      groupList.map(function(content, i){
-                        return (
-                          <div className="groupList" key={i}>
-                            <h6 onClick={()=>{ navigate('/group')}}>{ content }</h6>
-                          </div>
-                        )
-                      })
-                    }
-                    <button onClick={()=>{ setJoin(true) }}>그룹 가입하기</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {
+              tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} navigate={navigate}/> : null
+            }
+            {
+              tap == 1 ? <MyCalendar/> : null
+            }
           </div>
         }/>
-        <Route path="/login" element={ <LogIn/> }/>
+        <Route path="/login" element={ <LogIn userCount={userCount} navigate={navigate}/> }/>
         <Route path="/signup" element={ <SignUp/> }/>
         <Route path="/group" element={ <Group/> }/>
         <Route path="*" element={<div>404</div>}/>
@@ -100,9 +76,52 @@ function App() {
   );
 }
 
-function Calendar() {
+function ToDo(props) {
+  return(
+    <div className="todo">
+      <div className="row">
+        <div className="col-md-4"></div>
+        <div className="col-md-4">
+          {
+            props.missionList.map(function(content, i){
+              return (
+                <div className="mission" key={i}>
+                  <input type="checkbox"/>
+                  <h6 id={ content }>{ content }</h6>
+                  <button>샷</button>
+                  <button onClick={()=>{ let copy = [...props.missionList]; copy.splice(i, 1); props.setMissionList(copy); }}>X</button>
+                </div>
+              )
+            })
+          }
+        </div>
+        <div className="col-md-4">
+          <div className="myGroup">
+            <div className="myGroup-top">
+              <h4>나의 그룹</h4>
+              <button onClick={()=>{ props.setCreate(true) }}>+</button>
+            </div>
+            {
+              props.groupList.map(function(content, i){
+                return (
+                  <div className="groupList" key={i}>
+                    <h6 onClick={()=>{ props.navigate('/group')}}>{ content }</h6>
+                  </div>
+                )
+              })
+            }
+            <button onClick={()=>{ props.setJoin(true) }}>그룹 가입하기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MyCalendar() {
   
 }
+
 function CreateGroup(props) {
   return (
     <div className="myModal">
