@@ -20,7 +20,7 @@ $res_group = $db->query($query_findGroup);
 if($res_group){
     $groupList = array();
 
-    while($row = $res_group->fetch_row()){
+    while($row = $res_group->fetch_array(MYSQLI_ASSOC)){
         $groupList[] = $row;
     }
 }
@@ -37,25 +37,54 @@ if($row_member){
     // echo "사용자 이름 : ", $_SESSION['name'], "\n";
 
     // 사용자가 그룹이 있으면 세션에 이용자의 그룹 리스트 저장
-    if($groupList){
+    // if($groupList){
 
-        $_SESSION['group'] = $groupList;
-        // echo "세션에 그룹리스트 삽입\n";
+    //     $_SESSION['group'] = $groupList;
+    //     // echo "세션에 그룹리스트 삽입\n";
 
-        // foreach($_SESSION['group'] as $group){
-        //     echo "사용자가 속한 그룹 : ", $group[0], "\n";
-        // }
-        // echo "사용자가 속한 그룹 : ", $_SESSION['group'][0], "\n";
-        // echo "사용자가 속한 그룹 : ", $_SESSION['group'][1], "\n";
-        // echo "사용자가 속한 그룹 : ", $_SESSION['group'][2], "\n";
-    }else{
-        // echo "그룹은 없습니다. !\n";
-    }
+    //     // foreach($_SESSION['group'] as $group){
+    //     //     echo "사용자가 속한 그룹 : ", $group[0], "\n";
+    //     // }
+    //     // echo "사용자가 속한 그룹 : ", $_SESSION['group'][0], "\n";
+    //     // echo "사용자가 속한 그룹 : ", $_SESSION['group'][1], "\n";
+    //     // echo "사용자가 속한 그룹 : ", $_SESSION['group'][2], "\n";
 
-    echo json_encode(true);
+    //     print_r($_SESSION['group']);
+    //     echo "\n"; 
+    //     echo "\n";
+    //     echo "\n";
+    //     echo "\n";
+    //     print_r($_SESSION['group'][0]);
+    //     echo "\n";
+    //     echo "\n";
+    //     echo "\n";
+    //     echo "\n";
+    //     echo $_SESSION['group'][0];
+    //     echo "\n";
+    //     echo "\n";
+    //     echo "\n";
+    //     echo "\n";
+    //     $id = isset($_SESSION['group'][0]) ? implode($_SESSION['group'][0]) : null;
+
+    //     print_r($id);
+    //     echo "\n";
+    //     echo "\n";
+    //     echo "\n";
+    //     echo $id;
+
+
+    // }else{
+    //     echo "그룹은 없습니다. !\n";
+    // }
+
+    //echo json_encode(true);
 
 
 }else{
     echo json_encode(false);
 }
+
+mysqli_close($db);
+
+?>
 
