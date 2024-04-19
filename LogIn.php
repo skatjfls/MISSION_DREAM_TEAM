@@ -20,7 +20,7 @@ $res_group = $db->query($query_findGroup);
 if($res_group){
     $groupList = array();
 
-    while($row = $res_group->fetch_row()){
+    while($row = $res_group->fetch_array(MYSQLI_ASSOC)){
         $groupList[] = $row;
     }
 }
@@ -48,14 +48,43 @@ if($row_member){
         // echo "사용자가 속한 그룹 : ", $_SESSION['group'][0], "\n";
         // echo "사용자가 속한 그룹 : ", $_SESSION['group'][1], "\n";
         // echo "사용자가 속한 그룹 : ", $_SESSION['group'][2], "\n";
+
+        print_r($_SESSION['group']);
+        echo "\n";
+        echo "\n";
+        echo "\n";
+        echo "\n";
+        print_r($_SESSION['group'][0]);
+        echo "\n";
+        echo "\n";
+        echo "\n";
+        echo "\n";
+        echo $_SESSION['group'][0];
+        echo "\n";
+        echo "\n";
+        echo "\n";
+        echo "\n";
+        $id = isset($_SESSION['group'][0]) ? implode($_SESSION['group'][0]) : null;
+
+        print_r($id);
+        echo "\n";
+        echo "\n";
+        echo "\n";
+        echo $id;
+
+
     }else{
-        // echo "그룹은 없습니다. !\n";
+        echo "그룹은 없습니다. !\n";
     }
 
-    echo json_encode(true);
+    //echo json_encode(true);
 
 
 }else{
     echo json_encode(false);
 }
+
+mysqli_close($db);
+
+?>
 
