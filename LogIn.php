@@ -48,11 +48,11 @@ if($row_member){
         // echo "사용자가 속한 그룹 : ", $_SESSION['group'][0], "\n";
         // echo "사용자가 속한 그룹 : ", $_SESSION['group'][1], "\n";
         // echo "사용자가 속한 그룹 : ", $_SESSION['group'][2], "\n";
-    }else{
-        // echo "그룹은 없습니다. !\n";
-    }
+    // }else{
+    //     // echo "그룹은 없습니다. !\n";
+    // }
 
-    //echo json_encode(true);
+    //echo json_encode(true); 
 
 
 }else{
