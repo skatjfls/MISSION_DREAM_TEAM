@@ -12,10 +12,10 @@ if ($res) {
         $total = $row[0]; 
     }
 
-    echo "지금까지 ", $total, "명의 이용자가 매일 미션을 완수하고 있어요";
+    echo json_encode($total);
 
 } else {
-    echo "Query error: " . $db->error;
+    echo json_encode(false);
 }
 
 ?>
