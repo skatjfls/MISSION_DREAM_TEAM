@@ -3,17 +3,23 @@
   --gra-color2: #F5FFDB;
   --gra-color3: #CCFFE6;
   --main-color: #87F6A6;
+  --sub-color1: #EAFFF4;
+  --sub-color2: #30C88B;
+  --sub-color3: #D5D5D5;
+  --gray-color: #EDEDED;
 }
 
 .App {
   text-align: center;
   user-select: none;
+  overflow-x: hidden;
 }
 
 div {
   box-sizing: border-box;
 }
 
+/*Nav css*/
 .nav-bar {
   display: flex;
   background: white;
@@ -30,20 +36,23 @@ div {
   gap: 20px;
 }
 
+/*tap css*/
 .main-top {
   background: linear-gradient(to bottom right, var(--gra-color1), var(--gra-color2), var(--gra-color3));
   padding-top: 40px;
+  height: 200px;
 }
 
-.main-bottom h6 {
+.todo-tap h6 {
   padding: 6px;
 }
 
 .tap {
   background-color: transparent;
-  padding-bottom: 0;
+  vertical-align: bottom;
 }
 
+/*To do css*/
 .mission {
   display: flex;
   padding: 2px 15px;
@@ -58,9 +67,13 @@ div {
   width: 80%;
 }
 
+/*My group css*/
 .myGroup {
   width: fit-content;
   margin: 20px;
+  padding: 15px;
+  border: solid 2px var(--sub-color3);
+  border-radius: 15px;
 }
 
 .myGroup-top {
@@ -70,6 +83,7 @@ div {
   gap: 10px;
 }
 
+/*Modal css*/
 .myModal {
   margin: 20px;
   padding: 20px;
@@ -80,3 +94,23 @@ div {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+/*Calendar css*/
+.calendar-tap {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 30px;
+}
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background: var(--sub-color1);
+}
+
+  .react-calendar__tile--now {
+    background: white;
+  }
+  .react-calendar__tile--active {
+    background: var(--sub-color1);
+    color: var(--sub-color2);
+  }
