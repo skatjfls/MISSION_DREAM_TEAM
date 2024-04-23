@@ -210,10 +210,6 @@ let sameRankCount = 0; // 등수가 같은 사람의 수를 기억할 변수
       </p>
     );
   })}
-
-
-
-
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
