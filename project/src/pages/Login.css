@@ -1,0 +1,47 @@
+/*login css*/
+.Login {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .login-box {
+    width: 70%;
+    height: 65%;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .login-left, .login-right {
+    flex: 1;
+    height: 100%;
+    align-content: center;
+  }
+  .login-left {
+    background: linear-gradient(to bottom right, var(--gra-color1), var(--gra-color2), var(--gra-color3));
+  }
+  
+  .login-input, .login-button {
+    height: 42px;
+    border-radius: 10px;
+    width: 55%;
+    margin: 8px;
+  }
+
+  .login-input {
+    display: inline-flex;
+    justify-content: space-between;
+    border-color: var(--gray-color1);
+  }
+
+  .login-button {
+    text-align: center;
+    border: 0;
+    background-color: var(--main-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-right input {
+    padding: 10px;
+  }
