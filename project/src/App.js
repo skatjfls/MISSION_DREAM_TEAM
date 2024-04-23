@@ -1,12 +1,14 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import moment from "moment";
 import { useState } from 'react';
 import { Nav } from 'react-bootstrap';
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import Group from './pages/Group.js';
 import LogIn from './pages/LogIn.js';
 import SignUp from './pages/SignUp.js';
-
 
 function App() {
   
@@ -78,7 +80,7 @@ function App() {
 
 function ToDo(props) {
   return(
-    <div className="todo">
+    <div className="todo-tap">
       <div className="row">
         <div className="col-md-4"></div>
         <div className="col-md-4">
@@ -98,7 +100,7 @@ function ToDo(props) {
         <div className="col-md-4">
           <div className="myGroup">
             <div className="myGroup-top">
-              <h4>나의 그룹</h4>
+              <h5>나의 그룹</h5>
               <button onClick={()=>{ props.setCreate(true) }}>+</button>
             </div>
             {
@@ -119,7 +121,19 @@ function ToDo(props) {
 }
 
 function MyCalendar() {
-  
+  let [value, setValue] = useState(new Date());
+  return (
+    <div className='calendar-tap'>
+      <Calendar
+        onChange={setValue}
+        value={value}
+        formatDay={(locale, date) => moment(date).format("DD")}
+      ></Calendar>
+      <div>
+        {moment(value).format("YYYY년 MM월 DD일")} 
+      </div>
+    </div>
+  );
 }
 
 function CreateGroup(props) {
