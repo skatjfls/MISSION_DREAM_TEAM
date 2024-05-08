@@ -33,22 +33,6 @@ div {
   box-sizing: border-box;
 }
 
-/*Nav css*/
-.nav-bar {
-  display: flex;
-  background: var(--gray-color); /* 수정된 부분: 배경색을 변수로 변경 */
-  width: 100%;
-  color: black;
-  padding: 20px 30px;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nav-bar div {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
 
 .info-container {
   background-color: var(--sub-color1);
