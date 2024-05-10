@@ -1,0 +1,21 @@
+.background{
+    background: linear-gradient(to right, var(--gra-color3), var(--gra-color2), var(--gra-color1));
+    width: 100%;
+    height: 100vh;
+    padding: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input{
+    background-color: rgb(255, 255, 255);
+    width: 50%;
+    height: 500px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+.Form.Label{
+    text-align: left;
+}

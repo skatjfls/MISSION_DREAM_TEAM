@@ -46,7 +46,7 @@ function onClickLogin(event) {
         const inputId = document.getElementById('id').value;
         const inputPw = document.getElementById('password').value;
 
-        axios.post('php url',
+        axios.post('http://localhost:3307/PHP/LogIn.php',
         {
             id: inputId,
             password: inputPw

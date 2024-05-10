@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Row, Col, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // useNavigate 추가
+import './SignUp.css';
 
 const SignUpPage = () => {
   const initialIds = ['skatjfls', 'dlwlals', 'rhkrwotjq', 'rlagustn', 'dksgyfls'];
@@ -81,12 +82,13 @@ const SignUpPage = () => {
   const navigate = useNavigate(); // useNavigate 훅 사용
 
   return (
-    <Container className="d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
-      <div className="p-5 border rounded-lg">
+    <div className="background">
+      <div className="input">
         <h1 className="mb-4">회원가입</h1>
+        <p>회원이 되어 다양한 혜택을 누려보세요!</p>
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="formBasicId">
-            <Form.Label>ID</Form.Label>
+            <Form.Label>ID</Form.Label> <Form.Text>{idValidation}</Form.Text>
             <Row>
               <Col>
                 <Form.Control type="text" name="id" value={formData.id} onChange={handleChange} required />
@@ -95,22 +97,18 @@ const SignUpPage = () => {
                 <Button variant="secondary" onClick={handleCheckDuplicate}>중복확인</Button>
               </Col>
             </Row>
-            <Form.Text>{idValidation}</Form.Text>
           </Form.Group>
           <Form.Group controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
+            <Form.Label>Password</Form.Label> {passwordValidation && <Form.Text>{passwordValidation}</Form.Text>}
             <Form.Control type="password" name="password" value={formData.password} onChange={handleChange} onBlur={handlePasswordBlur} required />
-            {passwordValidation && <Form.Text>{passwordValidation}</Form.Text>}
           </Form.Group>
           <Form.Group controlId="formBasicConfirmPassword">
-            <Form.Label>Password 확인</Form.Label>
+            <Form.Label>Password 확인</Form.Label> {confirmPasswordValidation && <Form.Text>{confirmPasswordValidation}</Form.Text>}
             <Form.Control type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleConfirmPasswordChange} onBlur={handlePasswordBlur} required />
-            {confirmPasswordValidation && <Form.Text>{confirmPasswordValidation}</Form.Text>}
           </Form.Group>
           <Form.Group controlId="formBasicNickname">
-            <Form.Label>닉네임</Form.Label>
+            <Form.Label>닉네임</Form.Label> <Form.Text>{nicknameValidation}</Form.Text>
             <Form.Control type="text" name="nickname" value={formData.nickname} onChange={handleChange} onBlur={handleNicknameBlur} required />
-            <Form.Text>{nicknameValidation}</Form.Text>
           </Form.Group>
           <Button variant="primary" type="submit">
             가입하기
@@ -129,7 +127,7 @@ const SignUpPage = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </Container>
+    </div>
   );
 };
 
