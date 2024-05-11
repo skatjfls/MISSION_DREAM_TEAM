@@ -64,6 +64,10 @@ div {
   overflow-y: scroll;
 }
 
+.members::-webkit-scrollbar {
+  display: none;
+}
+
 .infoMember{
   display: block;
   background-color: white;
