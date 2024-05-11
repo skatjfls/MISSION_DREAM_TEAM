@@ -1,5 +1,6 @@
 <?php
     require_once 'dbConfig.php';
+    require_once 'DefaultSetting.php';
 
     if (!isset($_SESSION['id'])) {
         echo json_encode(array('error' => '로그인이 필요합니다.'));

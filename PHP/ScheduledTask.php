@@ -2,6 +2,7 @@
 // 2024.04.11 nimo
 
 require_once 'dbConfig.php';
+require_once 'DefaultSetting.php';
 
 // Set the timezone to your desired timezone
 date_default_timezone_set('Japan');

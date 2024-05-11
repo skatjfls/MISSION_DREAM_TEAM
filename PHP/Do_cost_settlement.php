@@ -1,5 +1,6 @@
 <?php
 require_once 'dbConfig.php';
+require_once 'DefaultSetting.php';
 
 session_start();
 
