@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Form, Button, Row, Col, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // useNavigate 추가
 import './SignUp.css';
+import axios from 'axios';
 
 const SignUpPage = () => {
   const initialIds = ['skatjfls', 'dlwlals', 'rhkrwotjq', 'rlagustn', 'dksgyfls'];
@@ -69,8 +70,24 @@ const SignUpPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // 회원가입 정보 저장
+    let formData = document.getElementById('formdata');
+    let formdata = new FormData(formData);
+    axios.post('http://localhost:3001/PHP/SignUp.php',{
+      id: formdata.get('id'),
+      password: formdata.get('password'),
+      name: formdata.get('nickname')
+    })
+    .then((res)=>{
+      console.log(res)
+      if (res.data == true) {
+        alert('회원가입에 성공했습니다.')
+        setShowModal(true);
+      } else {
+        alert('회원가입에 실패했습니다.')
+      }
+    })
     // 회원가입 완료 시 모달 열기
-    setShowModal(true);
   };
 
   const closeModal = () => {
@@ -86,7 +103,7 @@ const SignUpPage = () => {
       <div className="input">
         <h1 className="mb-4">회원가입</h1>
         <p>회원이 되어 다양한 혜택을 누려보세요!</p>
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit} id='formdata'>
           <Form.Group controlId="formBasicId">
             <Form.Label>ID</Form.Label> <Form.Text>{idValidation}</Form.Text>
             <Row>
