@@ -1,6 +1,7 @@
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Modal, Nav } from 'react-bootstrap';
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -11,20 +12,54 @@ import LogIn from './pages/LogIn.js';
 import SignUp from './pages/SignUp.js';
 
 function App() {
-  
-  let [missionList, setMissionList] = useState(['5,000원만 쓰기', '6,000원만 쓰기', '7,000원만 쓰기']);
+  //let state = useSelector((state) => state )
+
+  let [missionList, setMissionList] = useState([]);
   let [groupList] = useState(['그지깽깽이들', '그만 좀 먹어라', '예쁜말 고운말']);
   let [join, setJoin] = useState(false);
   let [create, setCreate] = useState(false);
+  const [newMission, setNewMission] = useState('');
 
-  let [userName] = useState('이지민');
-  let [point] = useState(-2);
+  let [userName, setUserName] = useState();
+  let [point, setPoint] = useState();
   let [missionInput, setMissionInput] = useState('');
   let [tap, setTap] = useState(0);
   let navigate = useNavigate();
   let [userCount] = useState(32)
   
+  useEffect(() => {
+    axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php')
+    .then(res => {
+      console.log(res);
+      const userData = res.data;
+      setUserName(userData.name);
+      setPoint(userData.point);
+    })
+    .catch(error => {
+      console.error('Error fetching user info:', error)
+    })
+  }, []);
 
+  const handleAddMission = async () => {
+    try {
+      // 새로운 미션 추가
+      const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Insert_mission.php', {
+        mission: newMission // 미션 내용
+      });
+
+      // 미션 목록 갱신
+      setMissionList([...missionList, newMission]);
+      // 입력 필드 초기화
+      setNewMission('');
+    } catch (error) {
+      console.error('Error adding mission:', error);
+    }
+  };
+
+  const handleInputChange = (event) => {
+    setNewMission(event.target.value); // 입력 필드의 내용 변경 시 상태 업데이트
+  };
+  
   return (
     <div className="App">
       <Routes>
@@ -40,12 +75,12 @@ function App() {
               </div>
             </div>
             <div className="main-top">
-              <h1>To do list</h1>
               {
                 tap == 0? <>
-                  <input className="input-todo" type="text" onChange={(e)=>{ setMissionInput(e.target.value) }}placeholder="오늘의 할 일을 작성하세요!"></input>
-                  <button className="button-todo-plus" onClick={()=>{ if (missionInput.trim() !== "") {let copy = [...missionList]; copy.push(missionInput); setMissionList(copy);} }}>+</button>
-                </> : null
+                  <h1>To do list</h1>
+                  <input className="input-todo" type="text" value={missionInput} onChange={(e)=>{ setMissionInput(e.target.value) }}placeholder="오늘의 할 일을 작성하세요!"></input>
+                  <button className="button-todo-plus" onClick={handleAddMission}>+</button>
+                </> : <h1>Calendar</h1>
               }
               <Nav variant="tabs" defaultActiveKey="todo" className="tap">
                 <Nav.Item>
@@ -57,7 +92,7 @@ function App() {
               </Nav>
             </div>
             {
-              tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} navigate={navigate}/> : null
+              tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} navigate={navigate} newMission={newMission} setNewMission={setNewMission}/> : null
             }
             {
               tap == 1 ? <MyCalendar/> : null
@@ -75,13 +110,31 @@ function App() {
   );
 }
 
+// Todo 탭
 function ToDo(props) {
+  let [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchMissions = async () => {
+      try {
+        const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/Show_mission.php')
+        console.log(res)
+        props.setMissionList(res.data)
+        setIsLoading(false)
+      } catch (error) {
+        console.error('Error fetching missions:', error)
+        setIsLoading(false)
+      }
+    }
+    fetchMissions();
+  }, [props.missionList]);
+  
   return(
     <div className="todo-tap">
       <div className="row">
         <div className="col-md-4"></div>
         <div className="col-md-4">
-          {
+          {props.missionList && props.missionList.length > 0 && (
             props.missionList.map(function(content, i){
               return (
                 <div className="mission" key={i}>
@@ -92,7 +145,10 @@ function ToDo(props) {
                 </div>
               )
             })
-          }
+          )}
+          {(!props.missionList || props.missionList.length === 0) && (
+            <div className='empty-mission'>미션을 추가해보세요!</div>
+          )}
         </div>
         <div className="col-md-4">
           <div className="myGroup">
@@ -117,6 +173,8 @@ function ToDo(props) {
   )
 }
 
+
+// 캘린더 탭
 function MyCalendar() {
   let [value, setValue] = useState(new Date());
   return (
@@ -127,12 +185,13 @@ function MyCalendar() {
         formatDay={(locale, date) => moment(date).format("DD")}
       ></Calendar>
       <div>
-        {moment(value).format("YYYY년 MM월 DD일")} 
+        {moment(value).format("YYYY년 MM월 DD일")}
       </div>
     </div>
   );
 }
 
+// 그룹 생성 모달
 function CreateGroup(props) {
   return (
     <Modal show={props.create} onHide={() => props.setCreate(false)} className='modal modal-xl'>
@@ -173,6 +232,7 @@ function CreateGroup(props) {
   );
 }
 
+// 그룹 가입 모달
 function JoinGroup(props) {
   return (
     <Modal show={props.join} onHide={() => props.setJoin(false)} className="modal">

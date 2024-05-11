@@ -2,72 +2,44 @@ import React, { useState } from 'react';
 import { Container, Form, Button, Row, Col, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // useNavigate 추가
 import './SignUp.css';
+
 import axios from 'axios';
 
-const SignUpPage = () => {
-  const initialIds = ['skatjfls', 'dlwlals', 'rhkrwotjq', 'rlagustn', 'dksgyfls'];
-  const initialNicknames = ['남서린', '이지민', '곽재섭', '김현수', '안효린'];
-  const [formData, setFormData] = useState({
-    id: '',
-    password: '',
-    confirmPassword: '',
-    nickname: ''
-  });
-  const [idList, setIdList] = useState(initialIds);
-  const [nicknameList, setNicknameList] = useState(initialNicknames);
-  const [idValidation, setIdValidation] = useState('');
-  const [passwordValidation, setPasswordValidation] = useState('');
-  const [confirmPasswordValidation, setConfirmPasswordValidation] = useState('');
-  const [nicknameValidation, setNicknameValidation] = useState('');
-  const [showModal, setShowModal] = useState(false);
+const SignUpForm = () => {
+    const [formData, setFormData] = useState({
+        id: '',
+        password: '',
+        repassword: '',
+        name: ''
+    });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
+    const [formErrors, setFormErrors] = useState({
+        id: '',
+        password: '',
+        repassword: '',
+        name: ''
+    });
 
-  const handleCheckDuplicate = () => {
-    if (!/^[a-zA-Z0-9]{6,20}$/.test(formData.id)) {
-      setIdValidation('아이디는 영문자와 숫자 조합으로 6자 이상 20자 이하여야 합니다.');
-    } else if (idList.includes(formData.id)) {
-      setIdValidation('사용할 수 없는 아이디입니다.');
-    } else {
-      setIdValidation('사용가능한 아이디입니다.');
-    }
-  };
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
 
-  const handlePasswordBlur = () => {
-    if (!/(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{8,20}$/.test(formData.password)) {
-      setPasswordValidation('영문, 숫자, 특수기호 포함 8~20자로 작성하여야 합니다.');
-    } else {
-      setPasswordValidation('');
-    }
-  };
+    const validateForm = () => {
+        let isValid = true;
+        const errors = {};
 
-  const handleConfirmPasswordChange = (e) => {
-    const { value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      confirmPassword: value
-    }));
-    if (value !== formData.password) {
-      setConfirmPasswordValidation('비밀번호가 일치하지 않습니다.');
-    } else{
-      setConfirmPasswordValidation('');
-    }
-  };
+        // 아이디 유효성 검사
+        if (!formData.id.match(/^[a-zA-Z0-9]{6,20}$/)) {
+            errors.id = '6~20자의 영문자, 숫자로 입력해주세요.';
+            isValid = false;
+        }
 
-  const handleNicknameBlur = () => {
-    if (nicknameList.includes(formData.nickname)) {
-      setNicknameValidation('사용할 수 없는 닉네임입니다.');
-    } else {
-      setNicknameValidation('사용가능한 닉네임입니다.');
-    }
-  };
-
+        // 비밀번호 유효성 검사
+        if (!formData.password.match(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,20}$/)) {
+            errors.password = '8~20자로 영문자, 숫자, 특수문자를 포함하여 입력해주세요.';
+            isValid = false;
+        }
   const handleSubmit = (e) => {
     e.preventDefault();
     // 회원가입 정보 저장
@@ -89,15 +61,20 @@ const SignUpPage = () => {
     })
     // 회원가입 완료 시 모달 열기
   };
+        // 비밀번호 확인 유효성 검사
+        if (formData.password !== formData.repassword) {
+            errors.repassword = '비밀번호가 일치하지 않습니다. 비밀번호를 다시 입력해주세요.';
+            isValid = false;
+        }
+        // 이름 유효성 검사
+        if (!formData.name.match(/^[가-힣]+$/)) {
+            errors.name = '한글로 입력해주세요.';
+            isValid = false;
+        }
 
-  const closeModal = () => {
-    setShowModal(false);
-    // 모달이 닫힐 때 상위폴더인 App.js로 이동
-    navigate('/');
-  };
-
-  const navigate = useNavigate(); // useNavigate 훅 사용
-
+        setFormErrors(errors);
+        return isValid;
+    };
   return (
     <div className="background">
       <div className="input">
@@ -146,6 +123,62 @@ const SignUpPage = () => {
       </Modal>
     </div>
   );
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const isValid = validateForm();
+
+        if (isValid) {
+            try {
+                const response = await axios.post('', {
+                    id: formData.id,
+                    password: formData.password,
+                    name: formData.name
+                });
+
+                if (response.data.success) {
+                    alert('회원가입에 성공했습니다.');
+                    // 원하는 경로로 이동
+                } else {
+                    alert('회원가입에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('회원가입 중 오류가 발생했습니다.');
+            }
+        } else {
+            console.log('Form is invalid, cannot submit.');
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <div>
+                <label htmlFor="id">아이디</label>
+                <input type="text" id="id" name="id" value={formData.id} onChange={handleChange} />
+                {formErrors.id && <div style={{ color: 'red' }}>{formErrors.id}</div>}
+            </div>
+
+            <div>
+                <label htmlFor="password">비밀번호</label>
+                <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} />
+                {formErrors.password && <div style={{ color: 'red' }}>{formErrors.password}</div>}
+            </div>
+
+            <div>
+                <label htmlFor="repassword">비밀번호 확인</label>
+                <input type="password" id="repassword" name="repassword" value={formData.repassword} onChange={handleChange} />
+                {formErrors.repassword && <div style={{ color: 'red' }}>{formErrors.repassword}</div>}
+            </div>
+
+            <div>
+                <label htmlFor="name">이름</label>
+                <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} />
+                {formErrors.name && <div style={{ color: 'red' }}>{formErrors.name}</div>}
+            </div>
+
+            <button type="submit">회원가입</button>
+        </form>
+    );
 };
 
-export default SignUpPage;
+export default SignUpForm;
