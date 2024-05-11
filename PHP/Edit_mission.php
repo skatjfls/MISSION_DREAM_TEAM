@@ -8,7 +8,7 @@ session_start();
 
 if (!isset($_SESSION['id'])) {
     // Redirect to login page
-    echo json_encode(null);
+    echo json_encode("ID not found");
     exit;
 }
 

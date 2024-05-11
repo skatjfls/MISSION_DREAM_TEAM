@@ -12,9 +12,9 @@ if (!isset($_SESSION['id'])) {
     exit;
 }
 
-// Assuming you have the mission name, photo, and complete values stored in variables
+#Assuming you have the mission name, photo, and complete values stored in variables
 $id = $_SESSION['id'];
-$missionName = $_POST['missionName'];
+$missionName = isset($_POST['missionName']) ? $_POST['missionName'] : null;
 $photo = isset($_POST['photo']) ? $_POST['photo'] : null; // Set the default image to null
 $complete = $_POST['complete'];
 

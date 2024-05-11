@@ -19,21 +19,46 @@ $id = $_SESSION['id'];
 $query_name = "SELECT name FROM member WHERE id = '$id'"; 
 $res = $db->query($query_name);
 $row = $res->fetch_assoc();
-$name = $row['name'];
+$user_name = $row['name'];
 
 // 사용자 포인트 찾아서 반환
 $query_point = "SELECT point FROM overall WHERE id = '$id'";
-$res = $db->query($query_point);
+$user_point = array_values($db->query($query_point)->fetch_assoc());
 
-if($res){
-    if($row = $res->fetch_assoc()){
-        $point = $row['point'];
-    }
-}else{
-    $point = 0;
+// 그룹 리스트 찾기 
+$sql = "SELECT group_name FROM groupmember WHERE id = ?";
+$stmt = $db->prepare($sql);
+$stmt->bind_param("s", $id);
+$stmt->execute();
+$sql_group_list = $stmt->get_result();
+
+$group_list = array();
+while($row = $sql_group_list->fetch_assoc()){
+    array_push($group_list, $row);
 }
 
-echo json_encode(array('name' => $name, 'point' => $point));
+// 미션 리스트 가져오기
+$sql = "SELECT * FROM missions WHERE id = ?";
+$stmt = $db->prepare($sql);
+$stmt->bind_param("s", $id);
+$stmt->execute();
+$sql_mission_list = $stmt->get_result();
+
+$mission_list = array();
+while($row = $sql_mission_list->fetch_assoc()){
+    array_push($mission_list, array_values($row));
+}
+
+$data = array(
+    'name' => $user_name,
+    'point' => $user_point,
+    'group_list' => $group_list,
+    'mission_list' => $mission_list
+);
+
+echo json_encode($data);
+
+// echo json_encode(array('name' => $name, 'point' => $point));
 
 mysqli_close($db);
 
