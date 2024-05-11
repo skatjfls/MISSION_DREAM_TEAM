@@ -46,14 +46,14 @@ function onClickLogin(event) {
         const inputId = document.getElementById('id').value;
         const inputPw = document.getElementById('password').value;
 
-        axios.post('http://localhost:3307/PHP/LogIn.php',
+        axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogIn.php',
         {
             id: inputId,
             password: inputPw
         })
         .then((res)=>{
             console.log(res)
-            if (res == true) {
+            if (res.data == true) {
                 alert('로그인에 성공했습니다.')
                 window.location.replace('/')
             }

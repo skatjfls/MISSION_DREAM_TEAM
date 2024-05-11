@@ -1,12 +1,18 @@
 <?php
 // 240410 김현수 작성
 
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json");
+
 // db 연결
 require_once("dbConfig.php");
 
+// 프론트에서 json 형태로 쏴주는 데이터를 json_decode 하여 변환
 // id, password 받아서 변수에 저장
-$id = $_POST["id"];
-$password = md5($_POST["password"]);
+$data = json_decode(file_get_contents('php://input'), true);
+$id = $data["id"];
+$password = md5($data["password"]);
 
 // member 테이블에서 이용자 찾아서 member 연관 배열에 저장
 $query_findMember = "SELECT * FROM member WHERE id = '$id' AND password = '$password'";
