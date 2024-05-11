@@ -48,12 +48,12 @@ function App() {
         <Route path="/" element={
           <div>
             <div className="nav-bar">
-              <h4 onClick={() => navigate('/')}>미션드림팀 로고</h4>
+              <img className="img-logo" onClick={()=>{navigate('/')}} src="/img/dream.png"/>
               <div>
-                <h6>{userName}</h6>
-                <h6>{point} point</h6>
-                <button>O</button>
-                <button onClick={() => navigate('/login')}>로그아웃</button>
+                <h6>{ userName }</h6>
+                <h6>{ point } point</h6>
+                <img className="imgs" src="/img/gear.png"/>
+                <button className="button-logout" onClick={()=>{navigate('/login')}}>로그아웃</button>
               </div>
             </div>
             <div className="content">
@@ -114,10 +114,10 @@ function App() {
                             ))}
                           </tr>
                           {members.map((member, memberIndex) => (
-                            <tr key={memberIndex}>
-                              <td>{member.memberName}</td>
+                            <tr key={memberIndex} >
+                              <td style={{ width: '200px' }}>{member.memberName}</td>
                               {datesOfWeek.map((date, dateIndex) => (
-                                <td key={dateIndex}>
+                                <td key={dateIndex} style={{ width: '100px' }}>
                                   {date.toDateString() === new Date().toDateString() ? member.memberPoint : ''}
                                 </td>
                               ))}
