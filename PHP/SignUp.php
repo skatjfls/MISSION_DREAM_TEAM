@@ -3,6 +3,7 @@
 
 // db 연결
 require_once("dbConfig.php");
+require_once("DefaultSetting.php");
 
 //아이디, 패스워드, 이름 받아와서 변수에 저장
 $id = isset($_POST["id"]) ? $_POST["id"] : null;
@@ -15,6 +16,7 @@ if($id != null && $password != null && $name != null){
 
     // db에 쿼리 실행
     $db->query($query_signup);
+    echo json_encode(true);
 }else{
     echo json_encode(false);
 }
