@@ -71,7 +71,17 @@ function App() {
                 <h6>{ userName }</h6>
                 <h6>{ point } point</h6>
                 <img className="imgs" src="/img/gear.png"/>
-                <button className="button-logout" onClick={()=>{navigate('/login')}}>로그아웃</button>
+                <button className="button-logout" onClick={()=>{
+                  axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
+                  .then((res) => {
+                    console.log(res)
+                    alert('로그아웃되었습니다.')
+                    navigate('/login')
+                  })
+                  .catch((err) => {
+                    console.log(err)
+                  })
+                  }}>로그아웃</button>
               </div>
             </div>
             <div className="main-top">
