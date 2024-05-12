@@ -4,16 +4,16 @@
 require_once 'dbConfig.php';
 require_once 'DefaultSetting.php';
 
-session_start();
 
-if (!isset($_SESSION['id'])) {
+if (!isset($_GET['id'])) {
     // Redirect to login page
     echo json_encode(null);
     exit;
+} else{
+    $id = $_GET['id'];
 }
 
 #Assuming you have the mission name, photo, and complete values stored in variables
-$id = $_SESSION['id'];
 $missionName = isset($_POST['missionName']) ? $_POST['missionName'] : null;
 $photo = isset($_POST['photo']) ? $_POST['photo'] : null; // Set the default image to null
 $complete = $_POST['complete'];

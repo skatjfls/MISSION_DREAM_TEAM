@@ -32,10 +32,7 @@ if($res_group){
 }
 
 if($row_member){
-
     session_start();
-
-    //세션에 아이디, 이름 저장
     $_SESSION['id'] = $id;
     $_SESSION['name'] = $row_member['name'];
 
@@ -58,7 +55,7 @@ if($row_member){
     //     // echo "그룹은 없습니다. !\n";
     // }
 
-    echo json_encode(true); 
+    echo json_encode(true);
 
 
 }else{
