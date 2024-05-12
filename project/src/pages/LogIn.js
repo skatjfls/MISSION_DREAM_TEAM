@@ -1,16 +1,19 @@
 import axios from 'axios';
-import { useDispatch, useSelector} from 'react-redux';
-import  { updateUser } from '../store/reducers/userReducer';
-import { useNavigate } from 'react-router-dom';
 import './Login.css';
+import { useDispatch, useSelector} from 'react-redux';
+import  { updateUser , resetUser} from '../store/reducers/userReducer';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 function LogIn(props) {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const userId = useSelector((state) => state.user.userId)
-    console.log('userId:', userId)
 
+    useEffect(() => {
+        dispatch(resetUser())
+    },[]);
 
     const onClickLogin = (event) => {
         event.preventDefault();
