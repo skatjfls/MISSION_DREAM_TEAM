@@ -23,9 +23,9 @@ function App() {
 
   useEffect(() => {
     // 로그인 상태를 확인하는 코드...
-    if (userId === ''){
-      navigate('/login')
-    }
+    // if (userId === ''){
+    //   navigate('/login')
+    // }
     axios.get('http://localhost:3001/PHP/GetInfo.php')
     .then(res => {
       console.log(res);
