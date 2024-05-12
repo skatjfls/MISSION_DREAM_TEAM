@@ -4,6 +4,7 @@ import moment from "moment";
 import { Button, Modal, Nav } from 'react-bootstrap';
 import Calendar from "react-calendar";
 import { useDispatch,useSelector } from 'react-redux';
+import { resetUser } from '../store/reducers/userReducer';
 
 
 function MainPage({userName, point, navigate}){
@@ -14,6 +15,8 @@ function MainPage({userName, point, navigate}){
     let [missionInput, setMissionInput] = useState('');
     let [missionList, setMissionList] = useState([]);
     let [groupList] = useState(['그지깽깽이들', '그만 좀 먹어라', '예쁜말 고운말']);
+
+    const dispatch = useDispatch();
 
     const handleAddMission = async () => {
         try {
@@ -43,7 +46,7 @@ function MainPage({userName, point, navigate}){
                   <h6>{ userName }</h6>
                   <h6>{ point } point</h6>
                   <img className="imgs" src="/img/gear.png"/>
-                  <button className="button-logout" onClick={()=>{navigate('/login')}}>로그아웃</button>
+                  <button className="button-logout" onClick={()=>{dispatch(resetUser())}}>로그아웃</button>
                 </div>
               </div>
               <div className="main-top">
