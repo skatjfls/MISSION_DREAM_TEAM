@@ -46,7 +46,7 @@ function MainPage({userName, point, navigate}){
                   <h6>{ userName }</h6>
                   <h6>{ point } point</h6>
                   <img className="imgs" src="/img/gear.png"/>
-                  <button className="button-logout" onClick={()=>{dispatch(resetUser())}}>로그아웃</button>
+                  <button className="button-logout" onClick={()=>{dispatch(resetUser()); navigate('/login')}}>로그아웃</button>
                 </div>
               </div>
               <div className="main-top">
