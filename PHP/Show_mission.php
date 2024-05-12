@@ -1,17 +1,22 @@
 <?php
 // 2024.04.11 nimo
-
 require_once 'dbConfig.php';
+require_once 'DefaultSetting.php';
 
-session_start();
 
-if (!isset($_SESSION['id'])) {
+// echo "세션 아이디 : " . session_id();
+// exit;
+
+// echo json_encode($_COOKIE['id']);
+
+if (!isset($_SESSION['id'])){
     // Redirect to login page
     echo json_encode(null);
     exit;
 }
-
-$id = $_SESSION['id'];
+else{
+    $id = $_SESSION['id'];
+}
 
 // Create a SQL statement to fetch missions from the database
 $sql = "SELECT id, mission, photo, complete FROM missions WHERE id = ?";
@@ -33,7 +38,7 @@ if ($result->num_rows > 0) {
     echo json_encode($mission_list);
 
 } else {
-    echo "No missions found";
+    echo json_encode(null);
 }
 
 // Close the connection

@@ -1,6 +1,61 @@
 import axios from 'axios';
+import { useDispatch, useSelector} from 'react-redux';
+import  { updateUser } from '../store/reducers/userReducer';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
+
 function LogIn(props) {
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const userId = useSelector((state) => state.user.userId)
+    console.log('userId:', userId)
+
+
+    const onClickLogin = (event) => {
+        event.preventDefault();
+        const idIsEmpty = checkField('id', '아이디를 입력해주세요.');
+        const passwordIsEmpty = checkField('password', '비밀번호를 입력해주세요.');
+    
+        if (!idIsEmpty && !passwordIsEmpty) {
+            const inputId = document.getElementById('id').value;
+            const inputPw = document.getElementById('password').value;
+    
+            axios.post('http://localhost:3001/PHP/LogIn.php',
+            {
+                id: inputId,
+                password: inputPw
+            })
+            .then((res)=>{
+                console.log(res)
+                if (res.data == true) {
+                    alert('로그인에 성공했습니다.')
+                    // console.log('inputId:', inputId)
+                    dispatch(updateUser(inputId));
+                    console.log('userId:', userId)
+                    navigate('/')             
+                }
+                else {
+                    alert('아이디 또는 비밀번호를 확인해주세요.')
+                }
+            })
+            .catch((err)=>{
+                console.log(err)
+            })
+        }
+    }
+
+    const checkField = (fieldId, checkText) => {
+        let fieldValue = document.getElementById(fieldId).value;
+        if (fieldValue == '') {
+            alert(checkText)
+            return true
+        }
+        else{
+            return false
+        }
+    }
+
     return (
         <div className="Login">
             <div className="login-box">
@@ -24,47 +79,6 @@ function LogIn(props) {
             </div>
         </div>
     );
-}
-
-function checkField(fieldId, checkText) {
-    let fieldValue = document.getElementById(fieldId).value;
-    if (fieldValue == '') {
-        alert(checkText)
-        return true
-    }
-    else{
-        return false
-    }
-}
-
-function onClickLogin(event) {
-    event.preventDefault();
-    const idIsEmpty = checkField('id', '아이디를 입력해주세요.');
-    const passwordIsEmpty = checkField('password', '비밀번호를 입력해주세요.');
-
-    if (!idIsEmpty && !passwordIsEmpty) {
-        const inputId = document.getElementById('id').value;
-        const inputPw = document.getElementById('password').value;
-
-        axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogIn.php',
-        {
-            id: inputId,
-            password: inputPw
-        })
-        .then((res)=>{
-            console.log(res)
-            if (res.data == true) {
-                alert('로그인에 성공했습니다.')
-                window.location.replace('/')
-            }
-            else {
-                alert('아이디 또는 비밀번호를 확인해주세요.')
-            }
-        })
-        .catch((err)=>{
-            console.log(err)
-        })
-    }
 }
 
 export default LogIn;

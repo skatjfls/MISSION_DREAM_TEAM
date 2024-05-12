@@ -1,18 +1,31 @@
-import { configureStore, createSlice } from '@reduxjs/toolkit'
+// store.js
 
-let suserName = createSlice({
-    name: 'userName',
-    initialState: 'kim'
-})
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import userSlice from './store/reducers/userReducer';
+import {persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
-let suserPoint = createSlice({
-    name: 'userPoint',
-    initialState: -5
-})
+const reducers = combineReducers({
+    user: userSlice
+});
 
-export default configureStore({
-    reducer: {
-        suserName : suserName.reducer,
-        suserPoint : suserPoint.reducer
-    }
-})
+const persistConfig = {
+    key : 'root',
+    storage,
+    // whitelist: ['user']
+}
+
+const persistedReducer = persistReducer(persistConfig, reducers);
+
+const store = configureStore({
+    reducer: persistedReducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware(
+        {
+            serializableCheck: {
+                ignoredActions: [FLUSH,REHYDRATE,PAUSE,PERSIST,PURGE,REGISTER]
+            }
+        }
+    )
+});
+
+export default store;
