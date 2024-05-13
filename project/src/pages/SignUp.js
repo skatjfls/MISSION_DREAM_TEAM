@@ -20,7 +20,7 @@ const SignUpForm = () => {
         name: ''
     });
 
-    const [showModal, setShowModal] = useState(false); // 모달 상태 추가
+    const [showModal, setShowModal] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -31,27 +31,23 @@ const SignUpForm = () => {
         let isValid = true;
         const errors = {};
 
-        // 아이디 유효성 검사
         if (!formData.id.match(/^[a-zA-Z0-9]{6,20}$/)) {
-            errors.id = '6~20자의 영문자, 숫자로 입력해주세요.';
+            errors.id = '사용할 수 없는 아이디입니다.';
             isValid = false;
         }
 
-        // 비밀번호 유효성 검사
         if (!formData.password.match(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,20}$/)) {
-            errors.password = '8~20자로 영문자, 숫자, 특수문자를 포함하여 입력해주세요.';
+            errors.password = '영문, 숫자, 특수기호 포함 8~20자로 작성하여야 합니다.';
             isValid = false;
         }
 
-        // 비밀번호 확인 유효성 검사
         if (formData.password !== formData.repassword) {
-            errors.repassword = '비밀번호가 일치하지 않습니다. 비밀번호를 다시 입력해주세요.';
+            errors.repassword = '비밀번호가 일치하지 않습니다.';
             isValid = false;
         }
 
-        // 이름 유효성 검사
         if (!formData.name.match(/^[가-힣]+$/)) {
-            errors.name = '한글로 입력해주세요.';
+            errors.name = '사용할 수 없는 닉네임입니다.';
             isValid = false;
         }
 
@@ -73,7 +69,7 @@ const SignUpForm = () => {
 
                 if (response.data === true) {
                     alert('회원가입에 성공했습니다.');
-                    setShowModal(true); // 모달 열기
+                    setShowModal(true);
                 } else {
                     alert('회원가입에 실패했습니다.');
                 }
@@ -84,7 +80,7 @@ const SignUpForm = () => {
         } else {
             console.log('Form is invalid, cannot submit.');
         }
-  };
+    };
 
     const closeModal = () => {
         setShowModal(false);
@@ -93,40 +89,42 @@ const SignUpForm = () => {
     return (
         <div className="background">
             <div className="input">
-                <h1 className="mb-4">회원가입</h1>
-                <p>회원이 되어 다양한 혜택을 누려보세요!</p>
+                <h1 className="mb-4 signUpTitle">회원가입</h1>
+                <p className="signUpExplain">회원이 되어 다양한 혜택을 누려보세요!</p>
                 <Form onSubmit={handleSubmit} id='formdata'>
-                    <Form.Group controlId="formBasicId">
-                        <Form.Label>ID</Form.Label>
-                        <Form.Text>{formErrors.id}</Form.Text>
-                        <Row>
-                            <Col>
-                                <Form.Control type="text" name="id" value={formData.id} onChange={handleChange} required />
-                            </Col>
-                            {/* 중복확인 버튼 삭제 */}
-                        </Row>
+                    <Form.Group className="form-group" controlId="formBasicId">
+                        <div className="labelAlign">
+                        <Form.Label className="form-label"><span className='notion'>*</span> ID</Form.Label>
+                        <Form.Text className="error-message">{formErrors.id}</Form.Text>
+                        </div>
+                        <Form.Control className="form-control" type="text" name="id" placeholder="ID 입력 (6~20자)" value={formData.id} onChange={handleChange} required />
                     </Form.Group>
-                    <Form.Group controlId="formBasicPassword">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Text>{formErrors.password}</Form.Text>
-                        <Form.Control type="password" name="password" value={formData.password} onChange={handleChange} required />
+                    <Form.Group className="form-group" controlId="formBasicPassword">
+                        <div className="labelAlign">
+                        <Form.Label className="form-label"><span className='notion'>*</span> Password</Form.Label>
+                        <Form.Text className="error-message">{formErrors.password}</Form.Text>
+                        </div >
+                        <Form.Control className="form-control" type="password" name="password" placeholder="PW 입력 (영문, 숫자, 특수기호 포함 8~20자)" value={formData.password} onChange={handleChange} required />
                     </Form.Group>
-                    <Form.Group controlId="formBasicConfirmPassword">
-                        <Form.Label>Password 확인</Form.Label>
-                        <Form.Text>{formErrors.repassword}</Form.Text>
-                        <Form.Control type="password" name="repassword" value={formData.repassword} onChange={handleChange} required />
+                    <Form.Group className="form-group" controlId="formBasicConfirmPassword">
+                        <div className="labelAlign">
+                        <Form.Label className="form-label"><span className='notion'>*</span> Password 확인</Form.Label>
+                        <Form.Text className="error-message">{formErrors.repassword}</Form.Text>
+                        </div>
+                        <Form.Control className="form-control" type="password" name="repassword" placeholder="PW 재입력" value={formData.repassword} onChange={handleChange} required />
                     </Form.Group>
-                    <Form.Group controlId="formBasicName">
-                        <Form.Label>이름</Form.Label>
-                        <Form.Text>{formErrors.name}</Form.Text>
-                        <Form.Control type="text" name="name" value={formData.name} onChange={handleChange} required />
+                    <Form.Group className="form-group" controlId="formBasicName">
+                        <div className="labelAlign">
+                        <Form.Label className="form-label"><span className='notion'>*</span> 닉네임</Form.Label>
+                        <Form.Text className="error-message">{formErrors.name}</Form.Text>
+                        </div>
+                        <Form.Control className="form-control" type="text" name="name" placeholder="한글로 입력" value={formData.name} onChange={handleChange} required />
                     </Form.Group>
-                    <Button variant="primary" type="submit">
-                        가입하기
+                    <Button className="complete" variant="primary" type="submit">
+                        가입완료
                     </Button>
                 </Form>
             </div>
-            {/* 모달 */}
             <Modal show={showModal} onHide={closeModal}>
                 <Modal.Header closeButton>
                     <Modal.Title>회원가입 완료</Modal.Title>
