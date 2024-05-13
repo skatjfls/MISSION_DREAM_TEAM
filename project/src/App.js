@@ -40,7 +40,7 @@ function App() {
     .catch(error => {
       console.error('Error fetching user info:', error)
     })
-  }, []);
+  });
 
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.user.userId);
@@ -144,7 +144,7 @@ function ToDo(props) {
       }
     }
     fetchMissions();
-  }, [props.missionList]);
+  }, []);
   
   return(
     <div className="todo-tap">
@@ -156,7 +156,7 @@ function ToDo(props) {
               return (
                 <div className="mission" key={i}>
                   <input type="checkbox"/>
-                  <h6 id={ content }>{ content }</h6>
+                  <h6 id={ content[1] }>{ content[1] }</h6>
                   <img className="imgs" src="/img/camera.png"/>
                   <button className="button-x" onClick={()=>{ let copy = [...props.missionList]; copy.splice(i, 1); props.setMissionList(copy); }}>X</button>
                 </div>
@@ -201,6 +201,9 @@ function MyCalendar() {
         value={value}
         formatDay={(locale, date) => moment(date).format("DD")}
       ></Calendar>
+      {
+        console.log(moment(value))
+      }
       <div>
         {moment(value).format("YYYY년 MM월 DD일")}
       </div>
