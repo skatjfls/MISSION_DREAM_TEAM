@@ -3,8 +3,7 @@ require_once 'dbConfig.php';
 require_once 'DefaultSetting.php';
 
 if(!session_id()){
-    echo json_encode(false);
-    exit;
+    session_start();
 }
 
 if (!isset($_SESSION['id'])){
