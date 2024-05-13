@@ -44,13 +44,14 @@ function App() {
     try {
       // 새로운 미션 추가
       const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Insert_mission.php', {
-        mission: missionInput, // 미션 내용
+        mission: missionInput // 미션 내용
       });
       console.log('insert_mission',res)
     
       // 미션 목록 갱신
       setMissionList([...missionList, missionInput]);
       fetchMissions(setMissionList);
+      setMissionInput('');
     } catch (error) {
       console.error('Error adding mission:', error);
     }
@@ -82,7 +83,7 @@ function App() {
               {
                 tap == 0? <>
                   <h1>To do list</h1>
-                  <input className="input-todo" type="text" onChange={(e)=>{ setMissionInput(e.target.value)}}placeholder="오늘의 할 일을 작성하세요!"></input>
+                  <input className="input-todo" type="text" value={missionInput} onChange={(e)=>{ setMissionInput(e.target.value)}}placeholder="오늘의 할 일을 작성하세요!"></input>
                   <button className="button-todo-plus" onClick={handleAddMission}>+</button>
                 </> : <h1>Calendar</h1>
               }
@@ -131,6 +132,21 @@ function ToDo(props) {
     fetchMissions(props.setMissionList);
   }, []);
   
+  const handleDeleteMission = async (i) => {
+    try {
+      let copy = [...props.missionList];
+      const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Delete_mission.php', {
+        mission_idx: props.missionList[i][0]
+      })
+      console.log(res)
+      //copy.splice(i, 1);
+      fetchMissions(props.setMissionList);
+      //props.setMissionList(copy);
+    } catch (error) {
+      console.error('Error deleting mission:', error);
+    }
+  };
+  
   return(
     <div className="todo-tap">
       <div className="row">
@@ -141,9 +157,9 @@ function ToDo(props) {
               return (
                 <div className="mission" key={i}>
                   <input type="checkbox"/>
-                  <h6 id={ content[1] }>{ content[1] }</h6>
+                  <h6 id={ content[2] }>{ content[2] }</h6>
                   <img className="imgs" src="/img/camera.png"/>
-                  <button className="button-x" onClick={()=>{ let copy = [...props.missionList]; copy.splice(i, 1); props.setMissionList(copy); }}>X</button>
+                  <button className="button-x" onClick={()=>{ handleDeleteMission(i) }}>X</button>
                 </div>
               )
             })
