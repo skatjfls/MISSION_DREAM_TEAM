@@ -2,12 +2,20 @@
 // 2024.04.11 nimo
 require_once 'dbConfig.php';
 require_once 'DefaultSetting.php';
-
+// ini_set("session.cookie_domain", '.dev.local');
+// session_set_cookie_params(3600, '/', '.dev.local');
 
 // echo "세션 아이디 : " . session_id();
 // exit;
 
 // echo json_encode($_COOKIE['id']);
+
+// ini_set("session.cookie_domain", '.dev.local');
+// session_set_cookie_params(3600, '/', '.dev.local');
+
+// if(!isset($_SESSION)) {
+//     session_start();
+//  }         // <---- 키면 리액트가 터짐---------------------------------------------------------------
 
 if (!isset($_SESSION['id'])){
     // Redirect to login page

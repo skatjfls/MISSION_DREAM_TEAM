@@ -1,18 +1,23 @@
 <?php
 // 240410 김현수 작성
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
-
 // db 연결
-require_once("dbConfig.php");
+ini_set("session.cookie_domain", '.dev.local');
+session_set_cookie_params(3600, '/', '.dev.local');
+require_once "dbConfig.php";
+require_once 'DefaultSetting.php';
+
+if(!isset($_SESSION)) {
+    session_start();
+ }
+
+$_SESSION['sess'] = "cur_session";
 
 // 프론트에서 json 형태로 쏴주는 데이터를 json_decode 하여 변환
 // id, password 받아서 변수에 저장
-$data = json_decode(file_get_contents('php://input'), true);
-$id = $data["id"];
-$password = md5($data["password"]);
+$_POST = json_decode(file_get_contents('php://input'), true);
+$id = $_POST["id"];
+$password = md5($_POST["password"]);
 
 // member 테이블에서 이용자 찾아서 member 연관 배열에 저장
 $query_findMember = "SELECT * FROM member WHERE id = '$id' AND password = '$password'";
@@ -32,28 +37,11 @@ if($res_group){
 }
 
 if($row_member){
-    session_start();
+
+    //세션에 아이디, 이름 저장
     $_SESSION['id'] = $id;
     $_SESSION['name'] = $row_member['name'];
-
-    // echo "사용자 ID : ", $_SESSION['id'], "\n";
-    // echo "사용자 이름 : ", $_SESSION['name'], "\n";
-
-    // 사용자가 그룹이 있으면 세션에 이용자의 그룹 리스트 저장
-    // if($groupList){
-
-    //     $_SESSION['group'] = $groupList;
-    //     // echo "세션에 그룹리스트 삽입\n";
-
-        // foreach($_SESSION['group'] as $group){
-        //     echo "사용자가 속한 그룹 : ", $group[0], "\n";
-        // }
-        // echo "사용자가 속한 그룹 : ", $_SESSION['group'][0], "\n";
-        // echo "사용자가 속한 그룹 : ", $_SESSION['group'][1], "\n";
-        // echo "사용자가 속한 그룹 : ", $_SESSION['group'][2], "\n";
-    // }else{
-    //     // echo "그룹은 없습니다. !\n";
-    // }
+    session_write_close();
 
     echo json_encode(true);
 
