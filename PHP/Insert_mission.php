@@ -20,13 +20,14 @@ if ($mission == null) {
 }
 
 // Prepare the SQL statement
-$sql = "INSERT INTO missions (id, mission) VALUES (?, ?)";
+$sql = "INSERT INTO missions (id, mission, complete) VALUES (?, ?, ?)";
 
 // Create a prepared statement
 $stmt = $db->prepare($sql);
+$complete = 0;
 
 // Bind the parameters
-$stmt->bind_param("ss",$id ,$missionName);
+$stmt->bind_param("ssi",$id ,$mission, $complete);
 
 // Execute the statement
 $stmt->execute();

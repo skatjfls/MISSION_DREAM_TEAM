@@ -1,11 +1,10 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Modal, Nav } from 'react-bootstrap';
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import Group from './pages/Group.js';
@@ -20,7 +19,6 @@ function App() {
   let [groupList] = useState(['그지깽깽이들', '그만 좀 먹어라', '예쁜말 고운말']);
   let [join, setJoin] = useState(false);
   let [create, setCreate] = useState(false);
-  const [newMission, setNewMission] = useState('');
 
   let [userName, setUserName] = useState();
   let [point, setPoint] = useState();
@@ -29,46 +27,52 @@ function App() {
   let navigate = useNavigate();
   let [userCount] = useState(32)
   
+  const [isLoggerIn, setIsLoggedIN] = useState(false);
+
   useEffect(() => {
-    axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php')
+    axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
     .then(res => {
-      console.log(res);
-      const userData = res.data;
-      setUserName(userData.name);
-      setPoint(userData.point);
+      console.log('로그인 상태 : ',res);
+      if(res.data === 'true'){
+        setIsLoggedIN(true);
+      }else{
+        setIsLoggedIN(false);
+      }
     })
     .catch(error => {
       console.error('Error fetching user info:', error)
     })
+    const fetchUserInfo = async () => {
+      try {
+        const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
+        console.log(res);
+        const userData = res.data;
+        setUserName(userData.name);
+        setPoint(userData.point);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+    fetchUserInfo();
   });
-
-  const dispatch = useDispatch();
-  const userId = useSelector((state) => state.user.userId);
-
-  if (userId == null){
-    navigate('/login');
-  }
 
   const handleAddMission = async () => {
     try {
       // 새로운 미션 추가
       const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Insert_mission.php', {
-        mission: newMission, // 미션 내용
+        mission: missionInput // 미션 내용
       });
       console.log('insert_mission',res)
     
       // 미션 목록 갱신
-      setMissionList([...missionList, newMission]);
-      // 입력 필드 초기화
-      setNewMission('');
+      setMissionList([...missionList, missionInput]);
+      fetchMissions(setMissionList);
+      setMissionInput('');
     } catch (error) {
       console.error('Error adding mission:', error);
     }
   };
-
-    const handleInputChange = (event) => {
-        setNewMission(event.target.value); // 입력 필드의 내용 변경 시 상태 업데이트
-    };
+  
   return (
     <div className="App">
       <Routes>
@@ -95,7 +99,7 @@ function App() {
               {
                 tap == 0? <>
                   <h1>To do list</h1>
-                  <input className="input-todo" type="text" value={missionInput} onChange={(e)=>{ setMissionInput(e.target.value) }}placeholder="오늘의 할 일을 작성하세요!"></input>
+                  <input className="input-todo" type="text" value={missionInput} onChange={(e)=>{ setMissionInput(e.target.value)}}placeholder="오늘의 할 일을 작성하세요!"></input>
                   <button className="button-todo-plus" onClick={handleAddMission}>+</button>
                 </> : <h1>Calendar</h1>
               }
@@ -109,7 +113,7 @@ function App() {
               </Nav>
             </div>
             {
-              tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} navigate={navigate} newMission={newMission} setNewMission={setNewMission}/> : null
+              tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} navigate={navigate}/> : null
             }
             {
               tap == 1 ? <MyCalendar/> : null
@@ -127,25 +131,55 @@ function App() {
   );
 }
 
+
+const fetchMissions = async (setMissionList) => {
+  try {
+      const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/Show_mission.php?`)
+      console.log('show_mission',res)
+      setMissionList(res.data)
+  } catch (error) {
+      console.error('Error fetching missions:', error)
+  }
+}
+
 // Todo 탭
-function ToDo(props) {
-  let [isLoading, setIsLoading] = useState(true);
-  
+function ToDo(props) { 
+  const inputFileRef = useRef(null);
   useEffect(() => {
-    const fetchMissions = async () => {
-      try {
-          const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/Show_mission.php?`)
-          console.log('show_mission',res)
-          props.setMissionList(res.data)
-          setIsLoading(false)
-      } catch (error) {
-          console.error('Error fetching missions:', error)
-          setIsLoading(false)
-      }
-    }
-    fetchMissions();
+    fetchMissions(props.setMissionList);
   }, []);
   
+  const handleDeleteMission = async (i) => {
+    try {
+      const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Delete_mission.php', {
+        mission_idx: props.missionList[i][0]
+      })
+      console.log(res)
+      fetchMissions(props.setMissionList);
+    } catch (error) {
+      console.error('Error deleting mission:', error);
+    }
+  };
+  
+  const handleImageUpload = async (e, i) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('imgFile', file);
+    formData.append('mission_idx', props.missionList[i][0])
+
+    console.log(file)
+    try {
+      const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ImageUpload.php', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Image uploaded:', res.data);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+
   return(
     <div className="todo-tap">
       <div className="row">
@@ -156,9 +190,10 @@ function ToDo(props) {
               return (
                 <div className="mission" key={i}>
                   <input type="checkbox"/>
-                  <h6 id={ content[1] }>{ content[1] }</h6>
-                  <img className="imgs" src="/img/camera.png"/>
-                  <button className="button-x" onClick={()=>{ let copy = [...props.missionList]; copy.splice(i, 1); props.setMissionList(copy); }}>X</button>
+                  <h6 id={ content[2] }>{ content[2] }</h6>
+                  <input type="file" accept="image/*" ref={inputFileRef} style={{ display: 'none' }} onChange={(e) => handleImageUpload(e, i)} />
+                  <img className="imgs" src="/img/camera.png" onClick={() => inputFileRef.current.click()} />
+                  <button className="button-x" onClick={()=>{ handleDeleteMission(i) }}>X</button>
                 </div>
               )
             })
