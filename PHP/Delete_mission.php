@@ -4,7 +4,9 @@
 require_once 'dbConfig.php';
 require_once 'DefaultSetting.php';
 
-session_start();
+if(!session_id()){
+    session_start();
+}
 
 if (!isset($_SESSION['id'])) {
     // Redirect to login page
@@ -15,7 +17,7 @@ if (!isset($_SESSION['id'])) {
 // Assuming you have the mission ID stored in a variable
 $id = $_SESSION['id'];
 
-// Assuming you have the mission idx stored in a variable
+// Assuming you have the mission id stored in a variable
 $mission_idx = $_POST['mission_idx'];
 
 // Prepare the SQL statement
@@ -25,7 +27,7 @@ $sql = "DELETE FROM missions WHERE id = ? AND mission_idx = ?";
 $stmt = $db->prepare($sql);
 
 // Bind the parameter
-$stmt->bind_param("si", $missionId, $mission_idx);
+$stmt->bind_param("si", $id, $mission_idx);
 
 // Execute the statement
 $stmt->execute();
