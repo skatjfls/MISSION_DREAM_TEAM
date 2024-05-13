@@ -27,17 +27,16 @@ try{
                 {
                     "date":"2020-01-01",
                     "point":100
-                }
+                },
             ],
             "missionList":[
                 {
                     "mission" : "잠자기",
                     "complete" : "true",
                     "photo" : "photo1.jpg"
-                }
+                },
             ]
-
-        }]
+        },]
     }
     */
     $member_list = array();
