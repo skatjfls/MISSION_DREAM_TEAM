@@ -42,8 +42,6 @@ function App() {
     .catch(error => {
       console.error('Error fetching user info:', error)
     })
-<<<<<<< HEAD
-    
     const fetchUserInfo = async () => {
       try {
         const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
@@ -56,22 +54,6 @@ function App() {
       }
     };
     fetchUserInfo();
-=======
-
-    axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
-    .then(res => {
-      console.log('로그인 상태 : ',res);
-      if(res.data === 'true'){
-        setIsLoggedIN(true);
-      }else{
-        setIsLoggedIN(false);
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching user info:', error)
-    })
-
->>>>>>> 72bb6472598dc8803082fd473aa3216a5cfa9a97
   });
 
   const handleAddMission = async () => {
