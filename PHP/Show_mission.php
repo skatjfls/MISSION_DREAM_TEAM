@@ -19,7 +19,7 @@ if (!isset($_SESSION['id'])){
 $user_id = $_SESSION['id'];
 
 // Create a SQL statement to fetch missions from the database
-$sql = "SELECT id, mission, photo, complete FROM missions WHERE id = ?";
+$sql = "SELECT * FROM missions WHERE id = ?";
 
 // Execute the SQL statement
 $stmt = $db->prepare($sql);
