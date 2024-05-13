@@ -16,11 +16,20 @@ $res = $db->query($query_name);
 $row = $res->fetch_assoc();
 $user_name = $row['name'];
 
+if ($user_name == null) {
+    $user_name = 'Unknown';
+}
+
 // 사용자 포인트 찾아서 반환
 $query_point = "SELECT point FROM overall WHERE id = '$user_id'";
 $res = $db->query($query_point);
 $row = $res->fetch_assoc();
 $user_point = $row['point'];
+
+if( $user_point == null){
+    $user_point = -9999999;
+}
+
 
 // 그룹 리스트 찾기 
 $sql = "SELECT group_name FROM groupmember WHERE id = ?";
