@@ -23,9 +23,6 @@ function MainPage({userName, point, navigate}){
       navigate('/login');
     }
 
-    if (userId == ''){
-      navigate('/login')
-    }
     const handleAddMission = async () => {
         try {
           // 새로운 미션 추가
