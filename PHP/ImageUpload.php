@@ -2,6 +2,9 @@
     require_once 'dbConfig.php';
     require_once 'DefaultSetting.php';
 
+    if(!session_id()){
+        session_start();
+    }
     if (!isset($_SESSION['id'])) {
         echo json_encode(array('error' => '로그인이 필요합니다.'));
         exit;
@@ -21,13 +24,13 @@
 
     
 
-function checkImage(){ 
+function checkImage(){
     // 이미지 파일이 첨부되었는지 확인
     if(! isset($_FILES['imgFile'])){
         echo json_encode(array('error' => '파일이 첨부되지 않았습니다.'));
         exit;
     }
-    if (! isset($_FILES['image']['error']) || ! is_int($_FILES['imgFile'])) {
+    if (! isset($_FILES['imgFile']['error']) || ! is_int($_FILES['imgFile']['error'])) {
         echo json_encode(array('error' => '파일 업로드 에러가 발생하였습니다.'));
         exit;
     }
@@ -125,11 +128,10 @@ function uploade(){
             // DB에 이미지 저장
             $id = $_SESSION['id'];
             $mission_idx = $_POST['mission_idx'];
-            $sql = "UPDATE mission SET photo = ? WHERE id = ? AND mission_idx = ?";      
+            $sql = "UPDATE missions SET photo = ? WHERE id = ? AND mission_idx = ?";
             $stmt = $db->prepare($sql);
-            $stmt->bind_Param(1, $imgfp, PDO::PARAM_LOB);
-            $stmt->bind_Param(2, $id, PDO::PARAM_STR);
-            $stmt->bind_Param(3, $mission_idx, PDO::PARAM_INT);
+            $stmt->bind_param('sbi', $imgfp, $id, $mission_idx);
+
 
             if($stmt->execute()){
                 echo json_encode(array('success' => '이미지 업로드 성공'));
