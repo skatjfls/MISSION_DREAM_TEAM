@@ -28,6 +28,19 @@ function App() {
   let [userCount] = useState(32)
   
   useEffect(() => {
+    axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
+    .then(res => {
+      console.log('로그인 상태 : ',res);
+      if(res.data === 'true'){
+        setIsLoggedIN(true);
+      }else{
+        setIsLoggedIN(false);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching user info:', error)
+    })
+    
     const fetchUserInfo = async () => {
       try {
         const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
