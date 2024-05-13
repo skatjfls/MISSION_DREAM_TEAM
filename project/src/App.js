@@ -1,13 +1,17 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useEffect, useState } from 'react';
-import { Nav } from 'react-bootstrap';
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { Button, Modal, Nav } from 'react-bootstrap';
+import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import Group from './pages/Group.js';
 import LogIn from './pages/LogIn.js';
 import SignUp from './pages/SignUp.js';
+import { resetUser } from './store/reducers/userReducer';
 axios.defaults.withCredentials = true;
 
 function App() {
