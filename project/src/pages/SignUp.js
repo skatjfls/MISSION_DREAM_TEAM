@@ -65,7 +65,7 @@ const SignUpForm = () => {
 
         if (isValid) {
             try {
-                const response = await axios.post('missiondreamteam.kro.kr/api/*.php ', {
+                const response = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/SignUp.php', {
                     id: formData.id,
                     password: formData.password,
                     name: formData.name
@@ -84,7 +84,7 @@ const SignUpForm = () => {
         } else {
             console.log('Form is invalid, cannot submit.');
         }
-    };
+  };
 
     const closeModal = () => {
         setShowModal(false);

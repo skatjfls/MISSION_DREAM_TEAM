@@ -1,9 +1,11 @@
 import axios from 'axios';
+//axios.defaults.withCredentials = true;
 import './Login.css';
 import { useDispatch, useSelector} from 'react-redux';
 import  { updateUser , resetUser} from '../store/reducers/userReducer';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+axios.defaults.withCredentials = true;
 
 function LogIn(props) {
 
@@ -24,7 +26,7 @@ function LogIn(props) {
             const inputId = document.getElementById('id').value;
             const inputPw = document.getElementById('password').value;
     
-            axios.post('http://localhost:3001/PHP/LogIn.php',
+            axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogIn.php',
             {
                 id: inputId,
                 password: inputPw

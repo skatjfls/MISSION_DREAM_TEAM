@@ -3,7 +3,12 @@
 require_once 'dbConfig.php';
 require_once 'DefaultSetting.php';
 
-session_start();
+ini_set("session.cookie_domain", '.dev.local');
+session_set_cookie_params(3600, '/', '.dev.local');
+
+if(!isset($_SESSION)) {
+    session_start();
+ }
 
 // 세션 여부 확인
 if (!isset($_SESSION['id'])) {
