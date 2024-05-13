@@ -15,6 +15,9 @@ header('Access-Control-Allow-Origin: http://localhost:3000');
 //     header("Access-Control-Allow-Origin: $http_origin");
 // }
 
+ini_set("session.cookie_domain", '.dev.local');
+session_set_cookie_params(3600, '/', '.dev.local');
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST)){
     $_POST = (array) json_decode(file_get_contents('php://input'), true);
 }

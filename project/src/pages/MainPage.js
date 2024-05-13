@@ -26,9 +26,10 @@ function MainPage({userName, point, navigate}){
     const handleAddMission = async () => {
         try {
           // 새로운 미션 추가
-          const res = await axios.post('http://localhost:3001/PHP/Insert_mission.php', {
+          const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Insert_mission.php', {
             mission: newMission, // 미션 내용
           });
+          console.log('insert_mission',res)
     
           // 미션 목록 갱신
           setMissionList([...missionList, newMission]);
@@ -90,7 +91,7 @@ function ToDo(props) {
     useEffect(() => {
       const fetchMissions = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/PHP/Show_mission.php?`)
+            const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/Show_mission.php?`)
             console.log('show_mission',res)
             props.setMissionList(res.data)
             setIsLoading(false)

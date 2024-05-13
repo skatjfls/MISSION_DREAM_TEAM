@@ -1,10 +1,11 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { Button, Modal, Nav } from 'react-bootstrap';
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import Group from './pages/Group.js';
@@ -39,15 +40,23 @@ function App() {
     .catch(error => {
       console.error('Error fetching user info:', error)
     })
-  }, []);
+  });
+
+  const dispatch = useDispatch();
+  const userId = useSelector((state) => state.user.userId);
+
+  if (userId == null){
+    navigate('/login');
+  }
 
   const handleAddMission = async () => {
     try {
       // 새로운 미션 추가
       const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Insert_mission.php', {
-        mission: newMission // 미션 내용
+        mission: newMission, // 미션 내용
       });
-
+      console.log('insert_mission',res)
+    
       // 미션 목록 갱신
       setMissionList([...missionList, newMission]);
       // 입력 필드 초기화
@@ -57,10 +66,9 @@ function App() {
     }
   };
 
-  const handleInputChange = (event) => {
-    setNewMission(event.target.value); // 입력 필드의 내용 변경 시 상태 업데이트
-  };
-  
+    const handleInputChange = (event) => {
+        setNewMission(event.target.value); // 입력 필드의 내용 변경 시 상태 업데이트
+    };
   return (
     <div className="App">
       <Routes>
@@ -72,7 +80,15 @@ function App() {
                 <h6>{ userName }</h6>
                 <h6>{ point } point</h6>
                 <img className="imgs" src="/img/gear.png"/>
-                <button className="button-logout" onClick={()=>{navigate('/login')}}>로그아웃</button>
+                <button className="button-logout" onClick={()=>{
+                  axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
+                  .then(res => {
+                    navigate('/login')
+                  })
+                  .catch(err => {
+                    console.log(err)
+                  })
+                  }}>로그아웃</button>
               </div>
             </div>
             <div className="main-top">
@@ -118,17 +134,17 @@ function ToDo(props) {
   useEffect(() => {
     const fetchMissions = async () => {
       try {
-        const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/Show_mission.php')
-        console.log(res)
-        props.setMissionList(res.data)
-        setIsLoading(false)
+          const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/Show_mission.php?`)
+          console.log('show_mission',res)
+          props.setMissionList(res.data)
+          setIsLoading(false)
       } catch (error) {
-        console.error('Error fetching missions:', error)
-        setIsLoading(false)
+          console.error('Error fetching missions:', error)
+          setIsLoading(false)
       }
     }
     fetchMissions();
-  }, [props.missionList]);
+  }, []);
   
   return(
     <div className="todo-tap">
@@ -140,7 +156,7 @@ function ToDo(props) {
               return (
                 <div className="mission" key={i}>
                   <input type="checkbox"/>
-                  <h6 id={ content }>{ content }</h6>
+                  <h6 id={ content[1] }>{ content[1] }</h6>
                   <img className="imgs" src="/img/camera.png"/>
                   <button className="button-x" onClick={()=>{ let copy = [...props.missionList]; copy.splice(i, 1); props.setMissionList(copy); }}>X</button>
                 </div>
@@ -185,6 +201,9 @@ function MyCalendar() {
         value={value}
         formatDay={(locale, date) => moment(date).format("DD")}
       ></Calendar>
+      {
+        console.log(moment(value))
+      }
       <div>
         {moment(value).format("YYYY년 MM월 DD일")}
       </div>

@@ -2,14 +2,12 @@
 // 240410 김현수 작성
 
 // db 연결
-ini_set("session.cookie_domain", '.dev.local');
-session_set_cookie_params(3600, '/', '.dev.local');
 require_once "dbConfig.php";
 require_once 'DefaultSetting.php';
-
-if(!isset($_SESSION)) {
-    session_start();
- }
+session_start();
+//if(!session_id()){
+    //session_start();
+//}
 
 $_SESSION['sess'] = "cur_session";
 
