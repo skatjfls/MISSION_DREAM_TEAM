@@ -1,7 +1,7 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Modal, Nav } from 'react-bootstrap';
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -28,16 +28,18 @@ function App() {
   let [userCount] = useState(32)
   
   useEffect(() => {
-    axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php')
-    .then(res => {
-      console.log(res);
-      const userData = res.data;
-      setUserName(userData.name);
-      setPoint(userData.point);
-    })
-    .catch(error => {
-      console.error('Error fetching user info:', error)
-    })
+    const fetchUserInfo = async () => {
+      try {
+        const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
+        console.log(res);
+        const userData = res.data;
+        setUserName(userData.name);
+        setPoint(userData.point);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+    fetchUserInfo();
   });
 
   const handleAddMission = async () => {
@@ -127,26 +129,43 @@ const fetchMissions = async (setMissionList) => {
 }
 
 // Todo 탭
-function ToDo(props) {
+function ToDo(props) { 
+  const inputFileRef = useRef(null);
   useEffect(() => {
     fetchMissions(props.setMissionList);
   }, []);
   
   const handleDeleteMission = async (i) => {
     try {
-      let copy = [...props.missionList];
       const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Delete_mission.php', {
         mission_idx: props.missionList[i][0]
       })
       console.log(res)
-      //copy.splice(i, 1);
       fetchMissions(props.setMissionList);
-      //props.setMissionList(copy);
     } catch (error) {
       console.error('Error deleting mission:', error);
     }
   };
   
+  const handleImageUpload = async (e, i) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('imgFile', file);
+    formData.append('mission_idx', props.missionList[i][0])
+
+    console.log(file)
+    try {
+      const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ImageUpload.php', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Image uploaded:', res.data);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+
   return(
     <div className="todo-tap">
       <div className="row">
@@ -158,7 +177,8 @@ function ToDo(props) {
                 <div className="mission" key={i}>
                   <input type="checkbox"/>
                   <h6 id={ content[2] }>{ content[2] }</h6>
-                  <img className="imgs" src="/img/camera.png"/>
+                  <input type="file" accept="image/*" ref={inputFileRef} style={{ display: 'none' }} onChange={(e) => handleImageUpload(e, i)} />
+                  <img className="imgs" src="/img/camera.png" onClick={() => inputFileRef.current.click()} />
                   <button className="button-x" onClick={()=>{ handleDeleteMission(i) }}>X</button>
                 </div>
               )
