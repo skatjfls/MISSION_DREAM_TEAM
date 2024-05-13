@@ -6,13 +6,8 @@ require_once 'DefaultSetting.php';
 ini_set("session.cookie_domain", '.dev.local');
 session_set_cookie_params(3600, '/', '.dev.local');
 
-if(!isset($_SESSION)) {
-    session_start();
- }
-
 // 세션 여부 확인
 if (!isset($_SESSION['id'])) {
-
     // 세션이 없는 경우 로그인 페이지로 이동 또는 오류 처리
     echo json_encode(false);
     exit;

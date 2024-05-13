@@ -29,6 +29,7 @@ function MainPage({userName, point, navigate}){
           const res = await axios.post('http://localhost:3001/PHP/Insert_mission.php', {
             mission: newMission, // 미션 내용
           });
+          console.log('insert_mission',res)
     
           // 미션 목록 갱신
           setMissionList([...missionList, newMission]);

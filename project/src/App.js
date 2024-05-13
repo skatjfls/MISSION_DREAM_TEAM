@@ -10,6 +10,7 @@ import './App.css';
 import Group from './pages/Group.js';
 import LogIn from './pages/LogIn.js';
 import SignUp from './pages/SignUp.js';
+import MainPage from './pages/MainPage.js';
 axios.defaults.withCredentials = true;
 
 function App() {
@@ -41,65 +42,11 @@ function App() {
     })
   }, []);
 
-  const handleAddMission = async () => {
-    try {
-      // 새로운 미션 추가
-      const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Insert_mission.php', {
-        mission: newMission // 미션 내용
-      });
-
-      // 미션 목록 갱신
-      setMissionList([...missionList, newMission]);
-      // 입력 필드 초기화
-      setNewMission('');
-    } catch (error) {
-      console.error('Error adding mission:', error);
-    }
-  };
-
-  const handleInputChange = (event) => {
-    setNewMission(event.target.value); // 입력 필드의 내용 변경 시 상태 업데이트
-  };
   
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={
-          <div>
-            <div className="nav-bar">
-              <img className="img-logo" onClick={()=>{navigate('/')}} src="/img/dream.png"/>
-              <div>
-                <h6>{ userName }</h6>
-                <h6>{ point } point</h6>
-                <img className="imgs" src="/img/gear.png"/>
-                <button className="button-logout" onClick={()=>{navigate('/login')}}>로그아웃</button>
-              </div>
-            </div>
-            <div className="main-top">
-              {
-                tap == 0? <>
-                  <h1>To do list</h1>
-                  <input className="input-todo" type="text" value={missionInput} onChange={(e)=>{ setMissionInput(e.target.value) }}placeholder="오늘의 할 일을 작성하세요!"></input>
-                  <button className="button-todo-plus" onClick={handleAddMission}>+</button>
-                </> : <h1>Calendar</h1>
-              }
-              <Nav variant="tabs" defaultActiveKey="todo" className="tap">
-                <Nav.Item>
-                  <Nav.Link onClick={()=>{ setTap(0) }} eventKey="todo">to do</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link onClick={()=>{ setTap(1) }} eventKey="calendar">calendar</Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </div>
-            {
-              tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} navigate={navigate} newMission={newMission} setNewMission={setNewMission}/> : null
-            }
-            {
-              tap == 1 ? <MyCalendar/> : null
-            }
-          </div>
-        }/>
+        <Route path="/" element={ <MainPage userName={userName} point={point} navigate={navigate} missionList={missionList} setMissionList={setMissionList} groupList={groupList} create={create} setCreate={setCreate} join={join} setJoin={setJoin}/> }/>
         <Route path="/login" element={ <LogIn userCount={userCount} navigate={navigate}/> }/>
         <Route path="/signup" element={ <SignUp/> }/>
         <Route path="/group" element={ <Group/> }/>
