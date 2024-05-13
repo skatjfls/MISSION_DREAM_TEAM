@@ -16,7 +16,7 @@ function App() {
   //let state = useSelector((state) => state )
 
   let [missionList, setMissionList] = useState([]);
-  let [groupList] = useState(['그지깽깽이들', '그만 좀 먹어라', '예쁜말 고운말']);
+  let [groupList, setGroupList] = useState([]);
   let [join, setJoin] = useState(false);
   let [create, setCreate] = useState(false);
 
@@ -113,7 +113,7 @@ function App() {
               </Nav>
             </div>
             {
-              tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} navigate={navigate}/> : null
+              tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} setGroupList={setGroupList} navigate={navigate}/> : null
             }
             {
               tap == 1 ? <MyCalendar/> : null
@@ -142,11 +142,22 @@ const fetchMissions = async (setMissionList) => {
   }
 }
 
+const fetchGroups = async (setGroupList) => {
+  try {
+      const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroup.php?`)
+      console.log('show_group',res)
+      setGroupList(res.data)
+  } catch (error) {
+      console.error('Error fetching missions:', error)
+  }
+}
+
 // Todo 탭
 function ToDo(props) { 
   const inputFileRef = useRef(null);
   useEffect(() => {
     fetchMissions(props.setMissionList);
+    fetchGroups(props.setGroupList);
   }, []);
   
   const handleDeleteMission = async (i) => {
@@ -212,7 +223,7 @@ function ToDo(props) {
               props.groupList.map(function(content, i){
                 return (
                   <div className="groupList" key={i}>
-                    <h6 onClick={()=>{ props.navigate('/group')}}>{ content }</h6>
+                    <h6 onClick={()=>{ props.navigate('/group')}}>{ content.group_name }</h6>
                   </div>
                 )
               })
