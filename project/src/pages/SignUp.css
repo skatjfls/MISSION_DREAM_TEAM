@@ -1,3 +1,27 @@
+/* SignUp.css */
+:root {
+    --gra-color1: #FAF29D;
+    --gra-color2: #F5FFDB;
+    --gra-color3: #CCFFE6;
+    --main-color: #87F6A6;
+    --sub-color1: #EAFFF4;
+    --sub-color2: #30C88B;
+    --sub-color3: #D5D5D5;
+    --sub-color4: #808080;
+    --sub-color5: #FF4D00;
+    --gray-color: #EDEDED;
+  }
+
+@font-face {
+    font-family: "font_tennine";        
+    src: url("../font/tennine.TTF"); 
+}
+
+@font-face {
+    font-family: "font_NanumSquare";        
+    src: url("../font/NanumSquare.ttf"); 
+}
+
 .background{
     background: linear-gradient(to right, var(--gra-color3), var(--gra-color2), var(--gra-color1));
     width: 100%;
@@ -8,14 +32,82 @@
     align-items: center;
 }
 
-.input{
+.input {
     background-color: rgb(255, 255, 255);
-    width: 50%;
-    height: 500px;
+    width: 550px;
+    height: 670px;
     margin: 0 auto;
-    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.1);
+    font-size: 20px;
+    font-family: "font_NanumSquare";
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 나머지 요소들을 세로 방향으로 가운데 정렬 */
+    align-items: center; /* 나머지 요소들을 가로 방향으로 가운데 정렬 */
 }
 
-.Form.Label{
-    text-align: left;
+.signUpTitle {
+    font-size: 50px;
+    font-family: "font_tennine";
+    margin: 0px auto;
+}
+
+.signUpExplain {
+    font-size: 20px;
+    font-family: "font_NanumSquare";
+    margin: 0px auto;
+}
+
+.form-label{
+    font-weight: bold;
+}
+
+.form-control {
+    box-shadow: inset 4px 4px 4px rgba(0, 0, 0, 0.1); /* 입력 필드에 그림자 추가 */
+    padding: 10px;
+    padding-left: 20px;
+}
+
+.form-control::placeholder {
+    color: #AEAEAE; /* 원하는 색상으로 변경하세요 */
+}
+
+.error-message {
+    font-size: 10px; /* 원하는 크기로 조정하세요 */
+    color: var(--sub-color5); /* 에러 메시지 색상도 변경할 수 있습니다 */
+    font-weight: bold;
+    text-align: right;
+    padding-top: 5px; /* 위 여백 조절 */
+    padding-bottom: 5px; /* 아래 여백 조절 */
+}
+
+.form-control{
+    width: 400px;
+    margin: 0px auto;
+}
+
+.form-group{
+    width: 400px;
+    margin: 20px;
+}
+
+.labelAlign {
+    display: flex;
+    width: 400px;
+    justify-content: space-between;
+}
+
+.notion{
+    color: var(--sub-color5); /* 에러 메시지 색상도 변경할 수 있습니다 */
+}
+
+.complete{
+    background-color: var(--main-color);
+    width:300px;
+    color: black;
+    border: none;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    font-weight: bold;
 }
