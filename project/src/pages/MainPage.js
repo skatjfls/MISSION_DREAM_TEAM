@@ -17,15 +17,11 @@ function MainPage({userName, point, navigate}){
     let [groupList] = useState(['그지깽깽이들', '그만 좀 먹어라', '예쁜말 고운말']);
 
     const dispatch = useDispatch();
-<<<<<<< Updated upstream
-    const userId = useSelector(state => state.user.userId);
-=======
     const userId = useSelector((state) => state.user.userId);
 
     if (userId == null){
       navigate('/login');
     }
->>>>>>> Stashed changes
 
     if (userId == ''){
       navigate('/login')
