@@ -11,7 +11,6 @@ import './App.css';
 import Group from './pages/Group.js';
 import LogIn from './pages/LogIn.js';
 import SignUp from './pages/SignUp.js';
-import { resetUser } from './store/reducers/userReducer';
 axios.defaults.withCredentials = true;
 
 function App() {
@@ -81,7 +80,15 @@ function App() {
                 <h6>{ userName }</h6>
                 <h6>{ point } point</h6>
                 <img className="imgs" src="/img/gear.png"/>
-                <button className="button-logout" onClick={()=>{dispatch(resetUser()); navigate('/login')}}>로그아웃</button>
+                <button className="button-logout" onClick={()=>{
+                  axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
+                  .then(res => {
+                    navigate('/login')
+                  })
+                  .catch(err => {
+                    console.log(err)
+                  })
+                  }}>로그아웃</button>
               </div>
             </div>
             <div className="main-top">

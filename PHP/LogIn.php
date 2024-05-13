@@ -4,10 +4,10 @@
 // db 연결
 require_once "dbConfig.php";
 require_once 'DefaultSetting.php';
-
-if(!session_id()){
-    session_start();
-}
+session_start();
+//if(!session_id()){
+    //session_start();
+//}
 
 $_SESSION['sess'] = "cur_session";
 
