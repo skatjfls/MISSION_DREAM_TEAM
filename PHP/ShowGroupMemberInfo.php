@@ -6,6 +6,13 @@ require_once("DefaultSetting.php");
 if(!session_id()){
     session_start();
 }
+/***
+ * 미션 전체 카운트 보내기
+ * 미션 안 한거 카운트 보내기
+ * 포인트 보내는거 없애기
+ * achieve따로 보내기
+ */
+
 
 // 세션에서 아이디 받기
 $id = $_SESSION['id'];
