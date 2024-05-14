@@ -76,7 +76,7 @@ try{
 
 $data = array(
     'name' => $user_name,
-    'point' => $no_complete_mission_cnt,
+    'noMissionCnt' => $no_complete_mission_cnt,
     'group_list' => $group_list,
 );
 
