@@ -3,40 +3,39 @@
 
 // member_name, total_pont is needed
 require_once 'dbConfig.php';
+require_once 'DefaultSetting.php';      
 
 session_start();
 
 if (!isset($_SESSION['id'])) {
-    // Redirect to login page
     echo json_encode(null);
     exit;
 }
 
 $id = $_SESSION['id'];
 $group_name = $_POST['group_name']; // primary key
-$penalty_per_point = $_POST['penalty_per_point']; // or we can get the penalty per point from the group table
 
-// Get member name and total point in this group
-$sql = "SELECT member_name, total_point FROM groupmember WHERE group_name = ?";
-$stmt = $db->prepare($sql);
-$stmt->bind_param("s", $group_name);
-$stmt->execute();
-$member_list = $stmt->get_result();
+// 그룹 내 토탈 포인트 가져오기
+try{
+    $sql = "SELECT point_total FROM groupmember WHERE group_name = ?";
+    $stmt = $db -> prepare($sql);
+    $stmt->bind_param("s", $group_name);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-if ($member_list->num_rows > 0){
-    // Convert the result to an array
-    $members = array();
-    while ($row = $member_list->fetch_assoc()) {
-        $members[] = $row;
+    $total_point = 0;
+
+    while($row = $result->fetch_assoc()){
+        $total_point += $row['point_total'];
     }
 
-    echo json_encode($members);
-}
-else {
-    echo "No members found";
+    $stmt->close();
+    
+}catch(exception $e){
+    echo json_encode(null);
+    exit;
 }
 
-$stmt->close();
-$db->close();
+echo json_encode($total_point);
 
 ?>

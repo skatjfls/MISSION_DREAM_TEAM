@@ -251,7 +251,8 @@ function MyCalendar() {
         console.log(moment(value))
       }
       <div>
-        {moment(value).format("YYYY년 MM월 DD일")}
+        // KST 기준으로 출력
+        {moment(value).format("YYYY년 MM월 DD일 HH시 mm분 ss초")}
       </div>
     </div>
   );
