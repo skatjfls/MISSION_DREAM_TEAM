@@ -27,28 +27,29 @@ function App() {
   let navigate = useNavigate();
   let [userCount] = useState(32)
   
-  const [isLoggerIn, setIsLoggedIN] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
     .then(res => {
       console.log('로그인 상태 : ',res);
-      if(res.data === 'true'){
-        setIsLoggedIN(true);
-      }else{
-        setIsLoggedIN(false);
+      if(res.data === false){
+        navigate('/login');
       }
     })
     .catch(error => {
       console.error('Error fetching user info:', error)
     })
+  }, []);
+  
+  useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
-        console.log(res);
         const userData = res.data;
         setUserName(userData.name);
-        setPoint(userData.noMissionCnt);
+        const string = '-'+userData.noMissionCnt;
+        setPoint(string);
       } catch (error) {
         console.error('Error fetching user info:', error);
       }
@@ -135,7 +136,6 @@ function App() {
 const fetchMissions = async (setMissionList) => {
   try {
       const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/Show_mission.php?`)
-      console.log('show_mission',res)
       setMissionList(res.data)
   } catch (error) {
       console.error('Error fetching missions:', error)
@@ -145,7 +145,7 @@ const fetchMissions = async (setMissionList) => {
 const fetchGroups = async (setGroupList) => {
   try {
       const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroup.php?`)
-      console.log('show_group',res)
+      console.log(res.data)
       setGroupList(res.data)
   } catch (error) {
       console.error('Error fetching missions:', error)
@@ -153,7 +153,7 @@ const fetchGroups = async (setGroupList) => {
 }
 
 // Todo 탭
-function ToDo(props) { 
+function ToDo(props) {
   const inputFileRef = useRef(null);
   useEffect(() => {
     fetchMissions(props.setMissionList);
@@ -165,7 +165,6 @@ function ToDo(props) {
       const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Delete_mission.php', {
         mission_idx: props.missionList[i][0]
       })
-      console.log(res)
       fetchMissions(props.setMissionList);
     } catch (error) {
       console.error('Error deleting mission:', error);
@@ -223,7 +222,8 @@ function ToDo(props) {
               props.groupList.map(function(content, i){
                 return (
                   <div className="groupList" key={i}>
-                    <h6 onClick={()=>{ props.navigate('/group')}}>{ content.group_name }</h6>
+                    <span className='groupPrice'>{ content.penaltyPerPoint.PenaltyPerPoint }</span>
+                    <span onClick={()=>{ props.navigate('/group')}}>{ content.groupName.group_name }</span>
                   </div>
                 )
               })
@@ -260,6 +260,15 @@ function MyCalendar() {
 
 // 그룹 생성 모달
 function CreateGroup(props) {
+  const [isSelectPrice, setIsSelectPrice] = useState(false);
+  const priceArr = ['₩0', '₩500', '₩1,000', '₩2,000', '₩3,000', '₩5,000']
+
+  const handleClickPrice = (idx) => {
+    const newArr = Array(priceArr.length).fill(false);
+    newArr[idx] = true;
+    setIsSelectPrice(newArr);
+  }
+  
   return (
     <Modal show={props.create} onHide={() => props.setCreate(false)} className='modal modal-xl'>
       <Modal.Header closeButton>
@@ -274,7 +283,13 @@ function CreateGroup(props) {
         <div className='modal-div'>
           <h5>포인트 별 금액</h5>
           <div>
-            <span>₩0</span><span>₩500</span><span>₩1,000</span><span>₩2,000</span><span>₩3,000</span><span>₩5,000</span>
+            <div>
+              {priceArr.map((content, i) => {
+                return(
+                  <span key={i} className={`button-price ${isSelectPrice[i]? 'button-price-clicked' : ''}`} onClick={() => handleClickPrice(i) }>{ content }</span>
+                );
+              })}
+            </div>
             <div className='modal-p'>
               <p>동기부여를 위해 포인트별 금액을 설정해보세요! 벌금처럼 걷어서 회식이나 1/n을 해도 좋고, 꼴등이 1등에게 쏘기도 좋아요!</p>
               <p>벌금이 부담스럽다면 0원으로 설정 후 상벌을 정해보세요.</p>

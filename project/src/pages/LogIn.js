@@ -1,10 +1,10 @@
 import axios from 'axios';
 //axios.defaults.withCredentials = true;
-import './Login.css';
-import { useDispatch, useSelector} from 'react-redux';
-import  { updateUser , resetUser} from '../store/reducers/userReducer';
-import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { updateUser } from '../store/reducers/userReducer';
+import './Login.css';
 axios.defaults.withCredentials = true;
 
 function LogIn(props) {
@@ -14,7 +14,16 @@ function LogIn(props) {
     const userId = useSelector((state) => state.user.userId)
 
     useEffect(() => {
-        dispatch(resetUser())
+        axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
+        .then(res => {
+        console.log('로그인 상태 : ',res);
+        if(res.data === true){
+            navigate('/');
+        }
+        })
+        .catch(error => {
+        console.error('Error fetching user info:', error)
+        })
     },[]);
 
     const onClickLogin = (event) => {

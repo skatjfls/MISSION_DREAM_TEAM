@@ -202,7 +202,7 @@ div {
   width: 150px;
   margin-right: 20px;
 }
-.modal-div>div>span {
+.button-price {
   margin: 0px 5px;
   background-color: var(--sub-color3);
   padding: 10px 25px;
@@ -210,6 +210,9 @@ div {
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: white;
+}
+.button-price-clicked {
+  background-color: var(--main-color) !important;
 }
 .modal-p {
   margin-top: 20px;
