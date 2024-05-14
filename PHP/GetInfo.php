@@ -31,7 +31,6 @@ try{
 
 }catch(Exception $e){
     $user_name = 'Unknown';
-    $user_point = -9999999;
 }
 
 try{

@@ -48,7 +48,7 @@ function App() {
         console.log(res);
         const userData = res.data;
         setUserName(userData.name);
-        setPoint(userData.point);
+        setPoint(userData.noMissionCnt);
       } catch (error) {
         console.error('Error fetching user info:', error);
       }
