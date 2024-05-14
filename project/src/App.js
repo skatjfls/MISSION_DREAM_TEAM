@@ -155,6 +155,7 @@ const fetchGroups = async (setGroupList) => {
 // Todo 탭
 function ToDo(props) {
   const inputFileRef = useRef(null);
+  
   useEffect(() => {
     fetchMissions(props.setMissionList);
     fetchGroups(props.setGroupList);
@@ -218,12 +219,15 @@ function ToDo(props) {
               <h5>나의 그룹</h5>
               <button onClick={()=>{ props.setCreate(true) }} className="button-plus">+</button>
             </div>
+            <div className='groupLine'></div>
             {
               props.groupList.map(function(content, i){
+                const groupPrice = content.penaltyPerPoint.PenaltyPerPoint
+                const returnString = groupPrice?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 return (
                   <div className="groupList" key={i}>
-                    <span className='groupPrice'>{ content.penaltyPerPoint.PenaltyPerPoint }</span>
-                    <span onClick={()=>{ props.navigate('/group')}}>{ content.groupName.group_name }</span>
+                    <span className='myGroupPrice'>{ '₩'+returnString }</span>
+                    <div className="myGroupName" onClick={()=>{ props.navigate('/group')}}>{ content.groupName.group_name }</div>
                   </div>
                 )
               })
@@ -314,17 +318,60 @@ function CreateGroup(props) {
   );
 }
 
+
+
+
 // 그룹 가입 모달
 function JoinGroup(props) {
+  const onClickJoin = (event) => {
+    event.preventDefault();
+    const nameIsEmpty = checkField('name', '그룹 이름을 입력해주세요.');
+    const passwordIsEmpty = checkField('password', '비밀번호를 입력해주세요.');
+  
+    if (!nameIsEmpty && !passwordIsEmpty) {
+        const inputName = document.getElementById('name').value;
+        const inputPw = document.getElementById('password').value;
+  
+        axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/EnterGroup.php',
+        {
+            group_name: inputName,
+            group_password: inputPw
+        })
+        .then((res)=>{
+            if (res.data == true) {
+                alert('[ '+inputName+' ]그룹에 가입되었습니다!')
+                props.navigate('/')
+            }
+            else {
+                alert('그룹 이름 또는 비밀번호를 확인해주세요.')
+            }
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
+  }
+  
+  const checkField = (fieldId, checkText) => {
+    let fieldValue = document.getElementById(fieldId).value;
+    if (fieldValue == '') {
+        alert(checkText)
+        return true
+    }
+    else{
+        return false
+    }
+  }
+
   return (
     <Modal show={props.join} onHide={() => props.setJoin(false)} className="modal">
       <Modal.Header closeButton>
         <Modal.Title>그룹 가입</Modal.Title>
       </Modal.Header>
       <Modal.Body className='modal-joingroup'>
-        <input type="text" placeholder="그룹 이름"></input>
-        <input type="password" placeholder="PASSWORD"></input>
-        <button className='button-join'>그룹 가입하기</button>
+        <input type="text" placeholder="그룹 이름" id="name"></input>
+        <input type="password" placeholder="PASSWORD" id="password"></input>
+        <button className='button-join' onClick={onClickJoin}>그룹 가입하기</button>
       </Modal.Body>
     </Modal>
   );

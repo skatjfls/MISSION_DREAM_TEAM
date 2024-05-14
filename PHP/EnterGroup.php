@@ -2,9 +2,10 @@
 // 240419 김현수 작성
 
 require_once("dbConfig.php");
-
-session_start();
-
+require_once 'DefaultSetting.php';
+if(!session_id()){
+    session_start();
+}
 // 세션 여부 확인
 if (!isset($_SESSION['id'])) {
 
@@ -13,7 +14,7 @@ if (!isset($_SESSION['id'])) {
     exit;
 }
 
-// 세션에서 아이디 받기 
+// 세션에서 아이디 받기
 $id = $_SESSION['id'];
 
 // 그룹 명과 그룹 패스워드 받기, 없으면 null
@@ -32,11 +33,10 @@ if($group_password == $findPassword && isset($group_name) && isset($group_passwo
     $query_enterGroup = "INSERT INTO groupmember(group_name, id, point_total) VALUES('$group_name', '$id', 0)";
     $db->query($query_enterGroup);
 
-    echo "그룹 입장이 완료되었습니다.";
+    echo json_encode(true);
 
 }else{
     echo json_encode(false);
-    exit;
 }
 
 mysqli_close($db);

@@ -160,6 +160,31 @@ div {
   color: black;
   bottom: 0;
 }
+.groupLine {
+  width: 215px;
+  height: 2px;
+  background-color: var(--main-color);
+}
+.groupList{
+  display: flex;
+  margin: 10px 0px;
+}
+.myGroupPrice {
+  display: block;
+  margin: 0px 10px;
+  background-color: var(--main-color);
+  padding: 4px;
+  border-radius: 20px;
+  text-align: center;
+  color: white;
+  font-size: 12px;
+  width: 70px;
+}
+.myGroupName {
+  width: 120px;
+  text-align: right;
+  overflow: auto;
+}
 
 /*Calendar css*/
 .calendar-tap {
