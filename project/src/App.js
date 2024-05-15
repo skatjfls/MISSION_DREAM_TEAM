@@ -233,8 +233,8 @@ function ToDo(props) {
                   <div className="groupList" key={i}>
                     <span className='myGroupPrice'>{ '₩ '+returnString }</span>
                     <div className="myGroupName" onClick={()=>{
-                      props.navigate('/group'), { state: { pageGroupName: content.groupName.group_name } }}
-                    }>{ content.groupName.group_name }</div>
+                      props.navigate('/group', { state: { pageGroupName: content.groupName.group_name } });
+                    }}>{ content.groupName.group_name }</div>
                   </div>
                 )
               })
