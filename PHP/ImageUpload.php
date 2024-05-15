@@ -1,4 +1,7 @@
 <?php
+
+use function PHPSTORM_META\type;
+
     require_once 'dbConfig.php';
     require_once 'DefaultSetting.php';
 
@@ -87,70 +90,100 @@
         }
         /*************************** 업로드 파일 검수 끝 ***************************/
 
-        try{
-           upload();
 
+        //이전 이미지 서버에서 삭제
+        try{
+            $id = $_SESSION['id'];
+            $mission_idx = $_POST['mission_idx'];
+            $sql = "SELECT photo FROM missions WHERE id = ? AND mission_idx = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param('si', $id, $mission_idx);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            while($row = $result->fetch_assoc()){
+                $photo = $row['photo'];
+                if($photo != null){
+                    $folderPath = '../project/uploads/' . $id;
+                    $filePath = $folderPath . '/' . $photo;
+                    if(file_exists($filePath)){
+                        unlink($filePath);
+                    }
+                }
+            }
+        }catch(Exception $e){
+            echo json_encode(array('error' => '이전 이미지 삭제 중 오류가 발생하였습니다.'));
+            exit;
+        }
+
+
+        //이미지 업로드 시작
+        try{
+            if (is_uploaded_file($_FILES['imgFile']['tmp_name']) && getimagesize($_FILES['imgFile']['tmp_name']) != false){
+                // 이미지 크기 확인
+                $size = getimagesize($_FILES['imgFile']['tmp_name']);
+        
+                // 변수 정리
+                $type = $size['mime'];
+                $fileContent = file_get_contents($_FILES['imgFile']['tmp_name']);
+                $fileContentUtf8 = mb_convert_encoding($fileContent, 'UTF-8');
+                $fileContentBase64 = base64_encode($fileContentUtf8);
+                $size = $size[3]; // "wdith="xxx" height=xxx"
+                $name = explode('.', $_FILES['imgFile']['name'])[0];
+                $ext = explode('/', $type)[1];
+                $maxsize = 1024 * 1024 * 25; //25MB
+        
+                // 이미지 크기 확인
+                if($_FILES['imgFile']['size'] > $maxsize){
+                    echo json_encode(array('error' => '파일이 너무 큽니다.'));
+                    exit;
+                }
+                else{
+                    try{
+                        // DB에 이미지 경로 저장
+                        $id = $_SESSION['id'];
+                        $mission_idx = $_POST['mission_idx'];
+                        $folderPath = '../project/uploads/' . $id;
+        
+                        if(!file_exists($folderPath)){
+                            mkdir($folderPath, 0700, true);
+                        }
+        
+                        $fileName = md5($name.'/'.time()).'.'.$ext;
+                        $filePath = $folderPath . '/' . $fileName;
+        
+                        $sql = "UPDATE missions SET photo = ?, complete = 1 WHERE id = ? AND mission_idx = ?";
+                        $stmt = $db->prepare($sql);
+                        $stmt->bind_param('ssi', $fileName, $id, $mission_idx);
+                        $stmt->execute();
+        
+                        move_uploaded_file($_FILES['imgFile']['tmp_name'], $filePath);
+        
+                        echo json_encode(array('success' => '이미지 업로드 성공'));
+        
+                    } catch(Exception $e){
+                        $error_message = '이미지 업로드 실패' . $e->getMessage();
+                        echo json_encode(array('error' => $error_message));
+                        exit;
+        
+                    }finally{
+                        if($stmt){
+                            $stmt->close();
+                        }
+                        if($db){
+                            $db->close();
+                        }
+                    }
+                    echo json_encode(array('message' => '종료'));
+                }
+            }
+            else{
+                echo json_encode(array('error' => '이미지 파일이 아닙니다.'));
+                exit;
+            }
         }catch(Exception $e){
             echo json_encode(array('error' => '이미지 업로드 중 오류가 발생하였습니다.'));
             exit;
         }
     }
-
-function upload(){
-
-    include 'dbConfig.php';
-
-    if (is_uploaded_file($_FILES['imgFile']['tmp_name']) && getimagesize($_FILES['imgFile']['tmp_name']) != false){
-        // 이미지 크기 확인
-        $size = getimagesize($_FILES['imgFile']['tmp_name']);
-
-        // 변수 정리
-        $type = $size['mime'];
-        $fileContent = file_get_contents($_FILES['imgFile']['tmp_name']);
-        $fileContentUtf8 = mb_convert_encoding($fileContent, 'UTF-8');
-        $fileContentBase64 = base64_encode($fileContentUtf8);
-        $size = $size[3];
-        $name = $_FILES['imgFile']['name'];
-        $maxsize = 99999999;
-
-        // 이미지 크기 확인
-        if($_FILES['imgFile']['size'] > $maxsize){
-            echo json_encode(array('error' => '파일이 너무 큽니다.'));
-            exit;
-        }
-        else{
-            try{
-                $test = '테스트 입니다';
-                // DB에 이미지 저장
-                $id = $_SESSION['id'];
-                $mission_idx = $_POST['mission_idx'];
-                $sql = "UPDATE missions SET photo = ? WHERE id = ? AND mission_idx = ?";
-                $stmt = $db->prepare($sql);
-                $stmt->bind_param('sbi', $test, $id, $mission_idx);
-                $stmt->execute();
-
-                echo json_encode(array('success' => '이미지 업로드 성공'));
-
-            } catch(Exception $e){
-                $error_message = '이미지 업로드 실패' . $e->getMessage();
-                echo json_encode(array('error' => $error_message));
-                exit;
-
-            }finally{
-                if($stmt){
-                    $stmt->close();
-                }
-                if($db){
-                    $db->close();
-                }
-            }
-            echo json_encode(array('message' => '종료'));
-            exit;
-        }
-    }
-    else{
-        echo json_encode(array('error' => '이미지 파일이 아닙니다.'));
-        exit;
-    }
-}
 ?>

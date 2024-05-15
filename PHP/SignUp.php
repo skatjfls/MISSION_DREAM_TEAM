@@ -20,7 +20,7 @@ if($id != null && $password != null && $name != null){
     
     // 초기 값 설정
     $point = 0;
-    $sql = "INSERT INTO overall (id, point) VALUES ( ?,?)";
+    $sql = "INSERT INTO overall (id, date, point) VALUES ( ?, CURDATE(), ?)";
     $stmt = $db->prepare($sql);
     $stmt->bind_param("si", $id, $point);
     $stmt->execute();
