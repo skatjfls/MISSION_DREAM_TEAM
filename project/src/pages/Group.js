@@ -12,64 +12,29 @@ import LogIn from './LogIn.js';
 import SignUp from './SignUp.js';
 axios.defaults.withCredentials = true;
 
-function App() {
+function GroupPage(props) {
   let [userName, setUserName] = useState(); //로그인된 이름
   let [point, setPoint] = useState(); //로그인된 포인트
   const [groupName, setGroupName] = useState(""); // 로그인된 사람의 그룹 이름
+  const [groupMemberList, setGroupMemberList] = useState([]);
   const [penaltyPerPoint, setPenaltyPerPoint] = useState(0); // 빈 배열 대신 0으로 초기화
-  let [groupmember, setGroupMemberList] = useState([]); //로그인된 사람이 포함된 그룹내 멤버 리스트
   const [isLoggerIn, setIsLoggedIN] = useState(false); //로그인됐나
+  let [groupList, setGroupList] = useState([]);
+  let [members, setMembers] = useState([]); // 여기서 members 상태 정의
 
-  // fetchGroupName 함수에서 groupName으로 설정
-  const fetchGroupName = async () => {
+  const fetchGroups = async (setGroupList) => {
     try {
-        const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroup.php?`);
-        if (res.data.length > 0) {
-          const groupName = res.data[0].group_name; // 그룹 이름을 가져옴
-          setGroupName(groupName); // groupName 설정
-          console.log('그룹이름', groupName);
-        }
+        const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroup.php?`)
+        console.log(res.data)
+        setGroupList(res.data)
     } catch (error) {
-        console.error('Error fetching missions:', error);
+        console.error('Error fetching missions:', error)
     }
-  };
-
-  //포인트랑 원 환산 가져오기
-  const fetchPenaltyPerPoint = async () => {
-    try {
-        const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/Show_cost_settlement.php`);
-        if(res.data.length > 0){
-          console.log("포인트 배열", res.data);
-          const penaltyPerPoint = res.penalty_per_point; // 벌금 단위를 가져옴
-          setPenaltyPerPoint(penaltyPerPoint);
-          console.log("포인트 환산", penaltyPerPoint);
-        }
-    } catch (error) {
-        console.error('에러 fetching penalty per point:', error);
-    }
-  };
-  
-  // //포인트랑 원 환산 가져오기
-  // const fetchPenaltyPerPoint = async () => {
-  //   try {
-  //       const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/Show_cost_settlement.php`);
-  //       if(res.data.length > 0){
-  //         console.log("포인트 배열", res.data);
-  //         const penaltyPerPoint = res.penalty_per_point; // 벌금 단위를 가져옴
-  //         setPenaltyPerPoint(penaltyPerPoint);
-  //         console.log("포인트 환산", penaltyPerPoint);
-  //       }
-  //   } catch (error) {
-  //       console.error('에러 fetching penalty per point:', error);
-  //   }
-  // };
-  
+  }
 
   useEffect(() => {
-    fetchPenaltyPerPoint();
+    fetchGroups(setGroupList);
   }, []);
-  
-
 
   //세션확인
   useEffect(() => {
@@ -97,17 +62,111 @@ function App() {
       }
     };
     fetchUserInfo();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
+        const userData = res.data;
+        setUserName(userData.name);
+        const string = '-'+userData.noMissionCnt;
+        setPoint(string);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+    fetchUserInfo();
   });
+
+  // GroupName 불러오기
+  // 그룹 리스트 불러오기
+  let rmfnqdlfma = "Testgroup"; //app.js에서 받아오게 되면 여기다가 넣기
+  const fetchGroupName = async () => {
+    try {
+      const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroup.php`); // showgroup에서 res를 가져옴
+      if (res.data.length > 0) {
+        let groupNames = [];
+        let groupNamess = []; // 그룹이름만 담은 배열
+        for (let i = 0; i < res.data.length; i++) {
+          groupNames.push(res.data[i].groupName); // 각 그룹의 이름을 배열에 추가
+        }
+        setGroupName(groupNames.join(', ')); // 그룹 이름들을 문자열로 합쳐서 설정
+        for (let j = 0; j < res.data.length; j++) {
+          groupNamess.push(groupNames[j].group_name);
+        }
+        console.log('그룹이름', groupNamess);
+        
+        const fetchGroupMemberInfo = async (groupName) => {
+          try {
+            const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php?groupName=${groupName}`);
+            if (groupName === rmfnqdlfma) {
+              const groupMemberInfo = res.data;
+              console.log(`그룹 ${groupName}의 멤버 정보:`, groupMemberInfo);
+              // JSON 형태로 받아온 데이터를 바탕으로 멤버 정보를 적절히 가공합니다.
+              const members = groupMemberInfo.map(member => ({
+                memberName: member.name,
+                memberPoint: member.point
+              }));
+              // 가공된 멤버 정보를 상태로 설정합니다.
+              setMembers(members);
+            }
+          } catch (error) {
+            console.error(`Error fetching member info for group ${groupName}:`, error);
+          }
+        };
+        
+        
+        // // 각 그룹마다 멤버 정보를 가져오는 요청을 보냄
+        // for (let k = 0; k < groupNamess.length; k++) {
+        //   const groupMembers = await fetchGroupMemberInfo(groupNamess[k]); // 반환된 members 값을 캡처합니다.
+        //   setMembers(groupMembers); // 여기서 members 상태를 설정합니다.
+        // }
+      }
+    } catch (error) {
+      console.error('Error fetching missions:', error);
+    }
+  };
+  
+  //그룹리스트를 배열로 php에 넘겨주기
+
+  // //포인트랑 원 환산 가져오기@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // const fetchPenaltyPerPoint = async () => {
+  //   try {
+  //       const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/Show_cost_settlement.php`);
+  //       if(res.data.length > 0){
+  //         console.log("포인트 배열", res.data);
+  //         const penaltyPerPoint = res.penalty_per_point; // 벌금 단위를 가져옴
+  //         setPenaltyPerPoint(penaltyPerPoint);
+  //         console.log("포인트 환산", penaltyPerPoint);
+  //       }
+  //   } catch (error) {
+  //       console.error('에러 fetching penalty per point:', error);
+  //   }
+  // };
+  
+  //그룹에 있는 멤버 불러오기
+  const fetchGroupMemberList = async (groupName) => {
+    try {
+      const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php?groupName=${rmfnqdlfma}`);
+      console.log('그룹멤버', res);
+      setMembers(res.data); // members 상태를 설정합니다.
+    } catch (error) {
+      console.error('그룹멤버', error)
+    }
+  }
 
   //캘린더
   let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
   let [showModal, setShowModal] = useState(false);
   let navigate = useNavigate();
 
-  let [members, setMembers] = useState([]);
   useEffect(() => {
     fetchGroupName();
-  }, []);
+    fetchGroupMemberList(groupName); 
+  }, [groupName]); // groupName이 변경될 때마다 실행됩니다.
+  
+  
 
   let startOfWeek = new Date(currentWeekStart);
   startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
@@ -157,9 +216,22 @@ function App() {
                       <div className="calculate" onClick={() => setShowModal(true)}>포인트 정산하기</div>
                       <div className="members">
                       <div className="infoMember">멤버</div>
-                        {members.map((member, index) => (
-                            renderMember(member, index, (index) => setMembers(prevMembers => toggleMissionList(prevMembers, index)))
-                          ))}
+                          <div>
+                          {Array.isArray(members) ? (
+                            <div className="members">
+                            {Array.isArray(members) ? (
+                              members.map((member, index) => (
+                                <div key={index} className="member">{member}</div>
+                              ))
+                            ) : (
+                              <p>Members is not an array</p>
+                            )}
+                          </div>
+                          
+                          ) : (
+                            <p>Members is not an array</p>
+                          )}
+                        </div>
                       </div>
                       <p className="groupExit">그룹 탈퇴하기</p>
                       <div className="handle"></div>
@@ -171,7 +243,19 @@ function App() {
                         <table className="table-bordered groupInfoTable">
                           <tr>
                             <td>
-                            <div className="groupName">{groupName}</div>
+                            <div className="groupName"></div>
+                            {
+                              groupList.length > 0 && groupList.map(function(content, i){
+                                const groupPrice = content.penaltyPerPoint.PenaltyPerPoint
+                                const returnString = groupPrice?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                return (
+                                  <div className="groupList" key={i}>
+                                    <span className='myGroupPrice'>{ '₩'+returnString }</span>
+                                    <div className="myGroupName" onClick={()=>{ props.navigate('/group')}}>{ content.groupName.group_name }</div>
+                                  </div>
+                                )
+                              })
+                            }
                             </td>
                             <td>
                             <div className="pointWon">1 pt = {penaltyPerPoint} 원</div>
@@ -190,7 +274,7 @@ function App() {
                             <th></th>
                             <th colSpan="7">
                               <button className="backOfWeek" onClick={() => handleBackOfWeekClick(currentWeekStart, setCurrentWeekStart)}>◀</button>
-                              <h>{startOfWeek.getMonth() + 1}/{startOfWeek.getDate()} ~ {endOfWeek.getMonth() + 1}/{endOfWeek.getDate()}</h>
+                              <b>{startOfWeek.getMonth() + 1}/{startOfWeek.getDate()} ~ {endOfWeek.getMonth() + 1}/{endOfWeek.getDate()}</b>
                               <button className="frontOfWeek" onClick={() => handleFrontOfWeekClick(currentWeekStart, setCurrentWeekStart)}>▶</button>
                             </th>
                           </tr>
@@ -235,35 +319,6 @@ function App() {
   );
 }
 
-function generateMembers() {
-  let newMembers = [];
-  for (let i = 1; i <= 10; i++) {
-    let memberAchieve = `${Math.floor(Math.random() * 10)}/10`;
-    let memberPoint = `${-(10 - parseInt(memberAchieve.split('/')[0]))}pt`;
-    let missionList = [];
-    let numberOfMissions = Math.floor(Math.random() * 6) + 5;
-    
-    for (let j = 1; j < numberOfMissions; j++) {
-      let numberOfAlphabets = Math.floor(Math.random() * 5);
-      let mission = '';
-      for (let k = 0; k < numberOfAlphabets; k++) {
-        mission += String.fromCharCode(65 + Math.floor(Math.random() * 26));
-      }
-      missionList.push(mission);
-    }
-
-    newMembers.push({
-      memberProfileImage: `사진${i}`,
-      memberName: `멤버${i}`,
-      memberAchieve: memberAchieve,
-      memberPoint: memberPoint,
-      memberMissionList: missionList,
-      showMissionList: false
-    });
-  }
-  return newMembers;
-}
-
 function toggleMissionList(prevMembers, index) {
   return prevMembers.map((member, i) =>
     i === index ? { ...member, showMissionList: !member.showMissionList } : member
@@ -282,24 +337,6 @@ function handleFrontOfWeekClick(currentWeekStart, setCurrentWeekStart) {
   setCurrentWeekStart(nextWeekStart);
 }
 
-function renderMember(member, index, toggleMissionList) {
-  return (
-    <div className="member" key={index} onClick={() => toggleMissionList(index)}>
-      <span className="memberProfileImage">{member.memberProfileImage} </span>
-      <span className="memberName">{member.memberName} </span>
-      <span className="memberAchieve">{member.memberAchieve} </span>
-      <span className="memberPoint">{member.memberPoint} </span>
-      {member.showMissionList && (
-        <div className="memberMissionList">
-          {member.memberMissionList.map((mission, missionIndex) => (
-            <div key={missionIndex}>{mission}</div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
   let prevPoint = Number.POSITIVE_INFINITY;
   let rank = 1;
@@ -307,7 +344,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
-      <Modal.Header closeButton>
+           <Modal.Header closeButton>
         <Modal.Title>이번 정산 결과는?</Modal.Title>
         <Modal.Dialog>1pt={penalty_per_point}원</Modal.Dialog>
       </Modal.Header>
@@ -349,4 +386,6 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
   );
 }
 
-export default App;
+export default GroupPage;
+
+
