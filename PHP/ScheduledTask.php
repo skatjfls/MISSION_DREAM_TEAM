@@ -75,7 +75,7 @@ date_default_timezone_set('Japan');
             echo json_encode(array("error"=>$e->getMessage()));
         }
 
-        // mission 이미지 삭제
+        // missions 이미지 삭제
         try{
             $sql = "SELECT photo FROM missions WHERE id = ?";
             $stmt = $db->prepare($sql);
@@ -83,7 +83,7 @@ date_default_timezone_set('Japan');
             $stmt->execute();
             $photo_list = $stmt->get_result();
 
-            $sql = "UPDATE missions SET photo = NULL WHERE id = ?";
+            $sql = "UPDATE missions SET photo = NULL, complete = 0 WHERE id = ?";
             $stmt = $db->prepare($sql);
             $stmt->bind_param("s", $member['id']);
             $stmt->execute();
