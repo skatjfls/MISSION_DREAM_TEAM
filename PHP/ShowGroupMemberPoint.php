@@ -30,6 +30,8 @@ if ($group_name == null) {
  */
 
 try{
+
+    // 그룹 내 멤버 아이디 가져오기
     $sql = "SELECT id FROM groupmember WHERE group_name = ?";
     $stmt = $db->prepare($sql);
     $stmt->bind_param("s", $group_name);
@@ -72,7 +74,7 @@ if(empty($member_id_list)){
             $member['name'] = $row['name'];
         }catch(Exception $e){
             echo json_encode(array("error"=>$e->getMessage()));
-            exit();
+
         }finally{
             $stmt->close();
         }
@@ -83,7 +85,7 @@ if(empty($member_id_list)){
 
         // 멤버 포인트 가져오기
         try{
-            $sql = "SELECT date FROM overall WHERE id = ?";
+            $sql = "SELECT date, point FROM overall WHERE id = ?";
             $stmt = $db->prepare($sql);
             $stmt->bind_param("s", $member_id);
             $stmt->execute();
@@ -92,7 +94,7 @@ if(empty($member_id_list)){
                 if($row == null){
                     break;
                 }else{
-                    $member['point'] = $row['date'];
+                    array_push($member['point'],array($row['date']=>$row['point']));
                 }
             }
         }catch(Exception $e){
