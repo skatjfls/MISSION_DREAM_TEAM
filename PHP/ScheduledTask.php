@@ -16,10 +16,9 @@ date_default_timezone_set('Japan');
  */
 
 
-// 꼼수를 써보자 member의 ID를 가져와서 한번에 업데이트 하는 것은 너무 오래 걸린다.
-
-// Run the script only if it's 5 AM
-if (date('H') == '05') {
+// member의 ID를 가져와서 한번에 업데이트 하는 것은 너무 오래 걸린다.
+// 그래서 member의 ID를 가져와서 하나씩 업데이트 하는 것으로 변경
+{
     // Perform your database management tasks here
 
     // Get member id list
@@ -65,8 +64,8 @@ if (date('H') == '05') {
         try{
             $sql = "UPDATE groupmember AS gm
             JOIN (
-                SELECT id , point FROM overall 
-                WHERE id = ? AND date = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                SELECT o.id , o.point FROM overall AS o 
+                WHERE o.id = ? AND o.date = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
             ) AS subquery ON gm.id = subquery.id
             SET gm.point_total = gm.point_total + subquery.point";
             $stmt = $db->prepare($sql);
