@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Nav, Modal, Button, Row, Col } from 'react-bootstrap';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import './Group.css';
 import Group from './Group.js';
 import LogIn from './LogIn.js';
@@ -15,6 +15,8 @@ axios.defaults.withCredentials = true;
 function GroupPage(props) {
   let [userName, setUserName] = useState(); //로그인된 이름
   let [point, setPoint] = useState(); //로그인된 포인트
+  const location = useLocation();
+  const rmfnqdlfma = location.state.pageGroupName; //app.js에서 받아오게 되면 여기다가 넣기
   const [groupName, setGroupName] = useState(""); // 로그인된 사람의 그룹 이름
   const [groupMemberList, setGroupMemberList] = useState([]);
   const [penaltyPerPoint, setPenaltyPerPoint] = useState(0); // 빈 배열 대신 0으로 초기화
@@ -81,52 +83,27 @@ function GroupPage(props) {
 
   // GroupName 불러오기
   // 그룹 리스트 불러오기
-  let rmfnqdlfma = "Testgroup"; //app.js에서 받아오게 되면 여기다가 넣기
-  const fetchGroupName = async () => {
+
+  const fetchGroupMemberInfo = async (groupName) => {
     try {
-      const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroup.php`); // showgroup에서 res를 가져옴
-      if (res.data.length > 0) {
-        let groupNames = [];
-        let groupNamess = []; // 그룹이름만 담은 배열
-        for (let i = 0; i < res.data.length; i++) {
-          groupNames.push(res.data[i].groupName); // 각 그룹의 이름을 배열에 추가
-        }
-        setGroupName(groupNames.join(', ')); // 그룹 이름들을 문자열로 합쳐서 설정
-        for (let j = 0; j < res.data.length; j++) {
-          groupNamess.push(groupNames[j].group_name);
-        }
-        console.log('그룹이름', groupNamess);
-        
-        const fetchGroupMemberInfo = async (groupName) => {
-          try {
-            const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php?groupName=${groupName}`);
-            if (groupName === rmfnqdlfma) {
-              const groupMemberInfo = res.data;
-              console.log(`그룹 ${groupName}의 멤버 정보:`, groupMemberInfo);
-              // JSON 형태로 받아온 데이터를 바탕으로 멤버 정보를 적절히 가공합니다.
-              const members = groupMemberInfo.map(member => ({
-                memberName: member.name,
-                memberPoint: member.point
-              }));
-              // 가공된 멤버 정보를 상태로 설정합니다.
-              setMembers(members);
-            }
-          } catch (error) {
-            console.error(`Error fetching member info for group ${groupName}:`, error);
-          }
-        };
-        
-        
-        // // 각 그룹마다 멤버 정보를 가져오는 요청을 보냄
-        // for (let k = 0; k < groupNamess.length; k++) {
-        //   const groupMembers = await fetchGroupMemberInfo(groupNamess[k]); // 반환된 members 값을 캡처합니다.
-        //   setMembers(groupMembers); // 여기서 members 상태를 설정합니다.
-        // }
+      const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php?groupName=${rmfnqdlfma}`);
+      if (groupName === rmfnqdlfma) {
+        const groupMemberInfo = res.data;
+        console.log(`그룹 ${groupName}의 멤버 정보:`, groupMemberInfo);
+        // JSON 형태로 받아온 데이터를 바탕으로 멤버 정보를 적절히 가공합니다.
+        const members = groupMemberInfo.map(member => ({
+          memberName: member.name,
+          memberPoint: member.point
+        }));
+        // 가공된 멤버 정보를 상태로 설정합니다.
+        setMembers(members);
       }
     } catch (error) {
-      console.error('Error fetching missions:', error);
+      console.error(`Error fetching member info for group ${groupName}:`, error);
     }
   };
+        
+
   
   //그룹리스트를 배열로 php에 넘겨주기
 
@@ -162,7 +139,6 @@ function GroupPage(props) {
   let navigate = useNavigate();
 
   useEffect(() => {
-    fetchGroupName();
     fetchGroupMemberList(groupName); 
   }, [groupName]); // groupName이 변경될 때마다 실행됩니다.
   
@@ -211,26 +187,51 @@ function GroupPage(props) {
               </div>
             </div>
             <div className="content">
-                  <div className="info-container">
-                    <nav>
-                      <div className="calculate" onClick={() => setShowModal(true)}>포인트 정산하기</div>
-                      <div className="members">
-                      <div className="infoMember">멤버</div>
-                          <div>
-                          {Array.isArray(members) ? (
-                            <div className="members">
-                            {Array.isArray(members) ? (
-                              members.map((member, index) => (
-                                <div key={index} className="member">{member}</div>
-                              ))
-                            ) : (
-                              <p>Members is not an array</p>
-                            )}
+              <div className="info-container">
+                <nav>
+                  <div className="calculate" onClick={() => setShowModal(true)}>포인트 정산하기</div>
+                  <div className="members">
+                  <div className="infoMember">멤버</div>
+                    <div>
+                    {Array.isArray(members) ? (
+                      members.map((member, index) => {
+                        // member를 파싱하여 각 키에 대한 변수 만들기
+                        const memberObject = JSON.parse(member);
+                        const id = memberObject.id;
+                        const name = memberObject.name;
+                        const missionList = memberObject.missionList;
+                        const missionTotalCount = memberObject.missionTotalCount;
+                        const missionNotCompleteCount = memberObject.missionNotCompleteCount;
+                        const error = memberObject.error;
+                        let missionComplete; // missionComplete 변수를 미리 선언
+
+                        return (
+                          <div key={index} className="member">
+                            {/* 각 변수를 사용하여 출력 */}
+                            <span>
+                              {name},
+                              {missionTotalCount-missionNotCompleteCount}/{missionTotalCount},
+                              -{missionNotCompleteCount}pt
+                            </span>
+                            
+                              {/* missionList를 반복하여 각 미션을 출력 */}
+                              {missionList.map((mission, missionIndex) => {
+                                const missionObject = JSON.parse(mission);
+                                missionComplete = missionObject.complete; // missionComplete 변수에 값 할당
+                                const missionName = missionObject.mission;
+                                const missionPhoto = missionObject.photo;
+                                return (
+                                  <li key={missionIndex}>
+                                    {missionName} - Complete: {missionComplete}, Photo: {missionPhoto}
+                                  </li>
+                                );
+                              })}
                           </div>
-                          
-                          ) : (
-                            <p>Members is not an array</p>
-                          )}
+                        );
+                      })
+                      ) : (
+                        <p>Members is not an array</p>
+                    )}
                         </div>
                       </div>
                       <p className="groupExit">그룹 탈퇴하기</p>
@@ -244,18 +245,7 @@ function GroupPage(props) {
                           <tr>
                             <td>
                             <div className="groupName"></div>
-                            {
-                              groupList.length > 0 && groupList.map(function(content, i){
-                                const groupPrice = content.penaltyPerPoint.PenaltyPerPoint
-                                const returnString = groupPrice?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                                return (
-                                  <div className="groupList" key={i}>
-                                    <span className='myGroupPrice'>{ '₩'+returnString }</span>
-                                    <div className="myGroupName" onClick={()=>{ props.navigate('/group')}}>{ content.groupName.group_name }</div>
-                                  </div>
-                                )
-                              })
-                            }
+                            {rmfnqdlfma}
                             </td>
                             <td>
                             <div className="pointWon">1 pt = {penaltyPerPoint} 원</div>
@@ -292,16 +282,27 @@ function GroupPage(props) {
                               <td key={index}>{date.getDate()}</td>
                             ))}
                           </tr>
-                          {members.map((member, memberIndex) => (
-                            <tr key={memberIndex} >
-                              <td style={{ width: '200px' }}>{member.memberName}</td>
-                              {datesOfWeek.map((date, dateIndex) => (
-                                <td key={dateIndex} style={{ width: '100px' }}>
-                                  {date.toDateString() === new Date().toDateString() ? member.memberPoint : ''}
-                                </td>
-                              ))}
+                          {Array.isArray(members) ? (
+                            members.map((member, index) => {
+                              // member를 파싱하여 각 키에 대한 변수 만들기
+                              const memberObject = JSON.parse(member);
+                              const name = memberObject.name;
+                              return (
+                                <tr key={index}>
+                                  <td style={{ width: '200px' }}>{name}</td>
+                                  {datesOfWeek.map((date, dateIndex) => (
+                                    <td key={dateIndex} style={{ width: '100px' }}>
+                                      {date.toDateString() === new Date().toDateString() ? member.memberPoint : ''}
+                                    </td>
+                                  ))}
+                                </tr>
+                              );
+                            })
+                          ) : (
+                            <tr>
+                              <td colSpan={8}>Members is not an array</td>
                             </tr>
-                          ))}
+                          )}
                         </tbody>
                       </table>
                     </div>
