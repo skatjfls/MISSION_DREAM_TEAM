@@ -7,58 +7,76 @@ require_once 'DefaultSetting.php';
 // Set the timezone to your desired timezone
 date_default_timezone_set('Japan');
 
-// Check the connection
-if ($db->connect_error) {
-    die('Connection failed: ' . $db->connect_error);
-}
+/***
+ * 순서대로
+ * 1. 5시에 실행
+ * 2. 
+ * overall에 있는 point 0으로 만들기
+ * 
+ */
+
+
+// 꼼수를 써보자 member의 ID를 가져와서 한번에 업데이트 하는 것은 너무 오래 걸린다.
 
 // Run the script only if it's 5 AM
 if (date('H') == '05') {
     // Perform your database management tasks here
 
     // Get member id list
-    $sql = "SELECT * FROM member";
+    $sql = "SELECT id FROM member";
     $stmt = $db->prepare($sql);
     $stmt->execute();
     $member_list = $stmt->get_result();
 
     // Check mission status and update the point status if the mission is uncompleted
     while ($member = $member_list->fetch_assoc()){
-        $sql = "SELECT mission_idx FROM missions WHERE id = ? AND complete = 0";
-        $stmt = $db->prepare($sql);
-        $stmt->bind_param("s", $member['id']);
-        $stmt->execute();
-        $mission_list = $stmt->get_result();
 
-        $failed_mission = (int) $mission_list->num_rows;
-
-        // Update the point status if the mission is uncompleted
-        if ($failed_mission > 0) {
-            // Update the member point status
-            $date = date('Y-m-d', strtotime('-1 day'));
-            $sql = "UPDATE overall SET point = ?, date = ? WHERE id = ?";
-            $stmt = $db->prepare($sql);
-            $stmt->bind_param("iss", $failed_mission, $date, $member['id']);
-            $stmt->execute();
-            
-
-            // Update the group total point status
-            $sql = "SELECT * FROM groupmember WHERE id = ?";
+        // 멤버 overall 포인트 업데이트
+        try{
+            $sql = "UPDATE overall AS o
+            JOIN (
+                SELECT m.id, COUNT(*) AS uncompleted_mission 
+                FROM missions AS m 
+                WHERE m.complete = 0 AND id = ?
+                GROUP BY m.id
+            ) AS subquery ON o.id = subquery.id
+            SET o.point = subquery.uncompleted_mission
+            WHERE o.date = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
             $stmt = $db->prepare($sql);
             $stmt->bind_param("s", $member['id']);
             $stmt->execute();
-            $group_list = $stmt->get_result();
-            
-            while ($group = $group_list->fetch_assoc()){
-                $group_point_total = $group['point_total'] - $failed_mission;
-                $sql = "UPDATE group SET point = ? WHERE group_member_idx = ? AND id = ?";
-                $stmt = $db->prepare($sql);
-                $stmt->bind_param("iis", $group_point_total, $group['group_member_idx'], $group['id']);
-                $stmt->execute();
-            }
+        }catch(Exception $e){
+            echo json_encode(array("error"=>$e->getMessage()));
         }
-    }
 
+        // 새로운 overall 생성
+        try{
+            $sql = "INSERT INTO overall (id, date, point)
+            VALUES (?, CURDATE(), 0)";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("s", $member['id']);
+            $stmt->execute();
+        }catch(Exception $e){
+            echo json_encode(array("error"=>$e->getMessage()));
+            exit();
+        }
+
+        // groupmember point_total 업데이트
+        try{
+            $sql = "UPDATE groupmember AS gm
+            JOIN (
+                SELECT id , point FROM overall 
+                WHERE id = ? AND date = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+            ) AS subquery ON gm.id = subquery.id
+            SET gm.point_total = gm.point_total + subquery.point";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("s", $member['id']);
+            $stmt->execute();
+        }catch(Exception $e){
+            echo json_encode(array("error"=>$e->getMessage()));
+        }
+    }   
+     
     // Close the database connection
     $stmt->close();
     $db->close();
