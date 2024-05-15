@@ -74,6 +74,31 @@ date_default_timezone_set('Japan');
         }catch(Exception $e){
             echo json_encode(array("error"=>$e->getMessage()));
         }
+
+        // mission 이미지 삭제
+        try{
+            $sql = "SELECT photo FROM missions WHERE id = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("s", $member['id']);
+            $stmt->execute();
+            $photo_list = $stmt->get_result();
+
+            $sql = "UPDATE missions SET photo = NULL WHERE id = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("s", $member['id']);
+            $stmt->execute();
+
+            $folderPath = "../project/uploads/" . $member['id'] . "/";
+            
+            while($photo = $photo_list->fetch_assoc()){
+                $filePath = $folderPath . $photo['photo'];
+                if(file_exists($filePath)){
+                    unlink($filePath);}
+            }
+
+        }catch(Exception $e){
+            echo json_encode(array("error"=>$e->getMessage()));
+        }
     }   
      
     // Close the database connection
