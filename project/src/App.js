@@ -13,8 +13,6 @@ import SignUp from './pages/SignUp.js';
 axios.defaults.withCredentials = true;
 
 function App() {
-  //let state = useSelector((state) => state )
-
   let [missionList, setMissionList] = useState([]);
   let [groupList, setGroupList] = useState([]);
   let [join, setJoin] = useState(false);
@@ -48,7 +46,7 @@ function App() {
         const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
         const userData = res.data;
         setUserName(userData.name);
-        const string = '-'+userData.noMissionCnt;
+        const string = userData.noMissionCnt !== 0 ? '-' + userData.noMissionCnt : userData.noMissionCnt.toString();
         setPoint(string);
       } catch (error) {
         console.error('Error fetching user info:', error);
@@ -66,8 +64,15 @@ function App() {
       console.log('insert_mission',res)
     
       // 미션 목록 갱신
-      setMissionList([...missionList, missionInput]);
+      // 미션 목록이 비어 있는지 확인하고 새로운 미션을 추가
+      if (!missionList || missionList.length === 0) {
+        setMissionList([missionInput]);
+      } else {
+        // 미션 목록이 비어 있지 않으면 기존 미션 목록과 새로운 미션을 합쳐서 새로운 미션 목록을 만듦
+        setMissionList([...missionList, missionInput]);
+      }
       fetchMissions(setMissionList);
+      
       setMissionInput('');
     } catch (error) {
       console.error('Error adding mission:', error);
@@ -226,8 +231,10 @@ function ToDo(props) {
                 const returnString = groupPrice?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 return (
                   <div className="groupList" key={i}>
-                    <span className='myGroupPrice'>{ '₩'+returnString }</span>
-                    <div className="myGroupName" onClick={()=>{ props.navigate('/group')}}>{ content.groupName.group_name }</div>
+                    <span className='myGroupPrice'>{ '₩ '+returnString }</span>
+                    <div className="myGroupName" onClick={()=>{
+                      props.navigate('/group'), { state: { pageGroupName: content.groupName.group_name } }}
+                    }>{ content.groupName.group_name }</div>
                   </div>
                 )
               })
@@ -265,7 +272,7 @@ function MyCalendar() {
 // 그룹 생성 모달
 function CreateGroup(props) {
   const [isSelectPrice, setIsSelectPrice] = useState(false);
-  const priceArr = ['₩0', '₩500', '₩1,000', '₩2,000', '₩3,000', '₩5,000']
+  const priceArr = ['₩ 0', '₩ 500', '₩ 1,000', '₩ 2,000', '₩ 3,000', '₩ 5,000']
 
   const handleClickPrice = (idx) => {
     const newArr = Array(priceArr.length).fill(false);
@@ -339,7 +346,7 @@ function JoinGroup(props) {
         })
         .then((res)=>{
             if (res.data == true) {
-                alert('[ '+inputName+' ]그룹에 가입되었습니다!')
+                alert('[ '+inputName+' ] 그룹에 가입되었습니다!')
                 props.navigate('/')
             }
             else {
