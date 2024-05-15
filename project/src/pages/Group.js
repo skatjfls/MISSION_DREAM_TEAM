@@ -1,9 +1,8 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import moment from "moment";
 import React, { useState, useEffect } from 'react';
-import { Nav, Modal, Button, Row, Col } from 'react-bootstrap';
-import Calendar from 'react-calendar';
+import { Modal, Button } from 'react-bootstrap';
+import { useLocation } from 'react-router-dom';
 import 'react-calendar/dist/Calendar.css';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './Group.css';
@@ -13,6 +12,10 @@ import SignUp from './SignUp.js';
 axios.defaults.withCredentials = true;
 
 function GroupPage(props) {
+
+  const location = useLocation();
+  const selectGroup = location.state.pageGroupName;
+
   let [userName, setUserName] = useState(); //로그인된 이름
   let [point, setPoint] = useState(); //로그인된 포인트
   const [groupName, setGroupName] = useState(""); // 로그인된 사람의 그룹 이름
@@ -22,18 +25,11 @@ function GroupPage(props) {
   let [groupList, setGroupList] = useState([]);
   let [members, setMembers] = useState([]); // 여기서 members 상태 정의
 
-  const fetchGroups = async (setGroupList) => {
-    try {
-        const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroup.php?`)
-        console.log(res.data)
-        setGroupList(res.data)
-    } catch (error) {
-        console.error('Error fetching missions:', error)
-    }
-  }
 
   useEffect(() => {
-    fetchGroups(setGroupList);
+    console.log("선택된 그룹", selectGroup)
+    fetchGroupMemberList(selectGroup, setMembers);
+    console.log("멤버",members)
   }, []);
 
   //세션확인
@@ -50,18 +46,6 @@ function GroupPage(props) {
     .catch(error => {
       console.error('Error fetching user info:', error)
     })
-    const fetchUserInfo = async () => {
-      try {
-        const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
-        console.log(res);
-        const userData = res.data;
-        setUserName(userData.name);
-        setPoint(userData.point);
-      } catch (error) {
-        console.error('Error fetching user info:', error);
-      }
-    };
-    fetchUserInfo();
   }, []);
 
   useEffect(() => {
@@ -79,54 +63,6 @@ function GroupPage(props) {
     fetchUserInfo();
   });
 
-  // GroupName 불러오기
-  // 그룹 리스트 불러오기
-  let rmfnqdlfma = "Testgroup"; //app.js에서 받아오게 되면 여기다가 넣기
-  const fetchGroupName = async () => {
-    try {
-      const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroup.php`); // showgroup에서 res를 가져옴
-      if (res.data.length > 0) {
-        let groupNames = [];
-        let groupNamess = []; // 그룹이름만 담은 배열
-        for (let i = 0; i < res.data.length; i++) {
-          groupNames.push(res.data[i].groupName); // 각 그룹의 이름을 배열에 추가
-        }
-        setGroupName(groupNames.join(', ')); // 그룹 이름들을 문자열로 합쳐서 설정
-        for (let j = 0; j < res.data.length; j++) {
-          groupNamess.push(groupNames[j].group_name);
-        }
-        console.log('그룹이름', groupNamess);
-        
-        const fetchGroupMemberInfo = async (groupName) => {
-          try {
-            const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php?groupName=${groupName}`);
-            if (groupName === rmfnqdlfma) {
-              const groupMemberInfo = res.data;
-              console.log(`그룹 ${groupName}의 멤버 정보:`, groupMemberInfo);
-              // JSON 형태로 받아온 데이터를 바탕으로 멤버 정보를 적절히 가공합니다.
-              const members = groupMemberInfo.map(member => ({
-                memberName: member.name,
-                memberPoint: member.point
-              }));
-              // 가공된 멤버 정보를 상태로 설정합니다.
-              setMembers(members);
-            }
-          } catch (error) {
-            console.error(`Error fetching member info for group ${groupName}:`, error);
-          }
-        };
-        
-        
-        // // 각 그룹마다 멤버 정보를 가져오는 요청을 보냄
-        // for (let k = 0; k < groupNamess.length; k++) {
-        //   const groupMembers = await fetchGroupMemberInfo(groupNamess[k]); // 반환된 members 값을 캡처합니다.
-        //   setMembers(groupMembers); // 여기서 members 상태를 설정합니다.
-        // }
-      }
-    } catch (error) {
-      console.error('Error fetching missions:', error);
-    }
-  };
   
   //그룹리스트를 배열로 php에 넘겨주기
 
@@ -145,28 +81,10 @@ function GroupPage(props) {
   //   }
   // };
   
-  //그룹에 있는 멤버 불러오기
-  const fetchGroupMemberList = async (groupName) => {
-    try {
-      const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php?groupName=${rmfnqdlfma}`);
-      console.log('그룹멤버', res);
-      setMembers(res.data); // members 상태를 설정합니다.
-    } catch (error) {
-      console.error('그룹멤버', error)
-    }
-  }
-
   //캘린더
   let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
   let [showModal, setShowModal] = useState(false);
-  let navigate = useNavigate();
-
-  useEffect(() => {
-    fetchGroupName();
-    fetchGroupMemberList(groupName); 
-  }, [groupName]); // groupName이 변경될 때마다 실행됩니다.
-  
-  
+  let navigate = useNavigate();  
 
   let startOfWeek = new Date(currentWeekStart);
   startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
@@ -219,15 +137,24 @@ function GroupPage(props) {
                           <div>
                           {Array.isArray(members) ? (
                             <div className="members">
-                            {Array.isArray(members) ? (
-                              members.map((member, index) => (
-                                <div key={index} className="member">{member}</div>
-                              ))
-                            ) : (
-                              <p>Members is not an array</p>
-                            )}
+                              {
+                                members.map((member, index) => (
+                                  console.log('멤버', JSON.parse(member)),
+                                  member = JSON.parse(member),
+                                  <div key={index} className="member">
+                                    <h6>{member['id']}</h6>
+                                    <h6>{member['name']}</h6>
+                                    <h6>{member['missionNotCompleteCount']}/{member['missionTotalCount']}</h6>
+                                    {
+                                      member['missionList'].map((mission, index) => (
+                                        mission = JSON.parse(mission),
+                                        <h6>{mission['mission']}</h6>
+                                      ))
+                                    }
+                                  </div>
+                                ))
+                              }
                           </div>
-                          
                           ) : (
                             <p>Members is not an array</p>
                           )}
@@ -317,6 +244,20 @@ function GroupPage(props) {
       <PointModal showModal={showModal} setShowModal={setShowModal} members={members} penalty_per_point={penalty_per_point} />
     </div>
   );
+}
+
+//그룹에 있는 멤버 불러오기
+const fetchGroupMemberList = async (selectGroup, setMembers) => {
+  try {
+    const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php',{
+    groupName : selectGroup}
+  );
+    console.log('그룹 정보', res);
+
+    setMembers(res.data); // members 상태를 설정합니다.
+  } catch (error) {
+    console.error('그룹멤버', error)
+  }
 }
 
 function toggleMissionList(prevMembers, index) {
