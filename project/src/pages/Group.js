@@ -389,4 +389,3 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
 
 export default GroupPage;
 
-
