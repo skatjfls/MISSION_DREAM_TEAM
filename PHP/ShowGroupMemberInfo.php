@@ -7,11 +7,24 @@ if (!session_id()) {
     session_start();
 }
 
-$id = $_SESSION['id'];
+if (!$_SEESION['id']){
+    echo array(
+                "id" => NULL,
+                "name" => NULL,
+                "missionList" => array(),
+                "missionTotalCount" => NULL,
+                "missionNotCompleteCount" => NULL,
+                "error" => "로그인 필요"
+            )
+    exit()
+}else{
+    $id = $_SESSION['id'];
+}
+
 
 $group_name = isset($_POST['groupName']) ? $_POST['groupName'] : null;
 if ($group_name == null) {
-    echo json_encode("Group name is required");
+    echo json_encode("그룹 이름이 필요합니다");
     exit();
 }
 
@@ -92,6 +105,19 @@ if (empty($group_member_id_list)) {
             $mission_list = array();
         }
 
+        try{
+            $sql = "SELECT point_total FROM groupmember WHERE id = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("s",$member_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $mission_total_point = $result->fetch_assoc()['point_total'];
+            $stmt->close();
+        } catch (Execption $e){
+            $error_message .= $e->getMessage() . "\n";
+            $mission_total_point = NULL
+        }
+
         array_push($member_list, json_encode(
             array(
                 "id" => $member_id,
@@ -99,6 +125,7 @@ if (empty($group_member_id_list)) {
                 "missionList" => $mission_list,
                 "missionTotalCount" => $mission_total_count,
                 "missionNotCompleteCount" => $mission_not_complete_count,
+                "missionTotalPoint" => $mission_total_point,
                 "error" => $error_message
             )
         ));
