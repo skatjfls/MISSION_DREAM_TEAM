@@ -132,7 +132,7 @@
     
                     $sql = "UPDATE missions SET photo = ?, complete = 1 WHERE id = ? AND mission_idx = ?";
                     $stmt = $db->prepare($sql);
-                    $stmt->bind_param('ssi', $fileName, $id, $mission_idx);
+                    $stmt->bind_param('ssi', $filePath, $id, $mission_idx);
                     $stmt->execute();
     
                     move_uploaded_file($_FILES['imgFile']['tmp_name'], $filePath);
