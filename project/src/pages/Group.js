@@ -16,27 +16,11 @@ function GroupPage(props) {
   let [userName, setUserName] = useState(); //로그인된 이름
   let [point, setPoint] = useState(); //로그인된 포인트
   const location = useLocation();
-  const rmfnqdlfma = location.state.pageGroupName; //app.js에서 받아오게 되면 여기다가 넣기
-  const [groupName, setGroupName] = useState(""); // 로그인된 사람의 그룹 이름
-  const [groupMemberList, setGroupMemberList] = useState([]);
+  const group_name = location.state.pageGroupName; //app.js에서 받아오게 되면 여기다가 넣기
   const [penaltyPerPoint, setPenaltyPerPoint] = useState(0); // 빈 배열 대신 0으로 초기화
   const [isLoggerIn, setIsLoggedIN] = useState(false); //로그인됐나
-  let [groupList, setGroupList] = useState([]);
-  let [members, setMembers] = useState([]); // 여기서 members 상태 정의
-
-  const fetchGroups = async (setGroupList) => {
-    try {
-        const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroup.php?`)
-        console.log(res.data)
-        setGroupList(res.data)
-    } catch (error) {
-        console.error('Error fetching missions:', error)
-    }
-  }
-
-  useEffect(() => {
-    fetchGroups(setGroupList);
-  }, []);
+  const [members, setMembers] = useState([]); // 여기서 members 상태 정의
+  const [membersPoint, setMembersPoint] = useState([]); //멤버별 개인 포인트
 
   //세션확인
   useEffect(() => {
@@ -81,57 +65,35 @@ function GroupPage(props) {
     fetchUserInfo();
   });
 
-  // GroupName 불러오기
-  // 그룹 리스트 불러오기
-
-  const fetchGroupMemberInfo = async (groupName) => {
-    try {
-      const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php?groupName=${rmfnqdlfma}`);
-      if (groupName === rmfnqdlfma) {
-        const groupMemberInfo = res.data;
-        console.log(`그룹 ${groupName}의 멤버 정보:`, groupMemberInfo);
-        // JSON 형태로 받아온 데이터를 바탕으로 멤버 정보를 적절히 가공합니다.
-        const members = groupMemberInfo.map(member => ({
-          memberName: member.name,
-          memberPoint: member.point
-        }));
-        // 가공된 멤버 정보를 상태로 설정합니다.
-        setMembers(members);
-      }
-    } catch (error) {
-      console.error(`Error fetching member info for group ${groupName}:`, error);
-    }
-  };
-        
-
-  
-  //그룹리스트를 배열로 php에 넘겨주기
-
-  // //포인트랑 원 환산 가져오기@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-  // const fetchPenaltyPerPoint = async () => {
-  //   try {
-  //       const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/Show_cost_settlement.php`);
-  //       if(res.data.length > 0){
-  //         console.log("포인트 배열", res.data);
-  //         const penaltyPerPoint = res.penalty_per_point; // 벌금 단위를 가져옴
-  //         setPenaltyPerPoint(penaltyPerPoint);
-  //         console.log("포인트 환산", penaltyPerPoint);
-  //       }
-  //   } catch (error) {
-  //       console.error('에러 fetching penalty per point:', error);
-  //   }
-  // };
-  
-  //그룹에 있는 멤버 불러오기
-  const fetchGroupMemberList = async (groupName) => {
-    try {
-      const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php?groupName=${rmfnqdlfma}`);
-      console.log('그룹멤버', res);
-      setMembers(res.data); // members 상태를 설정합니다.
-    } catch (error) {
-      console.error('그룹멤버', error)
-    }
+//포인트랑 원 환산 가져오기
+const fetchPenaltyPerPoint = async () => {
+  try {
+    const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowPenalty.php', { groupName: group_name });
+    const bringpenaltyPerPoint = res.data; // 벌점 당 포인트 가져 오기
+    setPenaltyPerPoint(bringpenaltyPerPoint); // 상태에 벌점 당 포인트 설정
+    console.log("그룹 포인트:", bringpenaltyPerPoint);
+  } catch (error) {
+    console.error('에러 fetching penalty per point:', error);
   }
+};
+
+
+useEffect(() => {
+  fetchPenaltyPerPoint(setPenaltyPerPoint);
+}, []);
+
+  
+//그룹에 있는 멤버 정보
+const fetchGroupMemberList = async () => {
+  try {
+    const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php', { groupName: group_name });
+    console.log('그룹멤버 성공', res);
+    setMembers(res.data); // members 상태를 설정합니다.
+  } catch (error) {
+    console.error('그룹멤버 실패', error)
+  }
+}
+
 
   //캘린더
   let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
@@ -139,8 +101,8 @@ function GroupPage(props) {
   let navigate = useNavigate();
 
   useEffect(() => {
-    fetchGroupMemberList(groupName); 
-  }, [groupName]); // groupName이 변경될 때마다 실행됩니다.
+    fetchGroupMemberList(group_name); 
+  }, [group_name]); // groupName이 변경될 때마다 실행됩니다.
   
   
 
@@ -157,8 +119,6 @@ function GroupPage(props) {
     datesOfWeek.push(date);
   };
 
-  // 수정된 부분: PointWon 대신에 penalty_per_point 사용
-  let penalty_per_point = 4000;
   
   let prevPoint = Number.POSITIVE_INFINITY;
   let rank = 1;
@@ -202,36 +162,55 @@ function GroupPage(props) {
                         const missionList = memberObject.missionList;
                         const missionTotalCount = memberObject.missionTotalCount;
                         const missionNotCompleteCount = memberObject.missionNotCompleteCount;
+                        const missionTotalPoint = memberObject.missionTotalPoint;
                         const error = memberObject.error;
                         let missionComplete; // missionComplete 변수를 미리 선언
-
                         return (
                           <div key={index} className="member">
                             {/* 각 변수를 사용하여 출력 */}
                             <span>
-                              {name},
-                              {missionTotalCount-missionNotCompleteCount}/{missionTotalCount},
-                              -{missionNotCompleteCount}pt
+                              {name},  
+                              {missionTotalCount - missionNotCompleteCount}/{missionTotalCount},  
+                              {missionTotalPoint}pt
                             </span>
-                            
-                              {/* missionList를 반복하여 각 미션을 출력 */}
-                              {missionList.map((mission, missionIndex) => {
-                                const missionObject = JSON.parse(mission);
-                                missionComplete = missionObject.complete; // missionComplete 변수에 값 할당
-                                const missionName = missionObject.mission;
-                                const missionPhoto = missionObject.photo;
-                                return (
-                                  <li key={missionIndex}>
-                                    {missionName} - Complete: {missionComplete}, Photo: {missionPhoto}
-                                  </li>
-                                );
-                              })}
+                            <table className="missionTable">
+                              <thead>
+                                <tr>
+                                  <th>달성</th>
+                                  <th>미션</th>
+                                  <th>인증</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {/* missionList를 반복하여 각 미션을 출력 */}
+                                {missionList.map((mission, missionIndex) => {
+                                  const missionObject = JSON.parse(mission);
+                                  missionComplete = missionObject.complete; // missionComplete 변수에 값 할당
+                                  const missionName = missionObject.mission;
+                                  const missionPhoto = missionObject.photo;
+                                  return (
+                                    <tr key={missionIndex}>
+                                      <td>
+                                        <input
+                                          type="checkbox"
+                                          checked={missionComplete === 1 ? true : false}
+                                          disabled
+                                        />
+                                      </td>
+                                      <td>{missionName}</td>
+                                      <td>{missionPhoto}</td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
                           </div>
                         );
                       })
-                      ) : (
-                        <p>Members is not an array</p>
+                    ) : (
+                      <p>Members is not an array</p>
                     )}
+
                         </div>
                       </div>
                       <p className="groupExit">그룹 탈퇴하기</p>
@@ -241,21 +220,24 @@ function GroupPage(props) {
                   <div className="groupCalendar-container">
                     <div className="groupCalendar">
                       <div className="groupInfo">
-                        <table className="table-bordered groupInfoTable">
+                      <table className="table-bordered groupInfoTable">
+                        <thead>
                           <tr>
                             <td>
-                            <div className="groupName"></div>
-                            {rmfnqdlfma}
+                              <div className="groupName"></div>
+                              {group_name}
                             </td>
                             <td>
-                            <div className="pointWon">1 pt = {penaltyPerPoint} 원</div>
+                              <div className="penaltyPerPoint">1 pt = {penaltyPerPoint} 원</div>
                             </td>
                             <td style={{ width: '700px' }}></td>
                             <td>
-                            <div className="groupOption">설정</div>
+                              <div className="groupOption">설정</div>
                             </td>
                           </tr>
-                        </table>
+                        </thead>
+                      </table>
+
                       </div>
                       <div className="groupNotice">공지</div>
                       <table className="table-bordered groupStats">
@@ -310,13 +292,9 @@ function GroupPage(props) {
             </div>
           </div>
         }/>
-        <Route path="/login" element={<LogIn navigate={navigate}/>}/>
-        <Route path="/signup" element={ <SignUp/> }/>
-        <Route path="/group" element={ <Group/> }/>
-        <Route path="*" element={<div>404</div>}/>
       </Routes>
-      <PointModal showModal={showModal} setShowModal={setShowModal} members={members} penalty_per_point={penalty_per_point} />
-    </div>
+      <PointModal showModal={showModal} setShowModal={setShowModal} members={members}  /> 
+    </div> // PointModal에 penalty_per_point={penalty_per_point} 넣기
   );
 }
 

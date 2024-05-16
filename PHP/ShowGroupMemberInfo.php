@@ -7,24 +7,17 @@ if (!session_id()) {
     session_start();
 }
 
-if (!$_SEESION['id']){
-    echo array(
-                "id" => NULL,
-                "name" => NULL,
-                "missionList" => array(),
-                "missionTotalCount" => NULL,
-                "missionNotCompleteCount" => NULL,
-                "error" => "로그인 필요"
-            )
-    exit()
+if (!$_SESSION['id']){
+    echo "그룹 이름이 필요합니다";
+    exit();
 }else{
     $id = $_SESSION['id'];
 }
 
 
-$group_name = isset($_GET['groupName']) ? $_GET['groupName'] : null;
+$group_name = isset($_POST['groupName']) ? $_POST['groupName'] : null;
 if ($group_name == null) {
-    echo json_encode("그룹 이름이 필요합니다");
+    echo "그룹 이름이 필요합니다";
     exit();
 }
 
@@ -44,12 +37,12 @@ try {
     }
     $stmt->close(); // stmt 객체 닫기
 } catch (Exception $e) {
-    echo json_encode($e->getMessage());
+    echo $e->getMessage();
     exit();
 }
 
 if (empty($group_member_id_list)) {
-    echo json_encode("그룹 내에 멤버가 없습니다");
+    echo "그룹 내에 멤버가 없습니다";
     exit();
 } else {
     foreach ($group_member_id_list as $member_id) {
@@ -90,7 +83,7 @@ if (empty($group_member_id_list)) {
         }
 
         try {
-            $sql = "SELECT mission, complete, photo FROM missions WHERE id = ?"; //이거 missions 맞나요?
+            $sql = "SELECT mission, complete, photo FROM missions WHERE id = ?";
             $stmt = $db->prepare($sql);
             $stmt->bind_param("s", $member_id);
             $stmt->execute();
@@ -113,9 +106,9 @@ if (empty($group_member_id_list)) {
             $result = $stmt->get_result();
             $mission_total_point = $result->fetch_assoc()['point_total'];
             $stmt->close();
-        } catch (Execption $e){
+        } catch (Exception $e){
             $error_message .= $e->getMessage() . "\n";
-            $mission_total_point = NULL
+            $mission_total_point = NULL;
         }
 
         array_push($member_list, json_encode(
