@@ -83,7 +83,7 @@ useEffect(() => {
 }, []);
 
   
-//그룹에 있는 멤버 불러오기
+//그룹에 있는 멤버 정보
 const fetchGroupMemberList = async () => {
   try {
     const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php', { groupName: group_name });
@@ -94,22 +94,6 @@ const fetchGroupMemberList = async () => {
   }
 }
 
-//멤버별 포인트 불러오기
-const fetchGroupMemberPoint = async () => {
-  try {
-    const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberPoint.php', { groupName: group_name });
-    console.log('포인트불러오기ㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣ', res.data);
-    setMembersPoint(res.data); // 멤버 포인트를 상태에 설정합니다.
-  } catch (error) {
-    console.error('불러오기 실패', error);
-  }
-};
-
-
-useEffect(() => {
-fetchGroupMemberPoint(setMembersPoint);
-}, []);
-  
 
   //캘린더
   let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
@@ -178,16 +162,16 @@ fetchGroupMemberPoint(setMembersPoint);
                         const missionList = memberObject.missionList;
                         const missionTotalCount = memberObject.missionTotalCount;
                         const missionNotCompleteCount = memberObject.missionNotCompleteCount;
+                        const missionTotalPoint = memberObject.missionTotalPoint;
                         const error = memberObject.error;
                         let missionComplete; // missionComplete 변수를 미리 선언
-
                         return (
                           <div key={index} className="member">
                             {/* 각 변수를 사용하여 출력 */}
                             <span>
                               {name},  
                               {missionTotalCount - missionNotCompleteCount}/{missionTotalCount},  
-                              {missionNotCompleteCount}pt
+                              {missionTotalPoint}pt
                             </span>
                             <table className="missionTable">
                               <thead>
