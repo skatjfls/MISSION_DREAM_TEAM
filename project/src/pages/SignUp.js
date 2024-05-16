@@ -55,19 +55,41 @@ const SignUpForm = () => {
         return isValid;
     };
 
+    const handleCheckDuplicate = async (fieldName) => {
+        const fieldValue = formData[fieldName];
+        try {
+            const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/CheckDuplicate.php', {
+                fieldName: fieldName,
+                fieldValue: fieldValue,
+            });
+            console.log(res.data);
+    
+            if (res.data.trim() === 'true') {
+                alert(`${fieldName}는(은) 사용 가능합니다.`);
+            } else {
+                alert(`${fieldName}는(은) 이미 사용 중입니다.`);
+            }
+        } catch (error) {
+            console.error('Error checking duplicate:', error);
+            alert('중복 확인 중 오류가 발생했습니다.');
+        }
+    };
+    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validateForm();
 
         if (isValid) {
             try {
-                const response = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/SignUp.php', {
+                const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/SignUp.php', {
                     id: formData.id,
                     password: formData.password,
                     name: formData.name
                 });
+                console.log("sdafsdfsfds", res.data);
 
-                if (response.data === true) {
+                if (res.data === true) {
                     alert('회원가입에 성공했습니다.');
                     setShowModal(true);
                 } else {
@@ -94,31 +116,33 @@ const SignUpForm = () => {
                 <Form onSubmit={handleSubmit} id='formdata'>
                     <Form.Group className="form-group" controlId="formBasicId">
                         <div className="labelAlign">
-                        <Form.Label className="form-label"><span className='notion'>*</span> ID</Form.Label>
-                        <Form.Text className="error-message">{formErrors.id}</Form.Text>
+                            <Form.Label className="form-label"><span className='notion'>*</span> ID</Form.Label>
+                            <Form.Text className="error-message">{formErrors.id}</Form.Text>
                         </div>
                         <Form.Control className="form-control" type="text" name="id" placeholder="ID 입력 (6~20자)" value={formData.id} onChange={handleChange} required />
+                        <Button className="check-duplicate" variant="secondary" onClick={() => handleCheckDuplicate('id')}>중복 확인</Button>
                     </Form.Group>
                     <Form.Group className="form-group" controlId="formBasicPassword">
                         <div className="labelAlign">
-                        <Form.Label className="form-label"><span className='notion'>*</span> Password</Form.Label>
-                        <Form.Text className="error-message">{formErrors.password}</Form.Text>
+                            <Form.Label className="form-label"><span className='notion'>*</span> Password</Form.Label>
+                            <Form.Text className="error-message">{formErrors.password}</Form.Text>
                         </div >
                         <Form.Control className="form-control" type="password" name="password" placeholder="PW 입력 (영문, 숫자, 특수기호 포함 8~20자)" value={formData.password} onChange={handleChange} required />
                     </Form.Group>
                     <Form.Group className="form-group" controlId="formBasicConfirmPassword">
                         <div className="labelAlign">
-                        <Form.Label className="form-label"><span className='notion'>*</span> Password 확인</Form.Label>
-                        <Form.Text className="error-message">{formErrors.repassword}</Form.Text>
+                            <Form.Label className="form-label"><span className='notion'>*</span> Password 확인</Form.Label>
+                            <Form.Text className="error-message">{formErrors.repassword}</Form.Text>
                         </div>
                         <Form.Control className="form-control" type="password" name="repassword" placeholder="PW 재입력" value={formData.repassword} onChange={handleChange} required />
                     </Form.Group>
                     <Form.Group className="form-group" controlId="formBasicName">
                         <div className="labelAlign">
-                        <Form.Label className="form-label"><span className='notion'>*</span> 닉네임</Form.Label>
-                        <Form.Text className="error-message">{formErrors.name}</Form.Text>
+                            <Form.Label className="form-label"><span className='notion'>*</span> 닉네임</Form.Label>
+                            <Form.Text className="error-message">{formErrors.name}</Form.Text>
                         </div>
                         <Form.Control className="form-control" type="text" name="name" placeholder="한글로 입력" value={formData.name} onChange={handleChange} required />
+                        <Button className="check-duplicate" variant="secondary" onClick={() => handleCheckDuplicate('name')}>중복 확인</Button>
                     </Form.Group>
                     <Button className="complete" variant="primary" type="submit">
                         가입완료
@@ -135,9 +159,13 @@ const SignUpForm = () => {
                         확인
                     </Button>
                 </Modal.Footer>
-            </Modal>
-        </div>
-    );
+    <Button variant="primary" onClick={closeModal}>
+        확인
+    </Button>
+</Modal>
+</div>
+);
 };
 
 export default SignUpForm;
+
