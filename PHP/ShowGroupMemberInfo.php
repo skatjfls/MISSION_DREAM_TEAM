@@ -9,7 +9,7 @@ if (!session_id()) {
 
 $id = $_SESSION['id'];
 
-$group_name = isset($_GET['groupName']) ? $_GET['groupName'] : null;
+$group_name = isset($_POST['groupName']) ? $_POST['groupName'] : null;
 if ($group_name == null) {
     echo json_encode("Group name is required");
     exit();

@@ -10,7 +10,8 @@ if(!session_id()){
 // 세션에서 아이디 받기
 $id = $_SESSION['id'];
 
-$group_name = isset($_POST['group_name']) ? $_POST['group_name'] : null;
+$group_name = isset($_POST['groupName']) ? $_POST['groupName'] : null;
+
 if ($group_name == null) {
     echo json_encode(array("error"=>"Group name is requiared"));
     exit();
@@ -105,7 +106,8 @@ if(empty($member_id_list)){
         }
         array_push($member_list, $member);
     }
-    echo $member_list;
+    echo json_encode($member_list);
+
     $db->close();
 }
 
