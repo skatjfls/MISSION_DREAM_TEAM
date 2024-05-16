@@ -132,7 +132,7 @@
     
                     $sql = "UPDATE member SET profile = ?, WHERE id = ?";
                     $stmt = $db->prepare($sql);
-                    $stmt->bind_param('ss', $fileName, $id);
+                    $stmt->bind_param('ss', $filePath, $id);
                     $stmt->execute();
     
                     move_uploaded_file($_FILES['imgFile']['tmp_name'], $filePath);
