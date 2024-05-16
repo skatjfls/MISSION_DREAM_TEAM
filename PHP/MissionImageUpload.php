@@ -104,7 +104,7 @@
             while($row = $result->fetch_assoc()){
                 $photo = $row['photo'];
                 if($photo != null){
-                    $filePath = $folderPath . '/' . $photo;
+                    $filePath = $photo;
                     if(file_exists($filePath)){
                         unlink($filePath);
                     }
