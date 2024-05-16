@@ -99,9 +99,9 @@ if (empty($group_member_id_list)) {
         }
 
         try{
-            $sql = "SELECT point_total FROM groupmember WHERE id = ?";
+            $sql = "SELECT point_total FROM groupmember WHERE id = ? AND group_name = ?";
             $stmt = $db->prepare($sql);
-            $stmt->bind_param("s",$member_id);
+            $stmt->bind_param("ss",$member_id, $group_name);
             $stmt->execute();
             $result = $stmt->get_result();
             $mission_total_point = $result->fetch_assoc()['point_total'];
