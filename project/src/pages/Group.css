@@ -160,6 +160,15 @@ div {
   height: 600px;
 }
 
+.memberInfo {
+  border-collapse: collapse;
+  margin: 0 auto; /* 테이블을 상위 요소의 좌우 가운데에 배치 */
+}
+
+.memberInfo td {
+  border: 1px solid black; /* 테두리 설정 */
+  padding: 8px; /* 셀 간의 간격을 설정 */
+}
 
 
 
