@@ -7,32 +7,17 @@ if(!session_id()){
     session_start();
 }
 
-// 세션에서 아이디 받기
 $id = $_SESSION['id'];
 
 $group_name = isset($_POST['groupName']) ? $_POST['groupName'] : null;
 
 if ($group_name == null) {
-    echo json_encode(array("error"=>"Group name is requiared"));
+    echo json_encode(array("error"=>"Group name is required"));
     exit();
 }
 
-// JsonDataStructure
-/*
- * [
- *  {
- *    "id":"test1",
- *   "name":"test1",
- *   "point" : {
- *      "2024.05.13" : 100,
- *      "2024.05.12" : 200,}
- *  },
- * ]
- */
-
 try{
 
-    // 그룹 내 멤버 아이디 가져오기
     $sql = "SELECT id FROM groupmember WHERE group_name = ?";
     $stmt = $db->prepare($sql);
     $stmt->bind_param("s", $group_name);
@@ -54,7 +39,7 @@ try{
 }
 
 if(empty($member_id_list)){
-    echo json_encode(array("error"=>"그룹 내에 멤버가 없습니다."));
+    echo json_encode(array("error"=>"There are no members in the group"));
     exit();
 }else{
     $member_list = array();
@@ -64,7 +49,6 @@ if(empty($member_id_list)){
         $member['name'] = "";
         $member['point'] = array();
 
-        // 멤버 이름 가져오기
         try{
             $sql = "SELECT name FROM member WHERE id = ?";
             $stmt = $db->prepare($sql);
@@ -75,16 +59,16 @@ if(empty($member_id_list)){
             $member['name'] = $row['name'];
         }catch(Exception $e){
             echo json_encode(array("error"=>$e->getMessage()));
-
+            exit();
         }finally{
             $stmt->close();
         }
 
         if($member['name'] == null){
-            echo json_encode(array("error"=>"멤버 이름을 가져오는데 실패했습니다."));
+            echo json_encode(array("error"=>"Failed to get member name"));
+            exit();
         }
 
-        // 멤버 포인트 가져오기
         try{
             $sql = "SELECT date, point FROM overall WHERE id = ?";
             $stmt = $db->prepare($sql);
@@ -95,7 +79,8 @@ if(empty($member_id_list)){
                 if($row == null){
                     break;
                 }else{
-                    array_push($member['point'],array($row['date']=>$row['point']));
+                    // Change the structure of point array
+                    $member['point'][$row['date']] = $row['point'];
                 }
             }
         }catch(Exception $e){
@@ -106,6 +91,7 @@ if(empty($member_id_list)){
         }
         array_push($member_list, $member);
     }
+    // Echo the member list in JSON format
     echo json_encode($member_list);
 
     $db->close();
