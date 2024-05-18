@@ -45,3 +45,14 @@
   .login-right input {
     padding: 10px;
   }
+
+  .text-today {
+    background: linear-gradient(45deg, var(--tex-color1), var(--tex-color2), var(--tex-color3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  .text-unlock {
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  }
