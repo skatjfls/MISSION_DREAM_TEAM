@@ -239,7 +239,9 @@ function GroupPage(props) {
 
                                         </div>
                                     </div>
-                                    <p className="groupExit">그룹 탈퇴하기</p>
+                                    <div className="groupExit">
+                                        <button className="button-exit" onClick={handleGroupExit}>그룹 탈퇴하기</button>
+                                    </div>
                                     <div className="handle"></div>
                                 </nav>
                             </div>
@@ -412,6 +414,10 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
             </Modal.Footer>
         </Modal>
     );
+}
+
+function handleGroupExit(){
+    
 }
 
 
