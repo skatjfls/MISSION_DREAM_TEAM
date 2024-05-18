@@ -365,6 +365,22 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
     let rank = 1;
     let sameRankCount = 0;
 
+    // "이번엔 꼴찌가 1등에게 벌금을 몰아주세요!"라는 메시지
+    const tipMessage = "이번엔 꼴찌가 1등에게 벌금을 몰아주세요!";
+
+    const parsedMembers = members.map((member) => JSON.parse(member));
+    const rankedMembers = parsedMembers
+        .map((member) => ({
+            ...member,
+            calculatedPoint: Math.abs(parseInt(member.missionTotalPoint)) * penalty_per_point,
+        }))
+        .sort((a, b) => {
+            if (a.calculatedPoint === b.calculatedPoint) {
+                return a.name.localeCompare(b.name);
+            }
+            return a.calculatedPoint - b.calculatedPoint;
+        });
+
     return (
         <Modal show={showModal} onHide={() => setShowModal(false)}>
             <Modal.Header closeButton>
@@ -372,33 +388,22 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
                 <Modal.Dialog>1pt={penalty_per_point}원</Modal.Dialog>
             </Modal.Header>
             <Modal.Body>
-                <p>tip. 이번에는 꼴찌가 1등에게 정산금을 몰아주는건 어떨까요?</p>
-                {members
-                    .map((member, index) => ({
-                        ...member,
-                        calculatedPoint: Math.abs(parseInt(member.memberPoint)) * penalty_per_point
-                    }))
-                    .sort((a, b) => {
-                        if (a.calculatedPoint === b.calculatedPoint) {
-                            return a.memberName.localeCompare(b.memberName);
-                        }
-                        return a.calculatedPoint - b.calculatedPoint;
-                    })
-                    .map((member, index) => {
-                        if (prevPoint !== member.calculatedPoint) {
-                            rank += sameRankCount;
-                            sameRankCount = 1;
-                        } else {
-                            sameRankCount++;
-                        }
-                        prevPoint = member.calculatedPoint;
-
-                        return (
-                            <p key={index}>
-                                {rank}등: {member.memberName}: {member.memberPoint} X {penalty_per_point} = -{member.calculatedPoint}
-                            </p>
-                        );
-                    })}
+                <p>{tipMessage}</p>
+                {rankedMembers.map((member, index) => {
+                    if (prevPoint !== member.calculatedPoint) {
+                        rank += sameRankCount;
+                        sameRankCount = 1;
+                    } else {
+                        sameRankCount++;
+                    }
+                    prevPoint = member.calculatedPoint;
+  
+                    return (
+                        <p key={index}>
+                            {rank}등: {member.name}: {member.missionTotalPoint} X {penalty_per_point} = -{member.calculatedPoint}
+                        </p>
+                    );
+                })}
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={() => setShowModal(false)}>
@@ -408,5 +413,6 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
         </Modal>
     );
 }
+
 
 export default GroupPage;
