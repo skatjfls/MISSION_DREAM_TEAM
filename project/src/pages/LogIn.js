@@ -2,7 +2,6 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { updateUser } from '../store/reducers/userReducer';
 import './Login.css';
 axios.defaults.withCredentials = true;
 
@@ -33,18 +32,18 @@ function LogIn(props) {
         if (!idIsEmpty && !passwordIsEmpty) {
             const inputId = document.getElementById('id').value;
             const inputPw = document.getElementById('password').value;
+            const keepLogIn = document.getElementById('keepLogIn').checked;
     
             axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogIn.php',
             {
                 id: inputId,
-                password: inputPw
+                password: inputPw,
+                KeepLogIn: keepLogIn
             })
             .then((res)=>{
                 console.log(res)
                 if (res.data == true) {
-                    alert('로그인에 성공했습니다.')
-                    dispatch(updateUser(inputId));
-                    
+                    alert('로그인에 성공했습니다.');
                     navigate('/');
                 }
                 else {
@@ -72,9 +71,10 @@ function LogIn(props) {
         <div className="Login">
             <div className="login-box">
                 <div className="login-left">
-                    <h3 className='text-today'>오늘의 갓생러는 {props.userCount}명!</h3>
-                    <h4 className='text-unlock'>로그인으로 미션을 Unlock -☆</h4>
-                    <div>오늘의 미션은 무엇일까요?</div>
+                    <h1 className='text-title text-today'>오늘의 갓생러는 {props.userCount}명!</h1>
+                    <h3 className='text-title'>로그인으로 미션을 Unlock -☆</h3>
+                    <div className='text-today-box'>오늘의 미션은 무엇일까요?</div>
+                    <img className="img-cursor" src="/img/cursor.png"></img>
                 </div>
                 <div className="login-right">
                     <input className="login-input" type="text" placeholder="ID" id="id"></input>
@@ -82,7 +82,7 @@ function LogIn(props) {
                     <button className="login-button" onClick={onClickLogin}>미션하러 가기</button>
                     <div className="login-input">
                     <label>
-                        <input type="checkbox" id="keepLoggedIn"></input>
+                        <input type="checkbox" id="keepLogIn"></input>
                         로그인 유지
                     </label>
                     <span onClick={()=>{ props.navigate('/signup')}}>회원가입</span>

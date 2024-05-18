@@ -5,14 +5,18 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(204, 255, 230, 0.3));
   }
   .login-box {
     width: 70%;
     height: 65%;
     display: flex;
     justify-content: space-between;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    box-shadow: 10px 15px 10px rgba(0, 0, 0, 0.15);
+    background-color: white;
   }
+
   .login-left, .login-right {
     flex: 1;
     height: 100%;
@@ -20,6 +24,7 @@
   }
   .login-left {
     background: linear-gradient(to bottom right, var(--gra-color1), var(--gra-color2), var(--gra-color3));
+    border-radius: 5px 0 0 5px;
   }
   
   .login-input, .login-button {
@@ -35,24 +40,44 @@
     border-color: var(--gray-color1);
   }
 
+  #keepLogIn {
+    margin: 0px 5px;
+  }
   .login-button {
     text-align: center;
     border: 0;
     background-color: var(--main-color);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
   }
   
   .login-right input {
     padding: 10px;
   }
 
+  .text-title {
+    filter: drop-shadow(0px 8px 5px rgba(0, 0, 0, 0.13));
+    font-family: "font_tennine";
+    margin: 10px;
+  }
   .text-today {
     background: linear-gradient(45deg, var(--tex-color1), var(--tex-color2), var(--tex-color3));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
   }
-  .text-unlock {
-    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+
+  .text-today-box {
+    margin: 35px 50px 0px;
+    padding: 10px;
+    border: solid 1px var(--sub-color3);
+    background-color: white;
+    text-align: left;
+    color: var(--sub-color4);
+  }
+
+  .img-cursor {
+    width: 30px;
+    margin: -10px 35px;
+    float: right;
   }
