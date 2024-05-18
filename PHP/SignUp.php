@@ -34,7 +34,7 @@ if ($id != null && $password != null && $name != null) {
         exit(); // 중복된 아이디가 확인되면 종료
     } else {
         // 패스워드를 해싱하여 저장
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $hashed_password = md5($password);
         
         // INSERT 쿼리 실행
         $sql = "INSERT INTO member (id, password, name) VALUES (?, ?, ?)";
