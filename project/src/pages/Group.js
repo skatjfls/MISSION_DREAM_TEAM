@@ -121,6 +121,25 @@ function GroupPage(props) {
         fetchGroupMemberOverall();
     }, [group_name]);
 
+// 그룹 탈퇴
+const handleGroupExit = async () => {
+    const confirmed = window.confirm("진짜 탈퇴할거에요?진짜?ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ가지마세용");
+    if (confirmed) {
+        try {
+            await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ExitGroup.php', { groupName: group_name });
+            alert("탈퇴 성공..... 메인페이지로 이동할게요....");
+            // 메인 페이지로 이동
+            navigate('/');
+        } catch (err) {
+            console.error('그룹 탈퇴 실패!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:', err);
+        }
+    } else {
+        // 아니오를 클릭한 경우 그냥 무시
+        console.log("탈퇴안해줄거지롱");
+    }
+};
+
+
     // 캘린더
     let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
     let [showModal, setShowModal] = useState(false);
@@ -416,9 +435,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
     );
 }
 
-function handleGroupExit(){
-    
-}
+
 
 
 export default GroupPage;
