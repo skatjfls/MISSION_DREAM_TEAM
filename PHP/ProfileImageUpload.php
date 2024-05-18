@@ -92,7 +92,7 @@
         
         /*************************** 이미지 업로드 시작 ****************************/
         $id = $_SESSION['id'];
-        $folderPath = '../project/uploads/' . $id . '/profile';
+        $folderPath = '../project/public/uploads/' . $id . '/profile';
 
         //이전 이미지 서버에서 삭제
         try{

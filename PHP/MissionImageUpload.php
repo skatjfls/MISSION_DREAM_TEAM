@@ -90,7 +90,7 @@
 
         
         $id = $_SESSION['id'];
-        $folderPath = '../project/uploads/' . $id;
+        $folderPath = '../project/public/uploads/' . $id;
         $mission_idx = $_POST['mission_idx'];
 
         //이전 이미지 서버에서 삭제
