@@ -111,3 +111,10 @@
     border-radius: 10px;
     font-weight: bold;
 }
+
+/* SignUp.css */
+.button-red {
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+    color: white;
+}
