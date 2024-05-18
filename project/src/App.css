@@ -14,10 +14,27 @@
   --tex-color3: #FFBD01;
 }
 
+
+@font-face {
+  font-family: "font_tennine";
+  src: url("./font/tennine.TTF");
+}
+
+@font-face {
+  font-family: "font_NanumSquare";
+  src: url("./font/NanumSquare.ttf");
+}
+
+@font-face {
+  font-family: "font_NanumSquareR";
+  src: url("./font/NanumSquareR.ttf");
+}
+
 .App {
   text-align: center;
   user-select: none;
   overflow-x: hidden;
+  font-family: "font_NanumSquareR";
 }
 
 div {
@@ -210,15 +227,15 @@ div {
 }
 
 /* modal css*/
-.modal {
+.main-modal {
   align-content: center;
 }
-.modal input, textarea {
+.main-modal input, textarea {
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
   border: solid 1px var(--gray-color);
   border-radius: 5px;
 }
-.modal p {
+.main-modal p {
   margin: 0;
   font-size: 12px;
 }
@@ -231,19 +248,20 @@ div {
   margin-right: 20px;
 }
 .button-price {
-  margin: 0px 5px;
+  margin: 5px;
   background-color: var(--sub-color3);
   padding: 10px 25px;
   border-radius: 20px;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: white;
+  border: 0;
 }
 .button-price-clicked {
   background-color: var(--main-color) !important;
 }
 .modal-p {
-  margin-top: 20px;
+  margin-top: 10px;
   color: var(--sub-color4);
 }
 .modal-div>p {

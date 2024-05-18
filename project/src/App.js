@@ -282,7 +282,7 @@ function CreateGroup(props) {
   }
 
   return (
-    <Modal show={props.create} onHide={() => {props.setCreate(false); setIsSelectPrice(Array(priceArr.length).fill(false));}} className='modal modal-xl'>
+    <Modal show={props.create} onHide={() => {props.setCreate(false); setIsSelectPrice(Array(priceArr.length).fill(false));}} className='main-modal modal-xl'>
       <Modal.Header closeButton>
         <Modal.Title>그룹 생성</Modal.Title>
       </Modal.Header>
@@ -298,7 +298,7 @@ function CreateGroup(props) {
             <div>
               {priceArr.map((content, i) => {
                 return(
-                  <span key={i} className={`button-price ${isSelectPrice[i]? 'button-price-clicked' : ''}`} onClick={() => handleClickPrice(i) }>{ content }</span>
+                  <button key={i} className={`button-price ${isSelectPrice[i]? 'button-price-clicked' : ''}`} onClick={() => handleClickPrice(i) }>{ content }</button>
                 );
               })}
             </div>
@@ -373,7 +373,7 @@ function JoinGroup(props) {
   }
 
   return (
-    <Modal show={props.join} onHide={() => props.setJoin(false)} className="modal">
+    <Modal show={props.join} onHide={() => props.setJoin(false)} className="main-modal">
       <Modal.Header closeButton>
         <Modal.Title>그룹 가입</Modal.Title>
       </Modal.Header>
