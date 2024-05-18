@@ -9,6 +9,9 @@
   --sub-color4: #808080;
   --sub-color5: #FF4D00;
   --gray-color: #EDEDED;
+  --tex-color1: #2AC8AB;
+  --tex-color2: #F1DC0E;
+  --tex-color3: #FFBD01;
 }
 
 .App {
@@ -117,7 +120,7 @@ div {
   color: var(--main-color);
 }
 
-.empty-mission {
+.empty-message {
   margin: 60px 0;
   color: var(--sub-color4);
 }

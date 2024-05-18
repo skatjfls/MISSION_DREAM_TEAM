@@ -1,5 +1,4 @@
 import axios from 'axios';
-//axios.defaults.withCredentials = true;
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -44,10 +43,9 @@ function LogIn(props) {
                 console.log(res)
                 if (res.data == true) {
                     alert('로그인에 성공했습니다.')
-                    // console.log('inputId:', inputId)
                     dispatch(updateUser(inputId));
-                    console.log('userId:', userId)
-                    navigate('/')             
+                    
+                    navigate('/');
                 }
                 else {
                     alert('아이디 또는 비밀번호를 확인해주세요.')
@@ -74,8 +72,8 @@ function LogIn(props) {
         <div className="Login">
             <div className="login-box">
                 <div className="login-left">
-                    <h3>오늘의 갓생러는 {props.userCount}명!</h3>
-                    <h4>로그인으로 미션을 Unlock -☆</h4>
+                    <h3 className='text-today'>오늘의 갓생러는 {props.userCount}명!</h3>
+                    <h4 className='text-unlock'>로그인으로 미션을 Unlock -☆</h4>
                     <div>오늘의 미션은 무엇일까요?</div>
                 </div>
                 <div className="login-right">
@@ -84,7 +82,7 @@ function LogIn(props) {
                     <button className="login-button" onClick={onClickLogin}>미션하러 가기</button>
                     <div className="login-input">
                     <label>
-                        <input type="checkbox"></input>
+                        <input type="checkbox" id="keepLoggedIn"></input>
                         로그인 유지
                     </label>
                     <span onClick={()=>{ props.navigate('/signup')}}>회원가입</span>

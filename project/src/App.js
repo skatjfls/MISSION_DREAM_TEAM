@@ -132,7 +132,7 @@ function App() {
         <Route path="*" element={<div>404</div>}/>
       </Routes>
       <CreateGroup create={create} setCreate={setCreate}/>
-      <JoinGroup join={join} setJoin={setJoin}/>
+      <JoinGroup join={join} setJoin={setJoin} setGroupList={setGroupList}/>
     </div>
   );
 }
@@ -215,7 +215,7 @@ function ToDo(props) {
             })
           )}
           {(!props.missionList || props.missionList.length === 0) && (
-            <div className='empty-mission'>미션을 추가해보세요!</div>
+            <div className='empty-message'>미션을 추가해보세요!</div>
           )}
         </div>
         <div className="col-md-4">
@@ -225,7 +225,7 @@ function ToDo(props) {
               <button onClick={()=>{ props.setCreate(true) }} className="button-plus">+</button>
             </div>
             <div className='groupLine'></div>
-            {
+            {props.groupList && Array.isArray(props.groupList) && props.groupList.length > 0 ? (
               props.groupList.map(function(content, i){
                 const groupPrice = content.penaltyPerPoint.PenaltyPerPoint
                 const returnString = groupPrice?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -236,9 +236,11 @@ function ToDo(props) {
                       props.navigate('/group', { state: { pageGroupName: content.groupName.group_name } });
                     }}>{ content.groupName.group_name }</div>
                   </div>
-                )
+                );
               })
-            }
+            ) : (
+              <div className='empty-message'>그룹에 가입해보세요!</div>
+            )}
             <button className="button-mygroup" onClick={()=>{ props.setJoin(true) }}>그룹 가입하기</button>
           </div>
         </div>
@@ -262,8 +264,7 @@ function MyCalendar() {
         console.log(moment(value))
       }
       <div>
-        // KST 기준으로 출력
-        {moment(value).format("YYYY년 MM월 DD일 HH시 mm분 ss초")}
+        {moment(value).format("YYYY년 MM월 DD일")}
       </div>
     </div>
   );
@@ -279,9 +280,9 @@ function CreateGroup(props) {
     newArr[idx] = true;
     setIsSelectPrice(newArr);
   }
-  
+
   return (
-    <Modal show={props.create} onHide={() => props.setCreate(false)} className='modal modal-xl'>
+    <Modal show={props.create} onHide={() => {props.setCreate(false); setIsSelectPrice(Array(priceArr.length).fill(false));}} className='modal modal-xl'>
       <Modal.Header closeButton>
         <Modal.Title>그룹 생성</Modal.Title>
       </Modal.Header>
@@ -347,7 +348,8 @@ function JoinGroup(props) {
         .then((res)=>{
             if (res.data == true) {
                 alert('[ '+inputName+' ] 그룹에 가입되었습니다!')
-                props.navigate('/')
+                props.setJoin(false)
+                fetchGroups(props.setGroupList);
             }
             else {
                 alert('그룹 이름 또는 비밀번호를 확인해주세요.')
