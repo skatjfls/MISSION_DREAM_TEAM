@@ -9,6 +9,16 @@
   --gray-color: #EDEDED;
 }
 
+@font-face {
+  font-family: "font_tennine";        
+  src: url("../font/tennine.TTF"); 
+}
+
+@font-face {
+  font-family: "font_NanumSquare";        
+  src: url("../font/NanumSquare.ttf"); 
+}
+
 #root {
   height: 100%;
 }
@@ -36,15 +46,15 @@ div {
 
 .info-container {
   background-color: var(--sub-color1);
-  width: 300px;
-  height: 90vh; /* 화면 전체 높이를 상속 */
+  width: 400px;
+  height: auto;
   display: inline-block;
-  float: left; /* 왼쪽으로 정렬 */
+  float: left;
 }
 
 
 .calculate {
-  border-radius: 20px;
+  border-radius: 30px;
   background-color: white;
   border: 3px solid var(--main-color);
   padding: 10px;
@@ -52,6 +62,8 @@ div {
   margin: 0 auto;
   margin-top: 20px;
   font-weight: bold;
+  font-family: "font_tennine";
+  font-size: 20px;
 }
 
 .members{
@@ -71,12 +83,12 @@ div {
 .infoMember{
   display: block;
   background-color: white;
-  font-weight: bolder;
-  font-size: larger;
+  font-size: 30px;
   text-align: left;
   padding-left: 20px;
   padding-bottom: 10px;
   padding-top: 10px;
+  font-family: "font_tennine";
 }
 
 .member{
@@ -85,6 +97,9 @@ div {
   margin: 0 auto;
   margin-bottom: 10px;
   padding: 10px;
+  border-radius: 5px;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
 }
 
 .memberMissionList{
@@ -108,7 +123,7 @@ div {
 .groupCalendar {
   display: inline-block;
   margin: 0 auto;
-  width: 80%;
+  width: 70%;
   background-color: white;
   padding: 40px;
   border: 3px solid var(--sub-color3);
@@ -117,10 +132,12 @@ div {
 
 
 .groupName{
-  display: inline-block;
-  float: left;
   font-size: 50px;
-  font-weight: 600;
+  font-weight: 500;
+  font-family: "font_tennine" !important;
+  background-image: linear-gradient(to right,#30C8A4, #F9E23D, #FEBE01);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .groupOption{
@@ -129,7 +146,6 @@ div {
 }
 
 .penaltyPerPoint{
-  float: left;
   background-color: var(--main-color);
   border-radius: 20px;
   padding-left: 30px;
@@ -139,6 +155,7 @@ div {
   margin: 0 auto;
   font-weight: 700;
   color: white;
+  font-size: 20px;
 }
 
 .groupNotice{
@@ -149,6 +166,8 @@ div {
   padding: 5px;
   margin-top: 10px;
   margin-bottom: 10px;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
 }
 
 .groupInfoTable{
@@ -158,17 +177,72 @@ div {
 .groupStats{
   width: 100%;
   height: 600px;
+  border: var(--sub-color3) 2px solid;
 }
 
 .memberInfo {
   border-collapse: collapse;
   margin: 0 auto; /* 테이블을 상위 요소의 좌우 가운데에 배치 */
+  width: 100%;
 }
 
 .memberInfo td {
-  border: 1px solid black; /* 테두리 설정 */
   padding: 8px; /* 셀 간의 간격을 설정 */
+  width: calc(100% / 3); /* 세 열이므로 각 열의 너비를 33.33%로 설정 */
 }
+
+.missionTable{
+  background-color: white;
+  width: 100%;
+  margin: 0px auto;
+}
+
+.missionTable th,
+.missionTable td {
+    font-size: 15px;
+}
+
+
+.missionTable th:nth-child(1),
+.missionTable td:nth-child(1) {
+    width: 15%; /* 달성의 너비를 10%로 설정 */
+}
+
+.missionTable th:nth-child(2),
+.missionTable td:nth-child(2) {
+    width: 70%; /* 미션의 너비를 80%로 설정 */
+}
+
+.missionTable th:nth-child(3),
+.missionTable td:nth-child(3) {
+    width: 15%; /* 인증의 너비를 10%로 설정 */
+}
+
+.backOfWeek{
+  background: var(--gra-color3);
+  color: white;
+  border: 0px;
+  border-radius: 5px;
+  font-family: "font_NanumSquare";
+  font-size: 25px;
+}
+
+.frontOfWeek{
+  background: var(--gra-color3);
+  color: white;
+  border: 0px;
+  border-radius: 5px;
+  font-family: "font_NanumSquare";
+  font-size: 25px;
+}
+
+.date{
+  font-family: "font_NanumSquare";
+  width: 300px;
+  display: inline-block;
+  font-size: 25px;
+}
+
 
 
 
