@@ -1,7 +1,9 @@
 <?php
 // 240419 김현수 작성
 
-require_once("dbConfig.php");
+//여기
+require_once 'dbConfig.php';
+require_once 'DefaultSetting.php';
 
 session_start();
 
@@ -16,8 +18,9 @@ if (!isset($_SESSION['id'])) {
 // 세션에서 아이디 받기 
 $id = $_SESSION['id'];
 
+// 여기
 // 그룹 이름 받아오기
-$group_name = isset($_POST["group_name"]) ? $_POST["group_name"] : null;
+$group_name = isset($_POST["groupName"]) ? $_POST["groupName"] : null;
 
 // 그룹이 존재하지 않으면 오류
 if(!$group_name){
