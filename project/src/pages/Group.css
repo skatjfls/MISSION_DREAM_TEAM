@@ -243,6 +243,12 @@ div {
   font-size: 25px;
 }
 
+.button-exit{
+  background-color: var(--sub-color1);
+  border: none;
+  color: var(--sub-color3);
+  margin: 10px;
+}
 
 
 
