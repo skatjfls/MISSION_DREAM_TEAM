@@ -34,7 +34,15 @@
   text-align: center;
   user-select: none;
   overflow-x: hidden;
-  font-family: "font_NanumSquareR";
+}
+
+h1, h3 {
+  font-family: "font_tennine";
+}
+
+h5, h6 {
+  font-family: "font_NanumSquare";
+  font-weight: bold;
 }
 
 div {
@@ -52,6 +60,10 @@ div {
   align-items: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 2;
+}
+
+.nav-bar h6 {
+  margin: auto;
 }
 
 .nav-bar div {
@@ -74,6 +86,8 @@ div {
   padding: 5px 20px;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: "font_NanumSquare";
+  font-weight: bold;
 }
 
 /*tap css*/
@@ -94,6 +108,14 @@ div {
   bottom: 0;
 }
 
+.tap .nav-link {
+  color: var(--sub-color4);
+  background-color: var(--sub-color1);
+  padding: 8px 30px;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
+}
+
 /*To do css*/
 .input-todo {
   width: 20%;
@@ -103,20 +125,25 @@ div {
   border-radius: 5px;
   height: 40px;
   margin-top: 25px;
+  padding-left: 10px;
+  font-family: "font_NanumSquareR";
 }
 .button-todo-plus {
   background-color: var(--main-color);
   border-radius: 5px;
-  padding: 7px 20px;
+  padding: 0px 20px;
   margin: 0px 15px;
   border: 0;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: white;
+  font-family: "font_tennine";
+  font-size: 25px;
 }
+
 .mission {
   display: flex;
-  padding: 2px 15px;
+  padding: 7px 15px;
   margin: 20px;
   border: 2px solid var(--gray-color);
   gap: 10px;
@@ -129,6 +156,8 @@ div {
 
 .mission h6 {
   width: 80%;
+  margin: auto;
+  font-size: 15px;
 }
 
 .button-x {
@@ -163,10 +192,16 @@ div {
   gap: 10px;
 }
 
+.myGroup-top>button, .myGroup-top>h5 {
+  font-family: "font_tennine";
+  font-weight: normal;
+  color: var(--sub-color2);
+}
+
 .button-plus {
   border: 0;
   background-color: transparent;
-  color: var(--sub-color2);
+  font-size: 30px;
 }
 .button-mygroup {
   width: 200px;
@@ -179,6 +214,8 @@ div {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: black;
   bottom: 0;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
 }
 .groupLine {
   width: 215px;
@@ -188,6 +225,8 @@ div {
 .groupList{
   display: flex;
   margin: 10px 0px;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
 }
 .myGroupPrice {
   display: block;
@@ -307,6 +346,8 @@ div {
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: black;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
 }
 .button-join {
   margin: 10px;
@@ -315,4 +356,11 @@ div {
   height: 45px;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: "font_NanumSquare";
+  font-weight: bold;
+}
+
+.main-modal-title {
+  font-family: 'font_tennine';
+  font-size: 30px;
 }
