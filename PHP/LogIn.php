@@ -4,10 +4,26 @@
 // db 연결
 require_once "dbConfig.php";
 require_once 'DefaultSetting.php';
-session_start();
-//if(!session_id()){
-    //session_start();
-//}
+
+// 로그인 유지 추가
+$KeepLogIn = isset($_POST["KeepLogIn"]) ? $_POST["KeepLogIn"] : null;
+
+if(!session_id()){
+    if($KeepLogIn){
+
+        $duration = 24 * 60 * 60 * 30;
+        ini_set('session.gc_maxlifetime', $duration);
+        session_set_cookie_params($duration);
+        session_start();
+    }else{
+        session_start();
+    }
+}
+
+//session_start();
+// if(!session_id()){
+//     session_start();
+// }
 
 $_SESSION['sess'] = "cur_session";
 
