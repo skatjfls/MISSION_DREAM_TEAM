@@ -19,6 +19,7 @@ function GroupPage(props) {
     const [isLoggerIn, setIsLoggedIN] = useState(false); // 로그인됐나
     const [members, setMembers] = useState([]); // 여기서 members 상태 정의
     const [membersOverall, setMembersOverall] = useState({}); // 멤버별 개인 날짜별 포인트를 객체로 초기화
+    const [memberMissionTables, setMemberMissionTables] = useState({}); // 클릭한 멤버의 미션 테이블 표시 상태를 관리하는 객체
 
     // 세션확인 및 유저 정보 가져오기
     useEffect(() => {
@@ -66,6 +67,27 @@ function GroupPage(props) {
         };
         fetchPenaltyPerPoint();
     }, [group_name]);
+
+    // 그룹 공지 가져오기
+    // 공지 가져오기
+    useEffect(() => {
+        const fetchNotice = async () => {
+            try {
+                const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowNotice.php', { groupName: group_name });
+                const notice = res.data; // 공지 가져오기
+                // 가져온 공지를 그룹 공지 위치에 넣기
+                const groupNoticeElement = document.querySelector('.groupNotice');
+                if (groupNoticeElement) {
+                    groupNoticeElement.innerText = notice;
+                }
+                console.log("그룹 공지:", notice);
+            } catch (error) {
+                console.error('에러 fetching notice:', error);
+            }
+        };
+        fetchNotice();
+    }, [group_name]);
+
 
     // 그룹에 있는 멤버 정보 가져오기
     useEffect(() => {
@@ -121,24 +143,31 @@ function GroupPage(props) {
         fetchGroupMemberOverall();
     }, [group_name]);
 
-// 그룹 탈퇴
-const handleGroupExit = async () => {
-    const confirmed = window.confirm("진짜 탈퇴할거에요?진짜?ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ가지마세용");
-    if (confirmed) {
-        try {
-            await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ExitGroup.php', { groupName: group_name });
-            alert("탈퇴 성공..... 메인페이지로 이동할게요....");
-            // 메인 페이지로 이동
-            navigate('/');
-        } catch (err) {
-            console.error('그룹 탈퇴 실패!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:', err);
+    // 그룹 탈퇴
+    const handleGroupExit = async () => {
+        const confirmed = window.confirm("진짜 탈퇴할거에요?진짜?ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ가지마세용");
+        if (confirmed) {
+            try {
+                await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ExitGroup.php', { groupName: group_name });
+                alert("탈퇴 성공..... 메인페이지로 이동할게요....");
+                // 메인 페이지로 이동
+                navigate('/');
+            } catch (err) {
+                console.error('그룹 탈퇴 실패!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:', err);
+            }
+        } else {
+            // 아니오를 클릭한 경우 그냥 무시
+            console.log("탈퇴안해줄거지롱");
         }
-    } else {
-        // 아니오를 클릭한 경우 그냥 무시
-        console.log("탈퇴안해줄거지롱");
-    }
-};
+    };
 
+    // 클릭한 멤버의 미션 테이블 표시 상태를 토글하는 함수
+    const toggleMissionTable = (memberId) => {
+        setMemberMissionTables(prevState => ({
+            ...prevState,
+            [memberId]: !prevState[memberId]
+        }));
+    };
 
     // 캘린더
     let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
@@ -204,7 +233,7 @@ const handleGroupExit = async () => {
                                                     const error = memberObject.error;
                                                     let missionComplete; // missionComplete 변수를 미리 선언
                                                     return (
-                                                        <div key={index} className="member">
+                                                        <div key={index} className="member" onClick={() => toggleMissionTable(id)}>
                                                             <span>
                                                                 <table className="memberInfo">
                                                                     <thead>
@@ -218,37 +247,39 @@ const handleGroupExit = async () => {
                                                                     </tbody>
                                                                 </table>
                                                             </span>
-                                                            <table className="missionTable">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>달성</th>
-                                                                        <th>미션</th>
-                                                                        <th>인증</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {/* missionList를 반복하여 각 미션을 출력 */}
-                                                                    {missionList.map((mission, missionIndex) => {
-                                                                        const missionObject = JSON.parse(mission);
-                                                                        missionComplete = missionObject.complete; // missionComplete 변수에 값 할당
-                                                                        const missionName = missionObject.mission;
-                                                                        const missionPhoto = missionObject.photo;
-                                                                        return (
-                                                                            <tr key={missionIndex}>
-                                                                                <td>
-                                                                                    <input
-                                                                                        type="checkbox"
-                                                                                        checked={missionComplete === 1 ? true : false}
-                                                                                        disabled
-                                                                                    />
-                                                                                </td>
-                                                                                <td>{missionName}</td>
-                                                                                <td>{missionPhoto}</td>
-                                                                            </tr>
-                                                                        );
-                                                                    })}
-                                                                </tbody>
-                                                            </table>
+                                                            {memberMissionTables[id] && (
+                                                                <table className="missionTable">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>달성</th>
+                                                                            <th>미션</th>
+                                                                            <th>인증</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {/* missionList를 반복하여 각 미션을 출력 */}
+                                                                        {missionList.map((mission, missionIndex) => {
+                                                                            const missionObject = JSON.parse(mission);
+                                                                            missionComplete = missionObject.complete; // missionComplete 변수에 값 할당
+                                                                            const missionName = missionObject.mission;
+                                                                            const missionPhoto = missionObject.photo;
+                                                                            return (
+                                                                                <tr key={missionIndex}>
+                                                                                    <td>
+                                                                                        <input
+                                                                                            type="checkbox"
+                                                                                            checked={missionComplete === 1 ? true : false}
+                                                                                            disabled
+                                                                                        />
+                                                                                    </td>
+                                                                                    <td>{missionName}</td>
+                                                                                    <td>{missionPhoto}</td>
+                                                                                </tr>
+                                                                            );
+                                                                        })}
+                                                                    </tbody>
+                                                                </table>
+                                                            )}
                                                         </div>
                                                     );
                                                 })
@@ -267,17 +298,16 @@ const handleGroupExit = async () => {
                             <div className="groupCalendar-container">
                                 <div className="groupCalendar">
                                     <div className="groupInfo">
-                                        <table className="table-bordered groupInfoTable">
+                                        <table className="groupInfoTable">
                                             <thead>
                                                 <tr>
                                                     <td>
-                                                        <div className="groupName"></div>
-                                                        {group_name}
+                                                        <div className="groupName">{group_name}</div>
                                                     </td>
                                                     <td>
                                                         <div className="penaltyPerPoint">1 pt = {penaltyPerPoint} 원</div>
                                                     </td>
-                                                    <td style={{ width: '700px' }}></td>
+                                                    <td style={{ width: '500px' }}></td>
                                                     <td>
                                                         <div className="groupOption">설정</div>
                                                     </td>
@@ -285,14 +315,14 @@ const handleGroupExit = async () => {
                                             </thead>
                                         </table>
                                     </div>
-                                    <div className="groupNotice">공지</div>
+                                    <div className="groupNotice"></div>
                                     <table className="table-bordered groupStats">
                                         <thead>
                                             <tr>
                                                 <th></th>
-                                                <th colSpan="7">
+                                                <th colSpan="8">
                                                     <button className="backOfWeek" onClick={() => handleBackOfWeekClick(currentWeekStart, setCurrentWeekStart)}>◀</button>
-                                                    <b>{startOfWeek.getMonth() + 1}/{startOfWeek.getDate()} ~ {endOfWeek.getMonth() + 1}/{endOfWeek.getDate()}</b>
+                                                    <span className="date">{startOfWeek.getMonth() + 1}월 {startOfWeek.getDate()}일 ~ {endOfWeek.getMonth() + 1}월 {endOfWeek.getDate()}일</span>
                                                     <button className="frontOfWeek" onClick={() => handleFrontOfWeekClick(currentWeekStart, setCurrentWeekStart)}>▶</button>
                                                 </th>
                                             </tr>
@@ -321,7 +351,7 @@ const handleGroupExit = async () => {
                                                             <td style={{ width: '200px' }}>{name}</td>
                                                             {datesOfWeek.map((date, dateIndex) => {
                                                                 const currentDate = moment(date).format('YYYY-MM-DD');
-                                                                const today = moment().format('YYYY-MM-DD');
+                                                                const                                                                today = moment().format('YYYY-MM-DD');
                                                                 if (currentDate === today) {
                                                                     return <td key={dateIndex} style={{ width: '100px' }}></td>;
                                                                 }
@@ -360,12 +390,6 @@ const handleGroupExit = async () => {
             </Routes>
             <PointModal showModal={showModal} setShowModal={setShowModal} members={members} penalty_per_point={penaltyPerPoint} />
         </div>
-    );
-}
-
-function toggleMissionList(prevMembers, index) {
-    return prevMembers.map((member, i) =>
-        i === index ? { ...member, showMissionList: !member.showMissionList } : member
     );
 }
 
@@ -418,7 +442,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
                         sameRankCount++;
                     }
                     prevPoint = member.calculatedPoint;
-  
+
                     return (
                         <p key={index}>
                             {rank}등: {member.name}: {member.missionTotalPoint} X {penalty_per_point} = -{member.calculatedPoint}
@@ -435,7 +459,5 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
     );
 }
 
-
-
-
 export default GroupPage;
+
