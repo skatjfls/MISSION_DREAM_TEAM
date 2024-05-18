@@ -77,8 +77,8 @@ function LogIn(props) {
                     <img className="img-cursor" src="/img/cursor.png"></img>
                 </div>
                 <div className="login-right">
-                    <input className="login-input" type="text" placeholder="ID" id="id"></input>
-                    <input className="login-input" type="password" placeholder="PASSWORD" id="password"></input>
+                    <input className="login-input login-inputtext" type="text" placeholder="ID" id="id"></input>
+                    <input className="login-input login-inputtext" type="password" placeholder="PASSWORD" id="password"></input>
                     <button className="login-button" onClick={onClickLogin}>미션하러 가기</button>
                     <div className="login-input">
                     <label>

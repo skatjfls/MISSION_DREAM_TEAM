@@ -57,6 +57,10 @@ function App() {
 
   const handleAddMission = async () => {
     try {
+      if (missionInput.trim() === '') {
+        setMissionInput('');
+        return; // 미션 입력란이 비어 있으면 함수 종료
+      }
       // 새로운 미션 추가
       const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Insert_mission.php', {
         mission: missionInput // 미션 내용
@@ -284,7 +288,7 @@ function CreateGroup(props) {
   return (
     <Modal show={props.create} onHide={() => {props.setCreate(false); setIsSelectPrice(Array(priceArr.length).fill(false));}} className='main-modal modal-xl'>
       <Modal.Header closeButton>
-        <Modal.Title>그룹 생성</Modal.Title>
+        <Modal.Title className='main-modal-title'>그룹 생성</Modal.Title>
       </Modal.Header>
       <Modal.Body className="modal-creategroup">
         <div className='modal-div'>
@@ -375,7 +379,7 @@ function JoinGroup(props) {
   return (
     <Modal show={props.join} onHide={() => props.setJoin(false)} className="main-modal">
       <Modal.Header closeButton>
-        <Modal.Title>그룹 가입</Modal.Title>
+        <Modal.Title className='main-modal-title'>그룹 가입</Modal.Title>
       </Modal.Header>
       <Modal.Body className='modal-joingroup'>
         <input type="text" placeholder="그룹 이름" id="name"></input>
