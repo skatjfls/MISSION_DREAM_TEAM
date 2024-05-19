@@ -4,12 +4,30 @@
 require_once 'dbConfig.php';
 require_once 'DefaultSetting.php';
 
+session_start();
 
-if(!session_id()){
-    session_start();
+$missionLimit = 30;
+
+if(!$_SESSION['id']){
+    echo json_encode(array('error' => '로그인이 필요합니다.'));
+    exit;
+}else{
     $id = $_SESSION['id'];
 }
 
+// 미션 개수 제한
+$sql = "SELECT COUNT(*) FROM missions WHERE id = ?";
+$stmt = $db->prepare($sql);
+$stmt->bind_param('s', $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$missionCount = $row['COUNT(*)'];
+
+if($missionCount >= $missionLimit){
+    echo json_encode(array('error' => '미션은 최대 30개까지만 등록 가능합니다.'));
+    exit;
+}
 
 #Assuming you have the mission name, photo, and complete values stored in variables
 $mission = isset($_POST['mission']) ? $_POST['mission'] : null;
