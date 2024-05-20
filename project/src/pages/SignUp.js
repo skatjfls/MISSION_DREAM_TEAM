@@ -10,14 +10,14 @@ const SignUpForm = () => {
         id: '',
         password: '',
         repassword: '',
-        name: ''
+        nickName: ''  
     });
 
     const [formErrors, setFormErrors] = useState({
         id: '',
         password: '',
         repassword: '',
-        name: ''
+        nickName: ''
     });
 
     const [isIDDuplicateChecked, setIsIDDuplicateChecked] = useState(false);
@@ -43,9 +43,10 @@ const SignUpForm = () => {
             case 'repassword':
                 errors.repassword = value === formData.password ? '' : '비밀번호가 일치하지 않습니다.';
                 break;
-            case 'name':
-                errors.name = value.match(/^([a-zA-Z가-힣]{1,}).{1,9}$/) ? '' : '영문 혹은 한글을 포함하여 2~10자로 작성하여야 합니다.';
+            case 'nickName': 
+                errors.nickName = value.match(/^(?=.*[a-zA-Z가-힣]).{2,10}$/) ? '' : '영문 혹은 한글을 포함하여 2~10자로 작성하여야 합니다.';
                 break;
+            
             default:
                 break;
         }
@@ -55,13 +56,13 @@ const SignUpForm = () => {
 
     useEffect(() => {
         validateForm();
-    }, [isIDDuplicateChecked, isNameDuplicateChecked]);
+    }, [formData, isIDDuplicateChecked, isNameDuplicateChecked]);
 
     const validateForm = () => {
         const idIsValid = formData.id.match(/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{6,20}$/);
         const passwordIsValid = formData.password.match(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,20}$/);
-        const nameIsValid = formData.name.match(/^([a-zA-Z가-힣]{1,}).{1,9}$/);
-        const isValid = idIsValid && passwordIsValid && nameIsValid && formData.id !== '' && formData.password !== '' && formData.name !== '' && formData.repassword === formData.password && isIDDuplicateChecked && isNameDuplicateChecked;
+        const nickNameIsValid = formData.nickName.match(/^((?=.*[a-zA-Z가-힣])[a-zA-Z\d가-힣]{2,10})$/);  
+        const isValid = idIsValid && passwordIsValid && nickNameIsValid && formData.id !== '' && formData.password !== '' && formData.nickName !== '' && formData.repassword === formData.password && isIDDuplicateChecked && isNameDuplicateChecked;
 
         setFormIsValid(isValid);
     };
@@ -75,10 +76,10 @@ const SignUpForm = () => {
                 });
                 console.log(res.data);
                 if (res.data === true) {
-                    alert(`${formData.id}는 이미 사용중인 아이디입니다.`);
+                    alert(`${formData.id}은(는) 이미 사용중인 아이디입니다.`);
                     setIsIDDuplicateChecked(false);
                 } else {
-                    alert(`${formData.id}는 사용 가능한 아이디입니다.`);
+                    alert(`${formData.id}은(는) 사용 가능한 아이디입니다.`);
                     setIsIDDuplicateChecked(true);
                 }
             } catch (error) {
@@ -86,24 +87,24 @@ const SignUpForm = () => {
                 alert('아이디 중복 확인 중 오류가 발생했습니다.');
             }
         } else {
-            alert(`${formData.id}의 입력 조건을 확인해주세요.`);
+            alert(`ID의 입력 조건을 확인해주세요.`);
             setIsIDDuplicateChecked(false);
         }
     };
 
     const handleCheckDuplicateNickName = async () => {
-        const nameValidationResult = formData.name.match(/^([a-zA-Z가-힣]{1,}).{1,9}$/);
+        const nameValidationResult = formData.nickName.match(/^(?=.*[a-zA-Z가-힣]).{2,10}$/);
         if (nameValidationResult) {
             try {
                 const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/NickNameCheck.php', {
-                    nickName: formData.name
+                    nickName: formData.nickName 
                 });
                 console.log(res.data);
                 if (res.data === true) {
-                    alert(`${formData.name}는 이미 사용중인 닉네임입니다.`);
+                    alert(`${formData.nickName}은(는) 이미 사용중인 닉네임입니다.`);
                     setIsNameDuplicateChecked(false);
                 } else {
-                    alert(`${formData.name}는 사용 가능한 닉네임입니다.`);
+                    alert(`${formData.nickName}은(는) 사용 가능한 닉네임입니다.`);
                     setIsNameDuplicateChecked(true);
                 }
             } catch (error) {
@@ -111,24 +112,25 @@ const SignUpForm = () => {
                 alert('닉네임 중복 확인 중 오류가 발생했습니다.');
             }
         } else {
-            alert(`${formData.name}의 입력 조건을 확인해주세요.`);
+            alert(`닉네임의 입력 조건을 확인해주세요.`);
             setIsNameDuplicateChecked(false);
         }
     };
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const idIsValid = formData.id.match(/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{6,20}$/);
         const passwordIsValid = formData.password.match(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,20}$/);
-        const nameIsValid = formData.name.match(/^([a-zA-Z가-힣]{1,}).{1,9}$/);
-        const isValid = idIsValid && passwordIsValid && nameIsValid && formData.id !== '' && formData.password !== '' && formData.name !== '' && formData.repassword === formData.password && isIDDuplicateChecked && isNameDuplicateChecked;
+        const nickNameIsValid = formData.nickName.match(/^([a-zA-Z가-힣]{1,}).{1,9}$/); 
+        const isValid = idIsValid && passwordIsValid && nickNameIsValid && formData.id !== '' && formData.password !== '' && formData.nickName !== '' && formData.repassword === formData.password && isIDDuplicateChecked && isNameDuplicateChecked;
 
         if (isValid) {
             try {
                 const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/SignUp.php', {
                     id: formData.id,
                     password: formData.password,
-                    name: formData.name
+                    name: formData.nickName  
                 });
                 console.log(res.data);
 
@@ -158,8 +160,14 @@ const SignUpForm = () => {
                             <Form.Label className="form-label"><span className='notion'>*</span> ID</Form.Label>
                             <Form.Text className="error-message">{formErrors.id}</Form.Text>
                         </div>
-                        <Form.Control className="form-control" type="text" name="id" placeholder="ID 입력 (6~20자)" value={formData.id} onChange={handleChange} required />
-                        <Button className={`check-duplicate ${isIDDuplicateChecked ? 'button-red' : ''}`} variant="secondary" onClick={handleCheckDuplicateID}><b>ID 중복 확인</b></Button>
+                        <Row>
+                            <Col xs={8}>
+                                <Form.Control className="form-control" type="text" name="id" placeholder="ID 입력 (6~20자)" value={formData.id} onChange={handleChange} required />
+                            </Col>
+                            <Col xs={4}>
+                                <Button className={`check-duplicate ${isIDDuplicateChecked ? 'button-change' : ''}`} variant="secondary" onClick={handleCheckDuplicateID}><b>ID 중복 확인</b></Button>
+                            </Col>
+                        </Row>
                     </Form.Group>
                     <Form.Group className="form-group" controlId="formBasicPassword">
                         <div className="labelAlign">
@@ -178,10 +186,16 @@ const SignUpForm = () => {
                     <Form.Group className="form-group" controlId="formBasicName">
                         <div className="labelAlign">
                             <Form.Label className="form-label"><span className='notion'>*</span> 닉네임</Form.Label>
-                            <Form.Text className="error-message">{formErrors.name}</Form.Text>
+                            <Form.Text className="error-message">{formErrors.nickName}</Form.Text> 
                         </div>
-                        <Form.Control className="form-control" type="text" name="name" placeholder="한글로 입력" value={formData.name} onChange={handleChange} required />
-                        <Button className={`check-duplicate ${isNameDuplicateChecked ? 'button-red' : ''}`} variant="secondary" onClick={handleCheckDuplicateNickName}><b>닉네임 중복 확인</b></Button>
+                        <Row>
+                            <Col xs={8}>
+                                <Form.Control className="form-control" type="text" name="nickName" placeholder="닉네임 입력 (2~10자)" value={formData.nickName} onChange={handleChange} required />
+                            </Col>
+                            <Col xs={4}>
+                                <Button className={`check-duplicate ${isNameDuplicateChecked ? 'button-change' : ''}`} variant="secondary" onClick={handleCheckDuplicateNickName}><b>닉네임 중복 확인</b></Button>
+                            </Col>
+                        </Row>
                     </Form.Group>
                     <Button className="complete" variant="primary" type="submit" disabled={!formIsValid}>
                         가입완료
