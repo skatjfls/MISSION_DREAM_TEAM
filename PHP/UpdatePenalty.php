@@ -20,7 +20,7 @@ if($newPenalty == null){
     exit();
 }
 
-$query = "UPDATE GroupList SET PenaltyPerPoint = '$newPenalty' WHERE group_name = '$groupName'";
+$query = "UPDATE grouplist SET PenaltyPerPoint = '$newPenalty' WHERE group_name = '$groupName'";
 $db->query($query);
 
 echo json_encode(true);
