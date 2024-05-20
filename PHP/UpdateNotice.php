@@ -20,8 +20,9 @@ if($newNotice == null){
     exit();
 }
 
-$query = "UPDATE GroupList SET group_notice = '$newNotice' WHERE group_name = '$groupName'";
+$query = "UPDATE grouplist SET group_notice = '$newNotice' WHERE group_name = '$groupName'";
 $db->query($query);
+
 
 echo json_encode(true);
 

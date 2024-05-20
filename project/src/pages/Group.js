@@ -2,8 +2,8 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
 import React, { useState, useEffect } from 'react';
-import { Nav, Modal, Button, Row, Col } from 'react-bootstrap';
-import Calendar from 'react-calendar';
+import { Modal, Button, Form } from 'react-bootstrap';
+
 import 'react-calendar/dist/Calendar.css';
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import './Group.css';
@@ -20,6 +20,7 @@ function GroupPage(props) {
     const [members, setMembers] = useState([]); // 여기서 members 상태 정의
     const [membersOverall, setMembersOverall] = useState({}); // 멤버별 개인 날짜별 포인트를 객체로 초기화
     const [memberMissionTables, setMemberMissionTables] = useState({}); // 클릭한 멤버의 미션 테이블 표시 상태를 관리하는 객체
+    const [showSettingModal, setShowSettingModal] = useState(false); // 설정 모달 상태
 
     // 세션확인 및 유저 정보 가져오기
     useEffect(() => {
@@ -69,7 +70,6 @@ function GroupPage(props) {
     }, [group_name]);
 
     // 그룹 공지 가져오기
-    // 공지 가져오기
     useEffect(() => {
         const fetchNotice = async () => {
             try {
@@ -168,6 +168,12 @@ function GroupPage(props) {
             [memberId]: !prevState[memberId]
         }));
     };
+
+    // 그룹 설정 모달 열기
+    const handleSettingModalOpen = () => {
+        setShowSettingModal(true);
+    };
+    
 
     // 캘린더
     let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
@@ -309,7 +315,7 @@ function GroupPage(props) {
                                                     </td>
                                                     <td style={{ width: '500px' }}></td>
                                                     <td>
-                                                        <div className="groupOption">설정</div>
+                                                        <div className="groupOption" variant="primary" onClick={handleSettingModalOpen}><img className="imgs" src="/img/gear.png" /></div>
                                                     </td>
                                                 </tr>
                                             </thead>
@@ -389,6 +395,7 @@ function GroupPage(props) {
                 } />
             </Routes>
             <PointModal showModal={showModal} setShowModal={setShowModal} members={members} penalty_per_point={penaltyPerPoint} />
+            <SettingModal showSettingModal={showSettingModal} setShowSettingModal={setShowSettingModal} group_name={group_name} />
         </div>
     );
 }
@@ -406,11 +413,10 @@ function handleFrontOfWeekClick(currentWeekStart, setCurrentWeekStart) {
 }
 
 function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
-    let prevPoint = Number.POSITIVE_INFINITY;
+    let prevPoint = Number.NEGATIVE_INFINITY;
     let rank = 1;
     let sameRankCount = 0;
 
-    // "이번엔 꼴찌가 1등에게 벌금을 몰아주세요!"라는 메시지
     const tipMessage = "이번엔 꼴찌가 1등에게 벌금을 몰아주세요!";
 
     const parsedMembers = members.map((member) => JSON.parse(member));
@@ -420,10 +426,11 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
             calculatedPoint: Math.abs(parseInt(member.missionTotalPoint)) * penalty_per_point,
         }))
         .sort((a, b) => {
-            if (a.calculatedPoint === b.calculatedPoint) {
+            // totalpoint가 적을수록 등수가 높아지도록 오름차순 정렬
+            if (a.missionTotalPoint === b.missionTotalPoint) {
                 return a.name.localeCompare(b.name);
             }
-            return a.calculatedPoint - b.calculatedPoint;
+            return a.missionTotalPoint - b.missionTotalPoint;
         });
 
     return (
@@ -435,17 +442,17 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
             <Modal.Body>
                 <p>{tipMessage}</p>
                 {rankedMembers.map((member, index) => {
-                    if (prevPoint !== member.calculatedPoint) {
+                    if (prevPoint !== member.missionTotalPoint) {
                         rank += sameRankCount;
                         sameRankCount = 1;
                     } else {
                         sameRankCount++;
                     }
-                    prevPoint = member.calculatedPoint;
+                    prevPoint = member.missionTotalPoint;
 
                     return (
                         <p key={index}>
-                            {rank}등: {member.name}: {member.missionTotalPoint} X {penalty_per_point} = -{member.calculatedPoint}
+                            {rank}등: {member.name}: {member.missionTotalPoint}pt X {penalty_per_point} = -{member.calculatedPoint}원
                         </p>
                     );
                 })}
@@ -458,6 +465,73 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
         </Modal>
     );
 }
+
+// 설정 모달 컴포넌트
+function SettingModal({ showSettingModal, setShowSettingModal, group_name, currentNotice, currentPenaltyPerPoint }) {
+    const [newNotice, setNewNotice] = useState(currentNotice || "");
+    const [newPenaltyPerPoint, setNewPenaltyPerPoint] = useState(currentPenaltyPerPoint || 0);
+    
+    const handleClose = () => {
+        // 모달 닫기 전에 입력한 값 초기화하기
+        setNewNotice(currentNotice);
+        setNewPenaltyPerPoint(currentPenaltyPerPoint);
+        setShowSettingModal(false);
+    };
+
+    const handleSaveChanges = async () => {
+        if (!newNotice || !newPenaltyPerPoint) {
+            alert("공지사항과 벌점 당 포인트를 모두 입력해주세요.");
+            return;
+        }
+        try {
+            await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/UpdateNotice.php', {
+                groupName: group_name,
+                newNotice: newNotice
+            });
+            console.log('공지사항 업뎃 성공');
+    
+            await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/UpdatePenalty.php', {
+                groupName: group_name,
+                Penalty: newPenaltyPerPoint
+            });
+            console.log('페널티 업뎃 성공');
+    
+            // 변경 완료 alert
+            alert("그룹 정보 변경이 완료되었습니다.");
+
+            // 페이지 새로고침하기 (정보 반영)
+            window.location.reload();
+        } catch (error) {
+            console.error('변경사항 저장 실패:', error);
+        }
+    };
+    return (
+        <Modal show={showSettingModal} onHide={handleClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>그룹 설정</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form.Group controlId="formGroupNotice">
+                    <Form.Label>공지사항</Form.Label>
+                    <Form.Control type="text" placeholder="새로운 공지사항을 입력하세요" value={newNotice} onChange={(e) => setNewNotice(e.target.value)} />
+                </Form.Group>
+                <Form.Group controlId="formGroupPenalty">
+                    <Form.Label>벌점 당 포인트</Form.Label>
+                    <Form.Control type="number" placeholder="새로운 벌점 당 포인트를 입력하세요" value={newPenaltyPerPoint} onChange={(e) => setNewPenaltyPerPoint(e.target.value)} />
+                </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                    닫기
+                </Button>
+                <Button variant="primary" onClick={handleSaveChanges}>
+                    변경사항 저장
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+}
+
 
 export default GroupPage;
 
