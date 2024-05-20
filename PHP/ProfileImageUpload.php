@@ -94,6 +94,10 @@
         $id = $_SESSION['id'];
         $folderPath = '../project/public/uploads/' . $id . '/profile';
 
+        if(!file_exists($folderPath)){
+            mkdir($folderPath, 0700, true);
+        }
+
         //이전 이미지 서버에서 삭제
         try{
             $sql = "SELECT profile FROM member WHERE id = ?";
@@ -122,11 +126,6 @@
             if (is_uploaded_file($_FILES['imgFile']['tmp_name']) && getimagesize($_FILES['imgFile']['tmp_name']) != false){            
                 try{
                     // DB에 이미지 경로 저장                    
-    
-                    if(!file_exists($folderPath)){
-                        mkdir($folderPath, 0700, true);
-                    }
-    
                     $fileName = md5($name.'/'.time()).'.'.$ext;
                     $filePath = $folderPath . '/' . $fileName;
     

@@ -8,7 +8,7 @@ session_start();
 
 if (!isset($_SESSION['id'])) {
     // Redirect to login page
-    echo json_encode(null);
+    echo json_encode(array('error' => '로그인이 필요합니다.'));
     exit;
 }else{
     $id = $_SESSION['id'];
