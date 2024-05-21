@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
@@ -8,6 +8,7 @@ axios.defaults.withCredentials = true;
 function LogIn(props) {
 
     const navigate = useNavigate();
+    const [userCount, setUserCount] = useState(0);
     const dispatch = useDispatch();
     const userId = useSelector((state) => state.user.userId)
 
@@ -22,6 +23,14 @@ function LogIn(props) {
         .catch(error => {
         console.error('Error fetching user info:', error)
         })
+
+        axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/UserCnt.php')
+        .then(res => {
+            setUserCount(res.data);
+        })
+        .catch(error => {
+            console.error('Error fetching user count:', error)
+        });
     },[]);
 
     const onClickLogin = (event) => {
@@ -71,7 +80,7 @@ function LogIn(props) {
         <div className="Login">
             <div className="login-box">
                 <div className="login-left">
-                    <h1 className='text-title text-today'>오늘의 갓생러는 {props.userCount}명!</h1>
+                    <h1 className='text-title text-today'>오늘의 갓생러는 {userCount}명!</h1>
                     <h3 className='text-title'>로그인으로 미션을 Unlock -☆</h3>
                     <div className='text-today-box'>오늘의 미션은 무엇일까요?</div>
                     <img className="img-cursor" src="/img/cursor.png"></img>
