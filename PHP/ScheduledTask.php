@@ -91,7 +91,7 @@ date_default_timezone_set('Japan');
             $folderPath = "../project/uploads/" . $member['id'] . "/";
             
             while($photo = $photo_list->fetch_assoc()){
-                $filePath = $folderPath . $photo['photo'];
+                $filePath = $photo['photo'];
                 if(file_exists($filePath)){
                     unlink($filePath);}
             }
