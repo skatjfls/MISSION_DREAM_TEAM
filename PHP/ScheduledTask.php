@@ -29,16 +29,20 @@ date_default_timezone_set('Japan');
 
     // Check mission status and update the point status if the mission is uncompleted
     while ($member = $member_list->fetch_assoc()){
+        
+        $member_id = $member['id'];
 
         // 멤버 overall 포인트 업데이트
-try{
-            $sql = "INSERT INTO overall AS o ( id, date, point) VALUES (?, (DATE_SUB(CUR_DATE(), INTERVAL 1 DAY),
-(SELECT COUNT(*) AS uncompleted_mission 
+        try{
+            $sql = "INSERT INTO overall ( id, date, point) 
+            VALUES (?, 
+            (DATE_SUB(CURDATE(), INTERVAL 1 DAY)),
+            (SELECT COUNT(*)
                 FROM missions AS m 
-                WHERE m.complete = 0 AND id = ?
-                GROUP BY m.id))";
+                WHERE m.complete = 0 AND id = ?)
+            )";
             $stmt = $db->prepare($sql);
-            $stmt->bind_param("ss",$member['id'],$member['id']);
+            $stmt->bind_param("ss",$member_id,$member_id);
             $stmt->execute();
         }catch(Exception $e){
             echo json_encode(array("error"=>$e->getMessage()));
@@ -46,36 +50,36 @@ try{
         }
 
 
-        try{
-            $sql = "UPDATE overall AS o
-            JOIN (
-                SELECT m.id, COUNT(*) AS uncompleted_mission 
-                FROM missions AS m 
-                WHERE m.complete = 0 AND id = ?
-                GROUP BY m.id
-            ) AS subquery ON o.id = subquery.id
-            SET o.point = subquery.uncompleted_mission
-            WHERE o.date = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
-            $stmt = $db->prepare($sql);
-            $stmt->bind_param("s", $member['id']);
-            $stmt->execute();
-        }catch(Exception $e){
-            echo json_encode(array("error"=>$e->getMessage()));
-        }
+        // try{
+        //     $sql = "UPDATE overall AS o
+        //     JOIN (
+        //         SELECT m.id, COUNT(*) AS uncompleted_mission 
+        //         FROM missions AS m 
+        //         WHERE m.complete = 0 AND id = ?
+        //         GROUP BY m.id
+        //     ) AS subquery ON o.id = subquery.id
+        //     SET o.point = subquery.uncompleted_mission
+        //     WHERE o.date = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
+        //     $stmt = $db->prepare($sql);
+        //     $stmt->bind_param("s", $member_id);
+        //     $stmt->execute();
+        // }catch(Exception $e){
+        //     echo json_encode(array("error"=>$e->getMessage()));
+        // }
 
         
 
-        // 새로운 overall 생성
-        try{
-            $sql = "INSERT INTO overall (id, date, point)
-            VALUES (?, CURDATE(), 0)";
-            $stmt = $db->prepare($sql);
-            $stmt->bind_param("s", $member['id']);
-            $stmt->execute();
-        }catch(Exception $e){
-            echo json_encode(array("error"=>$e->getMessage()));
-            exit();
-        }
+        // // 새로운 overall 생성
+        // try{
+        //     $sql = "INSERT INTO overall (id, date, point)
+        //     VALUES (?, CURDATE(), 0)";
+        //     $stmt = $db->prepare($sql);
+        //     $stmt->bind_param("s", $member_id);
+        //     $stmt->execute();
+        // }catch(Exception $e){
+        //     echo json_encode(array("error"=>$e->getMessage()));
+        //     exit();
+        // }
 
         // groupmember point_total 업데이트
         try{
@@ -86,7 +90,7 @@ try{
             ) AS subquery ON gm.id = subquery.id
             SET gm.point_total = gm.point_total + subquery.point";
             $stmt = $db->prepare($sql);
-            $stmt->bind_param("s", $member['id']);
+            $stmt->bind_param("s", $member_id);
             $stmt->execute();
         }catch(Exception $e){
             echo json_encode(array("error"=>$e->getMessage()));
@@ -96,16 +100,16 @@ try{
         try{
             $sql = "SELECT photo FROM missions WHERE id = ?";
             $stmt = $db->prepare($sql);
-            $stmt->bind_param("s", $member['id']);
+            $stmt->bind_param("s", $member_id);
             $stmt->execute();
             $photo_list = $stmt->get_result();
 
             $sql = "UPDATE missions SET photo = NULL, complete = 0 WHERE id = ?";
             $stmt = $db->prepare($sql);
-            $stmt->bind_param("s", $member['id']);
+            $stmt->bind_param("s", $member_id);
             $stmt->execute();
 
-            $folderPath = "../project/uploads/" . $member['id'] . "/";
+            $folderPath = "../project/uploads/" . $member_id . "/";
             
             while($photo = $photo_list->fetch_assoc()){
                 $filePath = $photo['photo'];
