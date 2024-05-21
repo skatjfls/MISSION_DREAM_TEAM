@@ -1,6 +1,7 @@
 <?php
 
 require_once("dbConfig.php");
+require_once 'DefaultSetting.php';
 
 $query = "SELECT COUNT(*) FROM member";
 $res = $db->query($query);
