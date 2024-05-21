@@ -19,7 +19,7 @@ $sql = "SELECT PenaltyPerPoint FROM grouplist WHERE groupname = ?";
 $stmt = $db->prepare($sql);
 $stmt->bind_param("s", $group_name);
 $stmt->execute();
-$result = $stmt->get_result()
+$result = $stmt->get_result();
 while($point = $result->fetch_assoc()){
     $penalty_per_point = $point['PenaltyPerPoint'];
 }
@@ -56,8 +56,8 @@ $stmt->close();
 $db->close();
 
 $group_info = array(
-    totalPoint => $total_point
-    memberList => $member_list 
+    "totalPoint" => $total_point,
+    "memberList" => $member_list 
 );
 
 echo json_encode($group_info);
