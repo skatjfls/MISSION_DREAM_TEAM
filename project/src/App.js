@@ -162,7 +162,7 @@ const fetchGroups = async (setGroupList) => {
 
 // Todo 탭
 function ToDo(props) {
-  const inputFileRef = useRef(null);
+  const inputFileRef = useRef([]);
   
   useEffect(() => {
     fetchMissions(props.setMissionList);
@@ -180,13 +180,15 @@ function ToDo(props) {
     }
   };
   
-  const handleImageUpload = async (e, i) => {
+  const handleImageUpload = async (e, missionId) => {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append('imgFile', file);
-    formData.append('mission_idx', props.missionList[i][0])
+    formData.append('mission_idx', missionId)
 
-    console.log(file)
+    for (const pair of formData.entries()) {
+      console.log(`${pair[0]}: ${pair[1]}`);
+    }
     try {
       const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/MissionImageUpload.php', formData, {
         headers: {
@@ -210,8 +212,8 @@ function ToDo(props) {
                 <div className="mission" key={i}>
                   <input type="checkbox"/>
                   <h6 id={ content[2] }>{ content[2] }</h6>
-                  <input type="file" accept="image/*" ref={inputFileRef} style={{ display: 'none' }} onChange={(e) => handleImageUpload(e, i)} />
-                  <img className="imgs" src="/img/camera.png" onClick={() => inputFileRef.current.click()} />
+                  <input type="file" accept="image/*" ref={(el) => (inputFileRef.current[i] = el)} style={{ display: 'none' }} onChange={(e) => handleImageUpload(e, content[0])} />
+                  <img className="imgs" src="/img/camera.png" onClick={() => inputFileRef.current[i].click()} />
                   <button className="button-x" onClick={()=>{ handleDeleteMission(i) }}>X</button>
                 </div>
               )
