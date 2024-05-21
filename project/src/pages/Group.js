@@ -153,7 +153,7 @@ function GroupPage(props) {
                 // 메인 페이지로 이동
                 navigate('/');
             } catch (err) {
-                console.error('그룹 탈퇴 실패!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:', err);
+                console.error('그룹 탈퇴 실패!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 히히히', err);
             }
         } else {
             // 아니오를 클릭한 경우 그냥 무시
@@ -173,7 +173,7 @@ function GroupPage(props) {
     const handleSettingModalOpen = () => {
         setShowSettingModal(true);
     };
-    
+
 
     // 캘린더
     let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
@@ -248,7 +248,7 @@ function GroupPage(props) {
                                                                         <tr>
                                                                             <td>{name}</td>
                                                                             <td>{missionTotalCount - missionNotCompleteCount}/{missionTotalCount}</td>
-                                                                            <td>{missionTotalPoint}pt</td>
+                                                                            <td>-{missionTotalPoint}pt</td> {/*포인트가 0이면 마이너스 안니오게하기 app.js */}
                                                                         </tr>
                                                                     </tbody>
                                                                 </table>
@@ -394,7 +394,7 @@ function GroupPage(props) {
                     </div>
                 } />
             </Routes>
-            <PointModal showModal={showModal} setShowModal={setShowModal} members={members} penalty_per_point={penaltyPerPoint} />
+            <PointModal showModal={showModal} setShowModal={setShowModal} members={members} penalty_per_point={penaltyPerPoint} group_name={group_name} />
             <SettingModal showSettingModal={showSettingModal} setShowSettingModal={setShowSettingModal} group_name={group_name} />
         </div>
     );
@@ -412,7 +412,7 @@ function handleFrontOfWeekClick(currentWeekStart, setCurrentWeekStart) {
     setCurrentWeekStart(nextWeekStart);
 }
 
-function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
+function PointModal({ showModal, setShowModal, members, penalty_per_point, group_name }) {
     let prevPoint = Number.NEGATIVE_INFINITY;
     let rank = 1;
     let sameRankCount = 0;
@@ -433,8 +433,18 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
             return a.missionTotalPoint - b.missionTotalPoint;
         });
 
+    // 포인트 정산 실행 함수
+    const handlePointCalculation = async (group_name, penalty_per_point) => {
+        try {
+            await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Do_cost_settlement.php', { groupName: group_name, penaltyperpoint: penalty_per_point });
+            alert("드림이가 정산에 성공했어요!");
+            // 정산하고나서 페이지 새로고침하기 추가필요
+        } catch (err) {
+            alert("드림이가 정산에 실패했어요...");
+        }
+    };
     return (
-        <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal show={showModal} onHide={() => setShowModal(false)} className='calculateModal modal-xl'>
             <Modal.Header closeButton>
                 <Modal.Title>이번 정산 결과는?</Modal.Title>
                 <Modal.Dialog>1pt={penalty_per_point}원</Modal.Dialog>
@@ -461,10 +471,13 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point }) {
                 <Button variant="secondary" onClick={() => setShowModal(false)}>
                     닫기
                 </Button>
+                <Button variant="primary" onClick={() => handlePointCalculation(group_name, penalty_per_point)}>정산 실행</Button>
+
             </Modal.Footer>
         </Modal>
     );
 }
+
 
 // 설정 모달 컴포넌트
 function SettingModal({ showSettingModal, setShowSettingModal, group_name, currentNotice, currentPenaltyPerPoint }) {
