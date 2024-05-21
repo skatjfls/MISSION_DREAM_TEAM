@@ -136,7 +136,7 @@
     
                     move_uploaded_file($_FILES['imgFile']['tmp_name'], $filePath);
     
-                    echo json_encode(array('success' => '이미지 업로드 성공'),JSON_UNESCAPED_UNICODE);
+                    echo json_encode(true);
     
                 } catch(Exception $e){
                     $error_message = '이미지 업로드 실패' . $e->getMessage();
