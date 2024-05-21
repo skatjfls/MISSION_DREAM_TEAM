@@ -101,7 +101,7 @@
         try{
             $sql = "SELECT photo FROM missions WHERE id = ? AND mission_idx = ?";
             $stmt = $db->prepare($sql);
-            $stmt->bind_param('s', $id, $mission_idx);
+            $stmt->bind_param('si', $id, $mission_idx);
             $stmt->execute();
             $result = $stmt->get_result();
 
