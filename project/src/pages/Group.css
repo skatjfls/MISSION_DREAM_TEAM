@@ -255,4 +255,13 @@ div {
   align-content: center;
 }
 
+.button-camera {
+  border: none;
+  background-color: white;
+}
+
+.photoModal{
+  align-content: center;
+}
+
 
