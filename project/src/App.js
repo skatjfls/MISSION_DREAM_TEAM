@@ -144,7 +144,11 @@ function App() {
 const fetchMissions = async (setMissionList) => {
   try {
       const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/Show_mission.php?`)
-      setMissionList(res.data)
+      const missions = res.data.map(mission => ({
+        ...mission,
+        isCompleted: mission[4] === 1
+      }));
+      setMissionList(missions);
   } catch (error) {
       console.error('Error fetching missions:', error)
   }
@@ -196,6 +200,13 @@ function ToDo(props) {
         },
       });
       console.log('Image uploaded:', res.data);
+      if (res.data == true) {
+        props.setMissionList(prevMissions => {
+          const newMissions = [...prevMissions];
+          newMissions[index].isCompleted = true;
+          return newMissions;
+        });
+      }
       inputFileRef.current[index].value = "";
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -211,11 +222,11 @@ function ToDo(props) {
             props.missionList.map(function(content, i){
               return (
                 <div className="mission" key={i}>
-                  <input type="checkbox"/>
-                  <h6 id={ content[2] }>{ content[2] }</h6>
+                  <input type="checkbox" className="mission-checkbox" checked={content.isCompleted || false} readOnly/>
+                  <h6 id={ content[2] } style={{ textDecoration: content.isCompleted ? 'line-through' : 'none' }}>{ content[2] }</h6>
                   <input type="file" accept="image/*" ref={(el) => (inputFileRef.current[i] = el)} style={{ display: 'none' }} onChange={(e) => handleImageUpload(e, content[0], i)} />
-                  <img className="imgs" src="/img/camera.png" onClick={() => inputFileRef.current[i].click()} />
-                  <button className="button-x" onClick={()=>{ handleDeleteMission(i) }}>X</button>
+                  <img className="imgs" src={content.isCompleted ? "/img/camera_gray.png" : "/img/camera.png"} onClick={() => inputFileRef.current[i].click()} />
+                  <button className={`button-x ${content.isCompleted ? 'gray-button' : ''}`} onClick={()=>{ handleDeleteMission(i) }}>X</button>
                 </div>
               )
             })
