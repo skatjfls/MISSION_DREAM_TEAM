@@ -50,13 +50,14 @@
          * *****************************/
 
         // 변수 정리
+        $fileSize = $_FILES['imgFile']['size'];
         $error = $_FILES['imgFile']['error'];
         $name = explode('.', $_FILES['imgFile']['name'])[0];
-        $type = $size['mime'];
+        $type = $_FILES['imgFile']['type'];
         $ext = explode('/', $type)[1];
-        $size = $size[3]; // "wdith="xxx" height=xxx"
+        //$size = $fileSize[3];  "wdith="xxx" height=xxx"
 
-        $fileSize = $_FILES['imgFile']['size'];
+       
         $fileLimit = 1024 * 1024 * 25; // 25MB
         
         if($fileSize > $fileLimit){
