@@ -154,6 +154,10 @@ div {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.mission-checkbox {
+  accent-color: var(--sub-color3);
+}
+
 .mission h6 {
   width: 80%;
   margin: auto;
@@ -164,6 +168,10 @@ div {
   border: 0;
   background-color: transparent;
   color: var(--main-color);
+}
+
+.gray-button {
+  color: var(--sub-color3);
 }
 
 .empty-message {
