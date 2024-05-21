@@ -180,7 +180,7 @@ function ToDo(props) {
     }
   };
   
-  const handleImageUpload = async (e, missionId) => {
+  const handleImageUpload = async (e, missionId, index) => {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append('imgFile', file);
@@ -196,6 +196,7 @@ function ToDo(props) {
         },
       });
       console.log('Image uploaded:', res.data);
+      inputFileRef.current[index].value = "";
     } catch (error) {
       console.error('Error uploading image:', error);
     }
@@ -212,7 +213,7 @@ function ToDo(props) {
                 <div className="mission" key={i}>
                   <input type="checkbox"/>
                   <h6 id={ content[2] }>{ content[2] }</h6>
-                  <input type="file" accept="image/*" ref={(el) => (inputFileRef.current[i] = el)} style={{ display: 'none' }} onChange={(e) => handleImageUpload(e, content[0])} />
+                  <input type="file" accept="image/*" ref={(el) => (inputFileRef.current[i] = el)} style={{ display: 'none' }} onChange={(e) => handleImageUpload(e, content[0], i)} />
                   <img className="imgs" src="/img/camera.png" onClick={() => inputFileRef.current[i].click()} />
                   <button className="button-x" onClick={()=>{ handleDeleteMission(i) }}>X</button>
                 </div>
