@@ -7,7 +7,9 @@ require_once 'DefaultSetting.php';
 if(!session_id()){
     session_start();
 }
+
 $user_id = $_SESSION['id'];
+
 try{
     // 사용자 이름 찾아서 반환
     $query_name = "SELECT name FROM member WHERE id = '$user_id'"; 
@@ -53,6 +55,27 @@ try{
     }
 }
 
+// 전체 미션 수를 반환하는 코드 추가 ( 김현수 )
+try{
+    $sql = 'SELECT mission FROM missions WHERE id = ?';
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("s", $user_id);
+    $stmt->execute();
+    $sql_mission = $stmt->get_result();
+    $totalMission = array();
+    while($row = $sql_mission->fetch_assoc()){
+        array_push($totalMission, array_values($row));
+    }
+    $totalMissionCnt = count($totalMission);
+    
+}catch(Exception $e){
+    $totalMissionCnt = -9999999;
+}finally{
+    if($stmt != null){
+        $stmt->close();
+    }
+}
+
 try{
     // 그룹 리스트 찾기 
     $sql = "SELECT group_name FROM groupmember WHERE id = ?";
@@ -76,6 +99,7 @@ try{
 $data = array(
     'name' => $user_name,
     'noMissionCnt' => $no_complete_mission_cnt,
+    'totalMissionCnt' => $totalMissionCnt,
     'group_list' => $group_list,
 );
 
