@@ -113,8 +113,12 @@ date_default_timezone_set('Japan');
             
             while($photo = $photo_list->fetch_assoc()){
                 $filePath = $photo['photo'];
-                if(file_exists($filePath)){
-                    unlink($filePath);}
+                if($filePath != null){
+                    if(file_exists($filePath)){
+                        unlink($filePath);
+                    }
+                }
+                
             }
 
         }catch(Exception $e){
