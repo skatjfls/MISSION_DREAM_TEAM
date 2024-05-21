@@ -21,6 +21,8 @@ function GroupPage(props) {
     const [membersOverall, setMembersOverall] = useState({}); // 멤버별 개인 날짜별 포인트를 객체로 초기화
     const [memberMissionTables, setMemberMissionTables] = useState({}); // 클릭한 멤버의 미션 테이블 표시 상태를 관리하는 객체
     const [showSettingModal, setShowSettingModal] = useState(false); // 설정 모달 상태
+    const [showPhotoModal, setShowPhotoModal] = useState(false);
+    const [modalPhotoSrc, setModalPhotoSrc] = useState('');
 
     // 세션확인 및 유저 정보 가져오기
     useEffect(() => {
@@ -174,6 +176,13 @@ function GroupPage(props) {
         setShowSettingModal(true);
     };
 
+    // 인증샷 열기
+    const handlePhotoOpen = (photoPath) => {
+        let absolutePath = photoPath.replace('../project/public/', '');
+        absolutePath = absolutePath.replace('..', '');
+        setModalPhotoSrc(`/${absolutePath}`);
+        setShowPhotoModal(true);
+    };
 
     // 캘린더
     let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
@@ -239,9 +248,9 @@ function GroupPage(props) {
                                                     const error = memberObject.error;
                                                     let missionComplete; // missionComplete 변수를 미리 선언
                                                     return (
-                                                        <div key={index} className="member" onClick={() => toggleMissionTable(id)}>
+                                                        <div key={index} className="member">
                                                             <span>
-                                                                <table className="memberInfo">
+                                                                <table className="memberInfo" onClick={() => toggleMissionTable(id)}>
                                                                     <thead>
                                                                     </thead>
                                                                     <tbody>
@@ -279,7 +288,13 @@ function GroupPage(props) {
                                                                                         />
                                                                                     </td>
                                                                                     <td>{missionName}</td>
-                                                                                    <td>{missionPhoto}</td>
+                                                                                    <td>
+                                                                                        {missionPhoto ? (
+                                                                                            <button className= "button-camera" onClick={() => handlePhotoOpen(missionPhoto)}><img className="imgs" src="/img/camera.png" /></button>
+                                                                                        ) : (
+                                                                                            <button className= "button-camera" disabled><img className="imgs" src="/img/camera_gray.png" /></button>
+                                                                                        )}
+                                                                                    </td>
                                                                                 </tr>
                                                                             );
                                                                         })}
@@ -357,7 +372,7 @@ function GroupPage(props) {
                                                             <td style={{ width: '200px' }}>{name}</td>
                                                             {datesOfWeek.map((date, dateIndex) => {
                                                                 const currentDate = moment(date).format('YYYY-MM-DD');
-                                                                const                                                                today = moment().format('YYYY-MM-DD');
+                                                                const today = moment().format('YYYY-MM-DD');
                                                                 if (currentDate === today) {
                                                                     return <td key={dateIndex} style={{ width: '100px' }}></td>;
                                                                 }
@@ -396,6 +411,7 @@ function GroupPage(props) {
             </Routes>
             <PointModal showModal={showModal} setShowModal={setShowModal} members={members} penalty_per_point={penaltyPerPoint} group_name={group_name} />
             <SettingModal showSettingModal={showSettingModal} setShowSettingModal={setShowSettingModal} group_name={group_name} />
+            <PhotoModal showPhotoModal={showPhotoModal} setShowPhotoModal={setShowPhotoModal} modalPhotoSrc={modalPhotoSrc} />
         </div>
     );
 }
@@ -545,6 +561,27 @@ function SettingModal({ showSettingModal, setShowSettingModal, group_name, curre
     );
 }
 
+function PhotoModal({ showPhotoModal, setShowPhotoModal, modalPhotoSrc }) {
+    const handlePhotoClose = () => {
+        setShowPhotoModal(false);
+    };
+
+    return (
+        <Modal show={showPhotoModal} onHide={handlePhotoClose} className="photoModal modal-m">
+            <Modal.Header closeButton>
+                <Modal.Title>사진 보기</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <img src={modalPhotoSrc} alt="Mission" style={{ width: '100%' }} />
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={handlePhotoClose}>
+                    닫기
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+}
+
 
 export default GroupPage;
-
