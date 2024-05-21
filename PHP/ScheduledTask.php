@@ -31,6 +31,21 @@ date_default_timezone_set('Japan');
     while ($member = $member_list->fetch_assoc()){
 
         // 멤버 overall 포인트 업데이트
+try{
+            $sql = "INSERT INTO overall AS o ( id, date, point) VALUES (?, (DATE_SUB(CUR_DATE(), INTERVAL 1 DAY),
+(SELECT COUNT(*) AS uncompleted_mission 
+                FROM missions AS m 
+                WHERE m.complete = 0 AND id = ?
+                GROUP BY m.id))";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("ss",$member['id'],$member['id']);
+            $stmt->execute();
+        }catch(Exception $e){
+            echo json_encode(array("error"=>$e->getMessage()));
+            exit();
+        }
+
+
         try{
             $sql = "UPDATE overall AS o
             JOIN (
@@ -47,6 +62,8 @@ date_default_timezone_set('Japan');
         }catch(Exception $e){
             echo json_encode(array("error"=>$e->getMessage()));
         }
+
+        
 
         // 새로운 overall 생성
         try{
