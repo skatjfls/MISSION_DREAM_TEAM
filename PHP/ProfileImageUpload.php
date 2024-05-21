@@ -50,13 +50,12 @@
          * *****************************/
 
         // 변수 정리
+        $fileSize = $_FILES['imgFile']['size'];
         $error = $_FILES['imgFile']['error'];
         $name = explode('.', $_FILES['imgFile']['name'])[0];
         $type = $_FILES['imgFile']['type'];
         $ext = explode('/', $type)[1];
-        //$size = $size[3]; "wdith="xxx" height=xxx"
 
-        $fileSize = $_FILES['imgFile']['size'];
         $fileLimit = 1024 * 1024 * 25; // 25MB
         
         
@@ -136,7 +135,7 @@
     
                     move_uploaded_file($_FILES['imgFile']['tmp_name'], $filePath);
     
-                    echo json_encode(array('success' => '이미지 업로드 성공'));
+                    echo json_encode(array('success' => '이미지 업로드 성공', JSON_UNESCAPED_UNICODE));
     
                 } catch(Exception $e){
                     $error_message = '이미지 업로드 실패' . $e->getMessage();
@@ -154,7 +153,7 @@
                 echo json_encode(array('message' => '종료'));
             }
         }catch(Exception $e){
-            echo json_encode(array('error' => '이미지 업로드 중 오류가 발생하였습니다.'));
+            echo json_encode(array('error' => '이미지 업로드 중 오류가 발생하였습니다.', JSON_UNESCAPED_UNICODE));
             exit;
         }
     }

@@ -15,8 +15,10 @@ if (!isset($_SESSION['id'])){
     // Redirect to login page
     echo json_encode(null);
     exit;
+}else{
+    $user_id = $_SESSION['id'];
 }
-$user_id = $_SESSION['id'];
+
 
 // Create a SQL statement to fetch missions from the database
 $sql = "SELECT * FROM missions WHERE id = ?";
@@ -28,17 +30,17 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 // Create an array to store the missions
-$missions = array();
+$missions_list = array();
 while($row = $result->fetch_assoc()){
-    array_push($missions, array_values($row));
+    array_push($missions_list, array_values($row));
 }
 
 // Return the missions as a JSON object
-if (empty($missions)){
+if (empty($missions_list)){
     echo json_encode(null);
     exit;
 }else{
-    echo json_encode($missions);
+    echo json_encode($missions_list);
 }
 
 

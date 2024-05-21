@@ -8,11 +8,15 @@ if (!isset($_SESSION['id'])) {
     // Redirect to login page
     echo json_encode(null);
     exit;
+}else{
+    $user_id = $_SESSION['id'];
 }
 
-// Get the group name and penalty per point
+// Initialize the variables
 $group_name = $_POST['group_name'];
 $penalty_per_point = 0;
+$member_list = array();
+$total_point = 0;
 
 // 설정된 페널티 가져오기
 $sql = "SELECT PenaltyPerPoint FROM grouplist WHERE groupname = ?";
@@ -25,9 +29,6 @@ while($point = $result->fetch_assoc()){
 }
 
 
-// Initialize the variables
-$member_list = array();
-$total_point = 0;
 
 // Get member name and total point in this group
 $sql = "SELECT * FROM groupmember WHERE group_name = ?";
@@ -52,13 +53,14 @@ $stmt = $db->prepare($sql);
 $stmt->bind_param("s", $group_name);
 $stmt->execute();
 
-$stmt->close();
-$db->close();
-
 $group_info = array(
     "totalPoint" => $total_point,
-    "memberList" => $member_list 
+    "memberList" => $member_list,
+    "penaltyPerPoint" => $penalty_per_point
 );
 
 echo json_encode($group_info);
+
+$stmt->close();
+$db->close();
 ?>
