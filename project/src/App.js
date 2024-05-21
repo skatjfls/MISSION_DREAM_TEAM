@@ -23,7 +23,6 @@ function App() {
   let [missionInput, setMissionInput] = useState('');
   let [tap, setTap] = useState(0);
   let navigate = useNavigate();
-  let [userCount] = useState(32)
   
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -130,7 +129,7 @@ function App() {
             }
           </div>
         }/>
-        <Route path="/login" element={ <LogIn userCount={userCount} navigate={navigate}/> }/>
+        <Route path="/login" element={ <LogIn navigate={navigate}/> }/>
         <Route path="/signup" element={ <SignUp/> }/>
         <Route path="/group" element={ <Group/> }/>
         <Route path="*" element={<div>404</div>}/>
@@ -189,7 +188,7 @@ function ToDo(props) {
 
     console.log(file)
     try {
-      const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ImageUpload.php', formData, {
+      const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/MissionImageUpload.php', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -276,7 +275,12 @@ function MyCalendar() {
 
 // 그룹 생성 모달
 function CreateGroup(props) {
-  const [isSelectPrice, setIsSelectPrice] = useState(false);
+  const [isSelectPrice, setIsSelectPrice] = useState(Array(6).fill(false));
+  const [groupName, setGroupName] = useState('');
+  const [notice, setNotice] = useState('');
+  const [groupPassword, setGroupPassword] = useState('');
+  const [validationErrors, setValidationErrors] = useState({});
+  const [validationOrder, setValidationOrder] = useState(['groupName', 'selectedPrice', 'notice', 'groupPassword']);
   const priceArr = ['₩ 0', '₩ 500', '₩ 1,000', '₩ 2,000', '₩ 3,000', '₩ 5,000']
 
   const handleClickPrice = (idx) => {
@@ -285,47 +289,162 @@ function CreateGroup(props) {
     setIsSelectPrice(newArr);
   }
 
+  const handleGroupNameChange = (e) => {
+    const value = e.target.value;
+    setGroupName(value);
+    validateFields('groupName');
+  };
+
+  const handleNoticeChange = (e) => {
+    const value = e.target.value;
+    setNotice(value);
+    validateFields('notice');
+  };
+
+  const handleGroupPasswordChange = (e) => {
+    const value = e.target.value;
+    setGroupPassword(value);
+    validateFields('groupPassword');
+  };
+
+  const validateFields = (changedField) => {
+    validateField(changedField);
+  };
+
+  const validateField = (field) => {
+    const value = getFieldData(field);
+    const errors = { ...validationErrors };
+
+    switch (field) {
+      case 'groupName':
+        errors.groupName = !value ? '그룹 이름을 입력해주세요!' : '';
+        break;
+      case 'selectedPrice':
+        errors.selectedPrice = value === -1 ? '포인트 별 금액을 선택해주세요!' : '';
+        break;
+      case 'notice':
+        errors.notice = !value ? '그룹 공지사항을 작성해주세요!' : '';
+        break;
+      case 'groupPassword':
+        errors.groupPassword = !value ? '비밀번호를 입력해주세요!' : '';
+        break;
+      default:
+        break;
+    }
+
+    setValidationErrors(errors);
+  };
+
+  const getFieldData = (field) => {
+    switch (field) {
+      case 'groupName':
+        return groupName;
+      case 'selectedPrice':
+        return isSelectPrice.indexOf(true);
+      case 'notice':
+        return notice;
+      case 'groupPassword':
+        return groupPassword;
+      default:
+        return null;
+    }
+  };
+
+  const validate = () => {
+    const selectedPriceIndex = isSelectPrice.indexOf(true);
+    validateField('groupName');
+    validateField('selectedPrice');
+    validateField('notice');
+    validateField('groupPassword');
+
+    return Object.values(validationErrors).every(error => error === '');
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!validate()) return;
+
+    const selectedPrice = priceArr[isSelectPrice.indexOf(true)];
+
+    try {
+      const response = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/CreateGroup.php', {
+        group_name: groupName,
+        penaltyPerPoint: selectedPrice,
+        group_notice: notice,
+        group_password: groupPassword
+      });
+
+      if (response.data.success) {
+        props.setCreate(false);
+        setGroupName('');
+        setNotice('');
+        setGroupPassword('');
+        setIsSelectPrice(Array(priceArr.length).fill(false));
+        setValidationErrors({});
+      } else {
+        setValidationErrors({ server: response.data.message });
+      }
+    } catch (error) {
+      setValidationErrors({ server: '서버와의 통신 중 오류가 발생했습니다.' });
+    }
+  };
+
   return (
-    <Modal show={props.create} onHide={() => {props.setCreate(false); setIsSelectPrice(Array(priceArr.length).fill(false));}} className='main-modal modal-xl'>
+    <Modal show={props.create}
+    onHide={() => {
+      props.setCreate(false);
+      setIsSelectPrice(Array(priceArr.length).fill(false));
+      setGroupName('');
+      setNotice('');
+      setGroupPassword('');
+      setValidationErrors({});
+      }}
+      className='main-modal modal-xl'>
       <Modal.Header closeButton>
         <Modal.Title className='main-modal-title'>그룹 생성</Modal.Title>
       </Modal.Header>
       <Modal.Body className="modal-creategroup">
-        <div className='modal-div'>
-          <h5>그룹 이름</h5>
-          <input className="input-groupname" type="text" placeholder="그룹 이름을 작성해주세요!"></input>
-          <p>이미 존재하는 이름입니다.</p>
-        </div>
-        <div className='modal-div'>
-          <h5>포인트 별 금액</h5>
-          <div>
-            <div>
-              {priceArr.map((content, i) => {
-                return(
-                  <button key={i} className={`button-price ${isSelectPrice[i]? 'button-price-clicked' : ''}`} onClick={() => handleClickPrice(i) }>{ content }</button>
-                );
-              })}
-            </div>
-            <div className='modal-p'>
-              <p>동기부여를 위해 포인트별 금액을 설정해보세요! 벌금처럼 걷어서 회식이나 1/n을 해도 좋고, 꼴등이 1등에게 쏘기도 좋아요!</p>
-              <p>벌금이 부담스럽다면 0원으로 설정 후 상벌을 정해보세요.</p>
-            </div>
+        <form onSubmit={handleSubmit}>
+          <div className='modal-div'>
+            <h5>그룹 이름</h5>
+            <input className="input-groupname" type="text" placeholder="그룹 이름을 작성해주세요!" value={groupName} onChange={handleGroupNameChange}></input>
+            {validationErrors.groupName && <p className='error-message'>{validationErrors.groupName}</p>}
           </div>
-        </div>
-        <div className='modal-div'>
-          <h5>그룹 공지사항</h5>
-          <textarea placeholder="그룹 내에서 지켜야 할 규칙을 작성해주세요."></textarea>
-        </div>
-        <div className='modal-div'>
-          <h5>가입 비밀번호</h5>
-          <input className="input-grouppw" type="password" placeholder="비밀번호를 숫자로 작성해주세요!"></input>
-        </div>
+          <div className='modal-div'>
+            <h5>포인트 별 금액</h5>
+            <div>
+              <div>
+                {priceArr.map((content, i) => {
+                  return(
+                    <button key={i} className={`button-price ${isSelectPrice[i]? 'button-price-clicked' : ''}`} onClick={() => handleClickPrice(i) }>{ content }</button>
+                  );
+                })}
+              </div>
+              <div className='modal-p'>
+                <p>동기부여를 위해 포인트별 금액을 설정해보세요! 벌금처럼 걷어서 회식이나 1/n을 해도 좋고, 꼴등이 1등에게 쏘기도 좋아요!</p>
+                <p>벌금이 부담스럽다면 0원으로 설정 후 상벌을 정해보세요.</p>
+              </div>
+            </div>
+            {validationErrors.selectedPrice && <p className='error-message'>{validationErrors.selectedPrice}</p>}
+          </div>
+          <div className='modal-div'>
+            <h5>그룹 공지사항</h5>
+            <textarea placeholder="그룹 내에서 지켜야 할 규칙을 작성해주세요." value={notice} onChange={handleNoticeChange}></textarea>
+            {validationErrors.notice && <p className='error-message'>{validationErrors.notice}</p>}
+          </div>
+          <div className='modal-div'>
+            <h5>가입 비밀번호</h5>
+            <input className="input-grouppw" type="password" placeholder="비밀번호를 숫자로 작성해주세요!" value={groupPassword} onChange={handleGroupPasswordChange}></input>
+            {validationErrors.groupPassword && <p className='error-message'>{validationErrors.groupPassword}</p>}
+          </div>
+          <Modal.Footer>
+            <Button type='submit' className="button-group" variant="secondary">
+              그룹 만들기
+            </Button>
+          </Modal.Footer>
+        </form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button className="button-group" variant="secondary">
-          그룹 만들기
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 }
