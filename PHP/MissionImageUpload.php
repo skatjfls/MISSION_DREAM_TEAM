@@ -126,7 +126,7 @@
             if (is_uploaded_file($_FILES['imgFile']['tmp_name']) && getimagesize($_FILES['imgFile']['tmp_name']) != false){            
                 try{
                     // DB에 이미지 경로 저장
-                    $fileName = md5($name.'/'.time()).'.'.$ext;
+                    $fileName = md5($name.'/'.time().'/'.mt_rand()).'.'.$ext;
                     $filePath = $folderPath . '/' . $fileName;
     
                     $sql = "UPDATE missions SET photo = ?, complete = 1 WHERE id = ? AND mission_idx = ?";
@@ -136,11 +136,11 @@
     
                     move_uploaded_file($_FILES['imgFile']['tmp_name'], $filePath);
     
-                    echo json_encode(array('success' => '이미지 업로드 성공', JSON_UNESCAPED_UNICODE));
+                    echo json_encode(array('success' => '이미지 업로드 성공'),JSON_UNESCAPED_UNICODE);
     
                 } catch(Exception $e){
                     $error_message = '이미지 업로드 실패' . $e->getMessage();
-                    echo json_encode(array('error' => $error_message));
+                    echo json_encode(array('error' => $error_message), JSON_UNESCAPED_UNICODE);
                     exit;
     
                 }finally{
