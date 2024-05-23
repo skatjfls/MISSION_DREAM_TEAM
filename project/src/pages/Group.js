@@ -3,7 +3,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-
 import 'react-calendar/dist/Calendar.css';
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import './Group.css';
@@ -216,7 +215,7 @@ function GroupPage(props) {
                             <div>
                                 <h6>{userName}</h6>
                                 <h6>{point} point</h6>
-                                <img className="imgs" src="/img/gear.png" />
+                                <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png" />
                                 <button className="button-logout" onClick={() => {
                                     axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
                                         .then(res => {
