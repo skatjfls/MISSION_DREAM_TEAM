@@ -10,6 +10,7 @@ import './App.css';
 import Group from './pages/Group.js';
 import LogIn from './pages/LogIn.js';
 import SignUp from './pages/SignUp.js';
+import UpdateInfo from './pages/UpdateInfo.js';
 axios.defaults.withCredentials = true;
 
 function App() {
@@ -45,7 +46,8 @@ function App() {
         const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
         const userData = res.data;
         setUserName(userData.name);
-        const string = userData.noMissionCnt !== 0 ? '-' + userData.noMissionCnt : userData.noMissionCnt.toString();
+        const missionCnt = userData.totalMissionCnt - userData.noMissionCnt
+        const string = missionCnt  + ' / ' + userData.totalMissionCnt;
         setPoint(string);
       } catch (error) {
         console.error('Error fetching user info:', error);
@@ -91,7 +93,7 @@ function App() {
               <img className="img-logo" onClick={()=>{navigate('/')}} src="/img/dream.png"/>
               <div>
                 <h6>{ userName }</h6>
-                <h6>{ point } point</h6>
+                <h6>오늘의 미션 : { point }</h6>
                 <img className="imgs" src="/img/gear.png"/>
                 <button className="button-logout" onClick={()=>{
                   axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
@@ -132,6 +134,7 @@ function App() {
         <Route path="/login" element={ <LogIn navigate={navigate}/> }/>
         <Route path="/signup" element={ <SignUp/> }/>
         <Route path="/group" element={ <Group/> }/>
+        <Route path="/updateinfo" element={ <UpdateInfo/> }/>
         <Route path="*" element={<div>404</div>}/>
       </Routes>
       <CreateGroup create={create} setCreate={setCreate}/>
@@ -157,7 +160,6 @@ const fetchMissions = async (setMissionList) => {
 const fetchGroups = async (setGroupList) => {
   try {
       const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroup.php?`)
-      console.log(res.data)
       setGroupList(res.data)
   } catch (error) {
       console.error('Error fetching missions:', error)
@@ -277,9 +279,6 @@ function MyCalendar() {
         value={value}
         formatDay={(locale, date) => moment(date).format("DD")}
       ></Calendar>
-      {
-        console.log(moment(value))
-      }
       <div>
         {moment(value).format("YYYY년 MM월 DD일")}
       </div>
