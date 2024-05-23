@@ -1,0 +1,132 @@
+:root {
+    --gra-color1: #FAF29D;
+    --gra-color2: #F5FFDB;
+    --gra-color3: #CCFFE6;
+    --main-color: #87F6A6;
+    --sub-color1: #EAFFF4;
+    --sub-color2: #30C88B;
+    --sub-color3: #D5D5D5;
+    --sub-color4: #808080;
+    --sub-color5: #FF4D00;
+    --gray-color: #EDEDED;
+}
+
+@font-face {
+    font-family: "font_tennine";        
+    src: url("../font/tennine.TTF"); 
+}
+
+@font-face {
+    font-family: "font_NanumSquare";        
+    src: url("../font/NanumSquare.ttf"); 
+}
+
+.background{
+    background: linear-gradient(to right, var(--gra-color3), var(--gra-color2), var(--gra-color1));
+    width: 100%;
+    height: 100vh;
+    padding: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input {
+    background-color: rgb(255, 255, 255);
+    width: 650px;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.1);
+    font-size: 20px;
+    font-family: "font_NanumSquare";
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.signUpTitle {
+    font-size: 50px;
+    font-family: "font_tennine";
+    margin: 0px auto;
+}
+
+.signUpExplain {
+    font-size: 20px;
+    font-family: "font_NanumSquare";
+    margin: 0px auto;
+}
+
+.form-label{
+    font-weight: bold;
+}
+
+.form-control {
+    box-shadow: inset 4px 4px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    padding-left: 20px;
+}
+
+.form-control::placeholder {
+    color: #AEAEAE;
+}
+
+.error-message {
+    font-size: 12px;
+    color: var(--sub-color5);
+    font-weight: bold;
+    text-align: right;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.form-group {
+    width: 100%;
+    margin: 20px 0;
+}
+
+.labelAlign {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 500px;
+}
+
+.notion {
+    color: var(--sub-color5);
+}
+
+.complete:disabled {
+    background-color: var(--sub-color3);
+}
+
+.complete {
+    background-color: var(--main-color);
+    width: 300px;
+    color: black;
+    border: none;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    font-weight: bold;
+    height: 50px;
+    font-size: 25px;
+}
+
+.button-change {
+    background-color: var(--main-color) !important;
+    border-color: var(--main-color);
+    color: black;
+}
+
+
+.check-duplicate {
+    width: 100%;
+    height: 100%;
+    font-size: 18px;
+    background-color: var(--sub-color3);
+    border: none;
+}
