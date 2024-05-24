@@ -436,7 +436,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
 
     const handlePointCalculation = async (group_name, penalty_per_point) => {
         try {
-            await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Do_cost_settlement.php', { groupName: group_name });
+            await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Do_cost_settlement.php', { group_name: group_name });
             console.log(group_name);
             alert("드림이가 정산에 성공했어요!");
             window.location.reload();
