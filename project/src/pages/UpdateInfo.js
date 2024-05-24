@@ -26,13 +26,36 @@ const UpdateInfoForm = () => {
     const [formIsValid, setFormIsValid] = useState(false);
     const [isLoggedIN, setIsLoggedIN] = useState(false);
     const [showNewPasswordFields, setShowNewPasswordFields] = useState(false);
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const userRes = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
+                const userInfo = userRes.data;
+                setUserName(userInfo.name);
+                setFormData(prevData => ({ ...prevData, nickName: userInfo.name }));
+                const idRes = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetId.php');
+                const userId = idRes.data;
+                setFormData(prevData => ({ ...prevData, id: userId }));
+                setIsNameDuplicateChecked(true);
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
+        };
+        fetchUserInfo();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     
-        if (name === 'nickName' && value.trim() === '') {
-            setIsNameDuplicateChecked(true);
+        if (name === 'nickName') {
+            if (value === userName) {
+                setIsNameDuplicateChecked(true); // 기존 닉네임으로 설정 시 자동 통과
+            } else {
+                setIsNameDuplicateChecked(false); // 닉네임이 변경되면 중복 확인 필요
+            }
         }
     
         validateField(name, value);
@@ -74,10 +97,13 @@ const UpdateInfoForm = () => {
     };
       
     const handleCheckDuplicateNickName = async () => {
-        if (!formData.nickName) {
-            setIsNameDuplicateChecked(true); // 비어있는 경우 바로 유효하다고 판단
+        // 입력된 닉네임이 기존의 닉네임과 같은지 확인하고 같으면 자동 중복 통과
+        if (formData.nickName === userName) {
+            alert(`${formData.nickName}은(는) 현재 닉네임으로, 사용 가능합니다.`);
+            setIsNameDuplicateChecked(true);
             return;
         }
+    
         const nameValidationResult = formData.nickName && formData.nickName.match(/^(?=.*[a-zA-Z가-힣]).{2,10}$/);
         if (nameValidationResult) {
             try {
@@ -95,6 +121,7 @@ const UpdateInfoForm = () => {
             } catch (error) {
                 console.error('Error checking duplicate:', error);
                 alert('닉네임 중복 확인 중 오류가 발생했습니다.');
+                setIsNameDuplicateChecked(false);
             }
         } else {
             alert(`닉네임의 입력 조건을 확인해주세요.`);
@@ -119,6 +146,7 @@ const UpdateInfoForm = () => {
 
                 if (res.data === true) {
                     alert('회원정보 수정에 성공했습니다.');
+                    console.log(formData.nickName, formData.CurPassword, formData.newPassword);
                     navigate('/login');
                 } else {
                     alert('회원정보 수정에 실패했습니다.');
@@ -149,13 +177,13 @@ const UpdateInfoForm = () => {
 
         const fetchUserInfo = async () => {
             try {
-                const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetId.php');
+                const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
                 const userData = res.data;
-                console.log("아이디 불러오기 성공", userData);
-                setFormData({ ...formData, id: userData });
+                setUserName(userData.name);  // userName 상태 업데이트
+                setFormData(prevData => ({ ...prevData, nickName: userData.name }));  // formData에 nickName 초기화
+                setIsNameDuplicateChecked(true);  // 이미 사용 중인 nickName으로 초기화
             } catch (error) {
                 console.error('Error fetching user info:', error);
-                console.log("아이디 불러오기 실패");
             }
         };
 
@@ -175,51 +203,51 @@ const UpdateInfoForm = () => {
                             <Form.Text className="error-message">{formErrors.id}</Form.Text>
                         </div>
                         <Form.Control
-                            className="form-control" type="text" name="id" placeholder={formData.id} onChange={handleChange} disabled/>
+                            className="form-control" type="text" name="id" value={formData.id} onChange={handleChange} disabled/>
                     </Form.Group>
                     <Form.Group className="form-group" controlId="formBasicPassword">
                         <div className="labelAlign">
                             <Form.Label className="form-label"><span className='notion'>*</span> 기존 Password</Form.Label>
                             <Form.Text className="error-message">{formErrors.CurPassword}</Form.Text>
-                            </div>
+                        </div>
                             <Form.Control className="form-control" type="password" name="CurPassword" placeholder="기존 PW 입력 (8~20자)" value={formData.CurPassword} onChange={handleChange} required />
-                        </Form.Group>
-                        <Button variant="secondary" onClick={() => setShowNewPasswordFields(!showNewPasswordFields)} className="mb-3">
-                            비밀번호 바꾸기
-                        </Button>
-                        {showNewPasswordFields && (
-                            <Form.Group className="form-group" controlId="formBasicConfirmPassword">
-                                <div className="labelAlign">
-                                    <Form.Label className="form-label"> 새 Password</Form.Label>
-                                    <Form.Text className="error-message">{formErrors.newPassword}</Form.Text>
-                                </div>
+                    </Form.Group>
+                    <Button variant="secondary" onClick={() => setShowNewPasswordFields(!showNewPasswordFields)} className="mb-3">
+                        비밀번호 바꾸기
+                    </Button>
+                    {showNewPasswordFields && (
+                        <>
+                            <Form.Group className="form-group" controlId="formBasicNewPassword">
+                                <Form.Label className={`form-label ${showNewPasswordFields ? 'visible' : ''}`}>새 Password</Form.Label>
                                 <Form.Control className="form-control" type="password" name="newPassword" placeholder="새 PW 입력 (8~20자)" value={formData.newPassword} onChange={handleChange} />
-                                <div className="labelAlign">
-                                    <Form.Label className="form-label">비밀번호 재입력</Form.Label>
-                                    <Form.Text className="error-message">{formErrors.repassword}</Form.Text>
-                                </div>
-                                <Form.Control className="form-control" type="password" name="repassword" placeholder="새 PW 재입력" value={formData.repassword} onChange={handleChange} />
+                                <Form.Text className="error-message">{formErrors.newPassword}</Form.Text>
                             </Form.Group>
-                        )}
-                        <Form.Group className="form-group" controlId="formBasicName">
-                            <div className="labelAlign">
-                                <Form.Label className="form-label"> 새 닉네임</Form.Label>
-                                <Form.Text className="error-message">{formErrors.nickName}</Form.Text>
-                            </div>
-                            <Row>
-                                <Col xs={8}>
-                                    <Form.Control className="form-control" type="text" name="nickName" placeholder="닉네임 입력 (2~10자)" value={formData.nickName} onChange={handleChange} />
-                                </Col>
-                                <Col xs={4}>
-                                    <Button className={`check-duplicate ${isNameDuplicateChecked ? 'button-change' : ''}`} variant="secondary" onClick={handleCheckDuplicateNickName}><b>닉네임 중복 확인</b></Button>
-                                </Col>
-                            </Row>
-                        </Form.Group>
-                        <Button className="complete" variant="primary" type="submit" disabled={!formIsValid}> 수정완료 </Button>
-                    </Form>
-                </div>
+                            <Form.Group className="form-group" controlId="formBasicReNewPassword">
+                                <Form.Label className={`form-label ${showNewPasswordFields ? 'visible' : ''}`}>비밀번호 재입력</Form.Label>
+                                <Form.Control className="form-control" type="password" name="repassword" placeholder="새 PW 재입력" value={formData.repassword} onChange={handleChange} />
+                                <Form.Text className="error-message">{formErrors.repassword}</Form.Text>
+                            </Form.Group>
+                        </>
+                    )}
+                    <Form.Group className="form-group" controlId="formBasicNickName">
+                        <div className="labelAlign">
+                            <Form.Label className="form-label"> 새 닉네임</Form.Label>
+                            <Form.Text className="error-message">{formErrors.nickName}</Form.Text>
+                        </div>
+                        <Row>
+                            <Col xs={8}>
+                                <Form.Control className="form-control" type="text" name="nickName" value={formData.nickName} onChange={handleChange} />
+                            </Col>
+                            <Col xs={4}>
+                                <Button className={`check-duplicate ${isNameDuplicateChecked ? 'button-change' : ''}`} variant="secondary" onClick={handleCheckDuplicateNickName}><b>닉네임 중복 확인</b></Button>
+                            </Col>
+                        </Row>
+                    </Form.Group>
+                    <Button className="complete" variant="primary" type="submit" disabled={!formIsValid}>수정완료 </Button>
+                </Form>
             </div>
-        );
-    };
+        </div>
+    );
+};
 
-    export default UpdateInfoForm;
+export default UpdateInfoForm;

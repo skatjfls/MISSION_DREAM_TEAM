@@ -130,3 +130,7 @@
     background-color: var(--sub-color3);
     border: none;
 }
+
+.form-label.visible {
+    visibility: visible; /* 또는 다른 필요한 스타일 */
+}
