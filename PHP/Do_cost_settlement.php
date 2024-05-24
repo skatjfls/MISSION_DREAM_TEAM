@@ -19,7 +19,7 @@ $member_list = array();
 $total_point = 0;
 
 // 설정된 페널티 가져오기
-$sql = "SELECT PenaltyPerPoint FROM grouplist WHERE groupname = ?";
+$sql = "SELECT PenaltyPerPoint FROM grouplist WHERE group_name = ?";
 $stmt = $db->prepare($sql);
 $stmt->bind_param("s", $group_name);
 $stmt->execute();
