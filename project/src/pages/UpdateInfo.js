@@ -132,21 +132,24 @@ const UpdateInfoForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         validateForm();
-
+    
         console.log('Form submission status: ', formIsValid);
-
+    
         if (formIsValid) {
             try {
+                // 새 비밀번호가 비어있는 경우 null을 전달하고, 그렇지 않은 경우 실제 값을 전달
+                const newPasswordToSend = formData.newPassword === '' ? null : formData.newPassword;
+    
                 const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/UpdateInfo.php', {
                     newName: formData.nickName,
                     CurPassword: formData.CurPassword,
-                    newPassword: formData.newPassword
+                    newPassword: newPasswordToSend
                 });
                 console.log(res.data);
-
+    
                 if (res.data === true) {
                     alert('회원정보 수정에 성공했습니다.');
-                    console.log(formData.nickName, formData.CurPassword, formData.newPassword);
+                    console.log(formData.nickName, formData.CurPassword, newPasswordToSend);
                     navigate('/login');
                 } else {
                     alert('회원정보 수정에 실패했습니다.');
