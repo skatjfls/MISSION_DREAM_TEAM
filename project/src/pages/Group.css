@@ -262,6 +262,26 @@ div {
 
 .photoModal{
   align-content: center;
+  font-family: "font_tennine";
 }
+
+.modalTitle{
+  font-family: "font_tennine";
+  font-size: 50px;
+}
+
+.tipMessage{
+  font-family: "font_tennine";
+  color: #8a8a8a;
+  text-align: center; /* 가운데 정렬 */
+    left: 50%; /* 가로 중앙 정렬을 위해 왼쪽 위치를 화면 가로 중앙으로 이동 */
+}
+
+.table-responsive{
+  font-family: "font_NanumSquare";
+  font-weight: bold;
+}
+
+
 
 

@@ -194,6 +194,24 @@ const UpdateInfoForm = () => {
         fetchUserInfo();
     }, []);
 
+    // 계정 탈퇴
+    const handleMemberExit = async () => {
+        const confirmed = window.confirm("탈퇴하면 머리카락 3가닥 빠져요");
+        if (confirmed) {
+            try {
+                await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ExitMember.php');
+                alert("잘가요");
+                // 로그인창으로 이동
+                navigate('/login')
+            } catch (err) {
+                console.error('탈퇴 실패!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 히히히', err);
+            }
+        } else {
+            // 아니오를 클릭한 경우 그냥 무시
+            console.log("탈퇴안해줄거지롱");
+        }
+    };
+
     return (
         <div className="background">
             <div className="input">
@@ -248,6 +266,7 @@ const UpdateInfoForm = () => {
                     </Form.Group>
                     <Button className="complete" variant="primary" type="submit" disabled={!formIsValid}>수정완료 </Button>
                 </Form>
+                <button className="button-exit" onClick={handleMemberExit}>서비스 탈퇴하기</button>
             </div>
         </div>
     );

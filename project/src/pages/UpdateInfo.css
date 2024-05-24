@@ -134,3 +134,8 @@
 .form-label.visible {
     visibility: visible; /* 또는 다른 필요한 스타일 */
 }
+
+.button-exit{
+    background-color: white;
+    font-size: 10px;
+}
