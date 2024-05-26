@@ -133,11 +133,11 @@ function App() {
         }/>
         <Route path="/login" element={ <LogIn navigate={navigate}/> }/>
         <Route path="/signup" element={ <SignUp/> }/>
-        <Route path="/group" element={ <Group/> }/>
+        <Route path="/group/*" element={ <Group/> }/>
         <Route path="/updateinfo" element={ <UpdateInfo/> }/>
         <Route path="*" element={<div>404</div>}/>
       </Routes>
-      <CreateGroup create={create} setCreate={setCreate}/>
+      <CreateGroup create={create} setCreate={setCreate} setGroupList={setGroupList}/>
       <JoinGroup join={join} setJoin={setJoin} setGroupList={setGroupList}/>
     </div>
   );
@@ -286,134 +286,77 @@ function MyCalendar() {
   );
 }
 
-// 그룹 생성 모달
+
 function CreateGroup(props) {
   const [isSelectPrice, setIsSelectPrice] = useState(Array(6).fill(false));
   const [groupName, setGroupName] = useState('');
-  const [notice, setNotice] = useState('');
+  const [groupNotice, setGroupNotice] = useState('');
   const [groupPassword, setGroupPassword] = useState('');
-  const [validationErrors, setValidationErrors] = useState({});
-  const [validationOrder, setValidationOrder] = useState(['groupName', 'selectedPrice', 'notice', 'groupPassword']);
-  const priceArr = ['₩ 0', '₩ 500', '₩ 1,000', '₩ 2,000', '₩ 3,000', '₩ 5,000']
+  const [isGroupNameUnique, setIsGroupNameUnique] = useState(true);
+  const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const priceArr = ['₩ 0', '₩ 500', '₩ 1,000', '₩ 2,000', '₩ 3,000', '₩ 5,000'];
 
+  useEffect(() => {
+    const checkGroupName = async () => {
+      if (groupName) {
+        try {
+          const response = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/GroupNameCheck.php', { groupName });
+          setIsGroupNameUnique(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+    checkGroupName();
+  }, [groupName]);
+
+  useEffect(() => {
+    const regex = /^[0-9]{4,10}$/;
+    setIsPasswordValid(groupPassword === '' || regex.test(groupPassword));
+  }, [groupPassword]);
+
+  useEffect(() => {
+    if (!props.create) {
+      setGroupName('');
+      setGroupNotice('');
+      setGroupPassword('');
+      setIsSelectPrice(Array(6).fill(false));
+      setIsGroupNameUnique(true);
+      setIsPasswordValid(true);
+    }
+  }, [props.create]);
+  
   const handleClickPrice = (idx) => {
     const newArr = Array(priceArr.length).fill(false);
     newArr[idx] = true;
     setIsSelectPrice(newArr);
-  }
-
-  const handleGroupNameChange = (e) => {
-    const value = e.target.value;
-    setGroupName(value);
-    validateFields('groupName');
-  };
-
-  const handleNoticeChange = (e) => {
-    const value = e.target.value;
-    setNotice(value);
-    validateFields('notice');
-  };
-
-  const handleGroupPasswordChange = (e) => {
-    const value = e.target.value;
-    setGroupPassword(value);
-    validateFields('groupPassword');
-  };
-
-  const validateFields = (changedField) => {
-    validateField(changedField);
-  };
-
-  const validateField = (field) => {
-    const value = getFieldData(field);
-    const errors = { ...validationErrors };
-
-    switch (field) {
-      case 'groupName':
-        errors.groupName = !value ? '그룹 이름을 입력해주세요!' : '';
-        break;
-      case 'selectedPrice':
-        errors.selectedPrice = value === -1 ? '포인트 별 금액을 선택해주세요!' : '';
-        break;
-      case 'notice':
-        errors.notice = !value ? '그룹 공지사항을 작성해주세요!' : '';
-        break;
-      case 'groupPassword':
-        errors.groupPassword = !value ? '비밀번호를 입력해주세요!' : '';
-        break;
-      default:
-        break;
-    }
-
-    setValidationErrors(errors);
-  };
-
-  const getFieldData = (field) => {
-    switch (field) {
-      case 'groupName':
-        return groupName;
-      case 'selectedPrice':
-        return isSelectPrice.indexOf(true);
-      case 'notice':
-        return notice;
-      case 'groupPassword':
-        return groupPassword;
-      default:
-        return null;
-    }
-  };
-
-  const validate = () => {
-    const selectedPriceIndex = isSelectPrice.indexOf(true);
-    validateField('groupName');
-    validateField('selectedPrice');
-    validateField('notice');
-    validateField('groupPassword');
-
-    return Object.values(validationErrors).every(error => error === '');
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!validate()) return;
-
-    const selectedPrice = priceArr[isSelectPrice.indexOf(true)];
+    const selectedPriceString = priceArr[isSelectPrice.indexOf(true)];
+    const selectedPrice = parseInt(selectedPriceString.replace(/[^\d]/g, ''), 10);
 
     try {
       const response = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/CreateGroup.php', {
         group_name: groupName,
         penaltyPerPoint: selectedPrice,
-        group_notice: notice,
+        group_notice: groupNotice,
         group_password: groupPassword
       });
-
-      if (response.data.success) {
+      if (response.data == true) {
+        alert('[ '+groupName+' ] 그룹이 생성되었습니다!')
         props.setCreate(false);
-        setGroupName('');
-        setNotice('');
-        setGroupPassword('');
-        setIsSelectPrice(Array(priceArr.length).fill(false));
-        setValidationErrors({});
-      } else {
-        setValidationErrors({ server: response.data.message });
+        fetchGroups(props.setGroupList);
       }
     } catch (error) {
-      setValidationErrors({ server: '서버와의 통신 중 오류가 발생했습니다.' });
+      console.log(error);
     }
   };
 
   return (
-    <Modal show={props.create}
-    onHide={() => {
-      props.setCreate(false);
-      setIsSelectPrice(Array(priceArr.length).fill(false));
-      setGroupName('');
-      setNotice('');
-      setGroupPassword('');
-      setValidationErrors({});
-      }}
-      className='main-modal modal-xl'>
+    <Modal show={props.create} onHide={() => props.setCreate(false)} className='main-modal modal-xl'>
       <Modal.Header closeButton>
         <Modal.Title className='main-modal-title'>그룹 생성</Modal.Title>
       </Modal.Header>
@@ -421,38 +364,60 @@ function CreateGroup(props) {
         <form onSubmit={handleSubmit}>
           <div className='modal-div'>
             <h5>그룹 이름</h5>
-            <input className="input-groupname" type="text" placeholder="그룹 이름을 작성해주세요!" value={groupName} onChange={handleGroupNameChange}></input>
-            {validationErrors.groupName && <p className='error-message'>{validationErrors.groupName}</p>}
+            <input
+              className="input-groupname"
+              type="text"
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+              placeholder="그룹 이름을 작성해주세요!"
+            />
+            {!isGroupNameUnique && <p className='error-message'>이미 존재하는 그룹입니다.</p>}
           </div>
           <div className='modal-div'>
             <h5>포인트 별 금액</h5>
             <div>
-              <div>
-                {priceArr.map((content, i) => {
-                  return(
-                    <button key={i} className={`button-price ${isSelectPrice[i]? 'button-price-clicked' : ''}`} onClick={() => handleClickPrice(i) }>{ content }</button>
-                  );
-                })}
-              </div>
+              {priceArr.map((content, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className={`button-price ${isSelectPrice[i] ? 'button-price-clicked' : ''}`}
+                  onClick={() => handleClickPrice(i)}
+                >
+                  {content}
+                </button>
+              ))}
               <div className='modal-p'>
                 <p>동기부여를 위해 포인트별 금액을 설정해보세요! 벌금처럼 걷어서 회식이나 1/n을 해도 좋고, 꼴등이 1등에게 쏘기도 좋아요!</p>
                 <p>벌금이 부담스럽다면 0원으로 설정 후 상벌을 정해보세요.</p>
               </div>
             </div>
-            {validationErrors.selectedPrice && <p className='error-message'>{validationErrors.selectedPrice}</p>}
           </div>
           <div className='modal-div'>
             <h5>그룹 공지사항</h5>
-            <textarea placeholder="그룹 내에서 지켜야 할 규칙을 작성해주세요." value={notice} onChange={handleNoticeChange}></textarea>
-            {validationErrors.notice && <p className='error-message'>{validationErrors.notice}</p>}
+            <textarea
+              value={groupNotice}
+              onChange={(e) => setGroupNotice(e.target.value)}
+              placeholder="그룹 내에서 지켜야 할 규칙을 작성해주세요."
+            ></textarea>
           </div>
           <div className='modal-div'>
             <h5>가입 비밀번호</h5>
-            <input className="input-grouppw" type="password" placeholder="비밀번호를 숫자로 작성해주세요!" value={groupPassword} onChange={handleGroupPasswordChange}></input>
-            {validationErrors.groupPassword && <p className='error-message'>{validationErrors.groupPassword}</p>}
+            <input
+              className="input-grouppw"
+              type="password"
+              value={groupPassword}
+              onChange={(e) => setGroupPassword(e.target.value)}
+              placeholder="비밀번호를 숫자로 작성해주세요!"
+            />
+            {!isPasswordValid && <p className='error-message'>비밀번호는 4~10자의 숫자로 작성해주세요!</p>}
           </div>
           <Modal.Footer>
-            <Button type='submit' className="button-group" variant="secondary">
+            <Button
+              type='submit'
+              className={`button-group ${!groupName || !groupNotice || !groupPassword || isSelectPrice.indexOf(true) === -1 || !isGroupNameUnique || !isPasswordValid? 'button-disabled' : ''}`}
+              variant="secondary"
+              disabled={!groupName || !groupNotice || !groupPassword || isSelectPrice.indexOf(true) === -1 || !isGroupNameUnique || !isPasswordValid}
+            >
               그룹 만들기
             </Button>
           </Modal.Footer>
@@ -461,8 +426,6 @@ function CreateGroup(props) {
     </Modal>
   );
 }
-
-
 
 
 // 그룹 가입 모달
