@@ -94,7 +94,7 @@ function App() {
               <div>
                 <h6>{ userName }</h6>
                 <h6>오늘의 미션 : { point }</h6>
-                <img className="imgs" src="/img/gear.png"/>
+                <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png"/>
                 <button className="button-logout" onClick={()=>{
                   axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
                   .then(res => {
