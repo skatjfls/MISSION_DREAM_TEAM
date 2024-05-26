@@ -21,11 +21,11 @@ if ($row) {
 // groupName이 존재하면 true 반환 아니면 false 반환
 if ($check) {
 
-    echo json_encode(True);
+    echo json_encode(False);
 
 } else {
 
-    echo json_encode(False);
+    echo json_encode(True);
 }
 
 ?>

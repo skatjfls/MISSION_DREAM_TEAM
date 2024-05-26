@@ -2,6 +2,7 @@
 // 240410 김현수 작성
 
 require_once("dbConfig.php");
+require_once 'DefaultSetting.php';
 
 session_start();
 
