@@ -6,6 +6,7 @@ import { Button, Modal, Nav } from 'react-bootstrap';
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { Route, Routes, useNavigate } from 'react-router-dom';
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import './App.css';
 import Group from './pages/Group.js';
 import LogIn from './pages/LogIn.js';
@@ -271,16 +272,79 @@ function ToDo(props) {
 
 // 캘린더 탭
 function MyCalendar() {
-  let [value, setValue] = useState(new Date());
+  const [value, setValue] = useState(new Date());
+  const [pointsData, setPointsData] = useState([]);
+  
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetPersonalRecord.php');
+        if (res.data) {
+          const formattedData = res.data.map(entry => ({
+            date: entry.date.split(' ')[0],
+            point: parseInt(entry.point, 10)*(-1)
+          }));
+          setPointsData(formattedData);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+  
+  const maxYAxis = 0; // Set the maximum value for YAxis
+
+  const getPointForDate = (date) => {
+    const pointEntry = pointsData.find(
+      (entry) => moment(entry.date).isSame(date, 'day')
+    );
+    return pointEntry ? parseInt(pointEntry.point, 10) : null;
+  };
+
+  const getColorForPoint = (point) => {
+    if (point === null) return 'pointNull';
+    if (point === 0) return 'point0';
+    if (point >= -2) return 'point2';
+    if (point >= -4) return 'point4';
+    return 'point5';
+  };
+
   return (
     <div className='calendar-tap'>
       <Calendar
         onChange={setValue}
         value={value}
         formatDay={(locale, date) => moment(date).format("DD")}
-      ></Calendar>
-      <div>
-        {moment(value).format("YYYY년 MM월 DD일")}
+        className="myCalendar"
+        tileContent={({ date, view }) => {
+          const point = getPointForDate(date);
+          return (
+            <div className={`point ${getColorForPoint(point)}`}>
+              {point !== null && <span className="point-value">{point}</span>}
+            </div>
+          );
+        }}
+        tileClassName={({ date }) => {
+          const point = getPointForDate(date);
+          return `react-calendar__tile--${getColorForPoint(point)}`;
+        }}
+      />
+      <div style={{ width: '100%', height: '300px' }}>
+        <ResponsiveContainer>
+          <LineChart
+            data={pointsData}
+            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis allowDataOverflow={false} domain={[maxYAxis, 0]} tickCount={5} />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="point" stroke="#8884d8" activeDot={{ r: 8 }} />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
