@@ -23,6 +23,9 @@ $id = $_SESSION['id'];
 $quey = "DELETE FROM member WHERE id = '$id'";
 $db->query($quey);
 
+unset($_SESSION['id']);
+session_destroy();
+
 echo json_encode(true);
 
 mysqli_close($db);
