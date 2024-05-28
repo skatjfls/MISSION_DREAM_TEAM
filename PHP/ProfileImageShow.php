@@ -24,6 +24,10 @@ try{
 
     $profile_path = $result->fetch_assoc()['profile'];
 
+    if($profile_path == null){
+        $profile_path = "../project/public/img/default_profile.png";
+    }
+
     echo json_encode(array('profilePath' => $profile_path));
 
 }catch(Exception $e){

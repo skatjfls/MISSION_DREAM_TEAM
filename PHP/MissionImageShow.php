@@ -26,6 +26,10 @@ try{
 
     $photo_path = $result->fetch_assoc()['photo'];
 
+    if($photo_path == null){
+        $photo_path = "../project/public/img/mission_default.png";
+    }
+
     echo json_encode(array('photoPath' => $photo_path));
 
 }catch(Exception $e){
