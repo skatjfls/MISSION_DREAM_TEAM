@@ -1,8 +1,8 @@
 <?php
 //240520 김현수 작성
 
-require_once 'dbConfig.php';
-require_once 'DefaultSetting.php';
+ 
+include('index.php');
 
 $groupName = $_POST["groupName"];
 $newPenalty = isset($_POST["Penalty"]) ? $_POST['Penalty'] : null;

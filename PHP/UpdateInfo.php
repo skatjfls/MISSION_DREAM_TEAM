@@ -1,8 +1,8 @@
 <?php
 // 240419 김현수 작성
 
-require_once("dbConfig.php");
-require_once 'DefaultSetting.php';
+ 
+include('index.php');
 
 if(!session_id()){
     session_start();

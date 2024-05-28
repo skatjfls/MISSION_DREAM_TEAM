@@ -2,8 +2,8 @@
 // 2024.04.11 nimo
 
 // member_name, total_pont is needed
-require_once 'dbConfig.php';
-require_once 'DefaultSetting.php';      
+ 
+include('index.php');      
 
 session_start();
 

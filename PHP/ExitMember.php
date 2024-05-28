@@ -2,8 +2,8 @@
 // 240515 김현수 작성
 // 회원탈퇴.php
 
-require_once("dbConfig.php");
-require_once 'DefaultSetting.php';
+ 
+include('index.php');
 
 if(!session_id()){
     session_start();

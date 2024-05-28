@@ -1,8 +1,8 @@
 <?php
 //240520 김현수 작성
 
-require_once 'dbConfig.php';
-require_once 'DefaultSetting.php';
+ 
+include('index.php');
 
 $groupName = $_POST["groupName"];
 $newNotice = isset($_POST["newNotice"]) ? $_POST['newNotice'] : null;

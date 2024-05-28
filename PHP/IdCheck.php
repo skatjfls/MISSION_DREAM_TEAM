@@ -1,8 +1,8 @@
 <?php
 // 240508 김현수 작성
 
-require_once 'dbConfig.php';
-require_once 'DefaultSetting.php';
+ 
+include('index.php');
 
 // 클라에서 보내준 json형태의 자료 변환
 $_POST = json_decode(file_get_contents('php://input'), true);

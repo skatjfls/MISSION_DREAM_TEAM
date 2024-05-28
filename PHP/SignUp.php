@@ -2,8 +2,8 @@
 // 240410 김현수 작성
 
 // db 연결
-require_once("dbConfig.php");
-require_once("DefaultSetting.php");
+ 
+include('index.php');
 
 // 데이터베이스 연결 오류 처리
 if ($db->connect_error) {

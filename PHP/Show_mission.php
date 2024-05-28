@@ -1,7 +1,7 @@
 <?php
 // 2024.04.11 nimo
-require_once 'dbConfig.php';
-require_once 'DefaultSetting.php';
+ 
+include('index.php');
 
 
 if(!session_id()){
