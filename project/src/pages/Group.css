@@ -1,28 +1,3 @@
-:root {
-  --gra-color1: #FAF29D;
-  --gra-color2: #F5FFDB;
-  --gra-color3: #CCFFE6;
-  --main-color: #87F6A6;
-  --sub-color1: #EAFFF4;
-  --sub-color2: #30C88B;
-  --sub-color3: #D5D5D5;
-  --gray-color: #EDEDED;
-}
-
-@font-face {
-  font-family: "font_tennine";        
-  src: url("../font/tennine.TTF"); 
-}
-
-@font-face {
-  font-family: "font_NanumSquare";        
-  src: url("../font/NanumSquare.ttf"); 
-}
-
-#root {
-  height: 100%;
-}
-
 /* Group.css */
 
 .Group {
@@ -45,12 +20,12 @@ div {
 
 
 .info-container {
+  flex-direction: column;
   background-color: var(--sub-color1);
-  width: 400px;
-  height: auto;
-  display: inline-block;
+  width: 25%;
+  height: calc(100vh - 80px);
+  min-height: 100%;
   float: left;
-  z-index: 1;
 }
 
 
@@ -68,15 +43,19 @@ div {
 }
 
 .members{
-  background-color: white;
+  background-color: rgb(255, 255, 255);
   width: 80%;
-  height: 700px;
   margin: 0 auto;
   margin-top: 20px;
   padding-bottom: 10px;
+  height: 80%;
 }
 
 .infoMembers::-webkit-scrollbar {
+  display: none;
+}
+
+.members::-webkit-scrollbar {
   display: none;
 }
 
@@ -126,23 +105,27 @@ div {
 }
 
 .groupCalendar {
-  display: inline-block;
-  margin: 0 auto;
-  width: 70%;
+  float: right;
+  width: 75%;
+  min-height: calc(100vh - 100px);
+  height: 100%;
   background-color: white;
   padding: 40px;
-  border: 3px solid var(--sub-color3);
+  border: 1.5px solid var(--sub-color3);
   border-radius: 5px;
+  margin: 0px;
 }
 
 
 .groupName{
-  font-size: 40px;
+  font-size: 70px;
   font-weight: 500;
   font-family: "font_tennine" !important;
-  background-image: linear-gradient(to right,#30C8A4, #F9E23D, #FEBE01);
+  background: linear-gradient(to right,#30C8A4, #F9E23D, #FEBE01);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  width: auto;
+  text-align: left;
 }
 
 
@@ -157,6 +140,7 @@ div {
   font-weight: 700;
   color: white;
   font-size: 20px;
+  width: 80%;
 }
 
 .groupNotice{
@@ -177,7 +161,7 @@ div {
 
 .groupStats{
   width: 100%;
-  height: 600px;
+  height: auto;
   border: var(--sub-color3) 2px solid;
 }
 
@@ -245,7 +229,7 @@ div {
 }
 
 .button-exit{
-  background-color: var(--sub-color1);
+  background: none;
   border: none;
   color: var(--sub-color3);
   margin: 10px;
@@ -286,6 +270,15 @@ div {
   font-family: "font_NanumSquare";
   font-weight: bold;
 }
+
+.dateRow{
+  height: 50px;
+}
+
+.nameRow{
+  height: 50px;
+}
+
 
 
 
