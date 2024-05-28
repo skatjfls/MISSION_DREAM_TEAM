@@ -50,6 +50,7 @@ div {
   height: auto;
   display: inline-block;
   float: left;
+  z-index: 1;
 }
 
 
@@ -73,10 +74,9 @@ div {
   margin: 0 auto;
   margin-top: 20px;
   padding-bottom: 10px;
-  overflow-y: scroll;
 }
 
-.members::-webkit-scrollbar {
+.infoMembers::-webkit-scrollbar {
   display: none;
 }
 
@@ -89,6 +89,11 @@ div {
   padding-bottom: 10px;
   padding-top: 10px;
   font-family: "font_tennine";
+}
+
+.infoMembers{
+  overflow-y: scroll;
+  height: 90%;
 }
 
 .member{
@@ -132,7 +137,7 @@ div {
 
 
 .groupName{
-  font-size: 50px;
+  font-size: 40px;
   font-weight: 500;
   font-family: "font_tennine" !important;
   background-image: linear-gradient(to right,#30C8A4, #F9E23D, #FEBE01);

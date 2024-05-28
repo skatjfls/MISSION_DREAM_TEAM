@@ -219,7 +219,7 @@ function GroupPage(props) {
                 <div className="calculate" onClick={() => setShowModal(true)}>포인트 정산하기</div>
                 <div className="members">
                     <div className="infoMember">멤버</div>
-                    <div>
+                    <div className="infoMembers">
                     {Array.isArray(members) ? (
                         members.map((member, index) => {
                             // member를 파싱하여 각 키에 대한 변수 만들기
