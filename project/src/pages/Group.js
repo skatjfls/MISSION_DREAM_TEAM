@@ -213,9 +213,7 @@ function GroupPage(props) {
                     }}>로그아웃</button>
                 </div>
                 </div>
-                <div className="content">
                 <div className="info-container">
-                <nav>
                 <div className="calculate" onClick={() => setShowModal(true)}>포인트 정산하기</div>
                 <div className="members">
                     <div className="infoMember">멤버</div>
@@ -287,7 +285,6 @@ function GroupPage(props) {
                     <button className="button-exit" onClick={handleGroupExit}>그룹 탈퇴하기</button>
                 </div>
                 <div className="handle"></div>
-                </nav>
                 </div>
                 <div className="groupCalendar-container">
                     <div className="groupCalendar">
@@ -301,7 +298,6 @@ function GroupPage(props) {
                                         <td>
                                             <div className="penaltyPerPoint">1 pt = {penaltyPerPoint} 원</div>
                                         </td>
-                                        <td style={{ width: '500px' }}>&nbsp;</td>
                                         <td>
                                             <div className="groupOption" variant="primary" onClick={handleSettingModalOpen}><img className="imgs" src="/img/gear.png" /></div>
                                         </td>
@@ -331,7 +327,7 @@ function GroupPage(props) {
                                 <tr>
                                     <td>&nbsp;</td>
                                     {datesOfWeek.map((date, index) => (
-                                        <td key={index}>{date.getDate()}</td>
+                                        <td key={index} className="dateRow">{date.getDate()}</td>
                                     ))}
                                 </tr>
                                 {Array.isArray(members) ? (
@@ -341,7 +337,7 @@ function GroupPage(props) {
                                         const name = memberObject.name;
                                         return (
                                             <tr key={index}>
-                                                <td style={{ width: '200px' }}>{name}</td>
+                                                <td className="nameRow" style={{ width: '200px' }}>{name}</td>
                                                 {datesOfWeek.map((date, dateIndex) => {
                                                     const currentDate = moment(date).format('YYYY-MM-DD');
                                                     const today = moment().format('YYYY-MM-DD');
@@ -376,7 +372,6 @@ function GroupPage(props) {
                             </tbody>
                         </table>
                     </div>
-                </div>
                 </div>
                 </div>
                 } />
