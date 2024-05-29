@@ -23,6 +23,7 @@ function App() {
   let [userName, setUserName] = useState();
   let [point, setPoint] = useState();
   let [missionInput, setMissionInput] = useState('');
+  let [profileImage, setProfileImage] = useState('');
   let [tap, setTap] = useState(0);
   let navigate = useNavigate();
   
@@ -31,7 +32,6 @@ function App() {
   useEffect(() => {
     axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
     .then(res => {
-      console.log('로그인 상태 : ',res);
       if(res.data === false){
         navigate('/login');
       }
@@ -39,9 +39,7 @@ function App() {
     .catch(error => {
       console.error('Error fetching user info:', error)
     })
-  }, []);
-  
-  useEffect(() => {
+
     const fetchUserInfo = async () => {
       try {
         const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
@@ -55,8 +53,18 @@ function App() {
       }
     };
     fetchUserInfo();
-  });
 
+    const fetchProfileImage = async () => {
+      try {
+        const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageShow.php');
+        setProfileImage(res.data.profilePath);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchProfileImage();
+  }, []);
+  
   const handleAddMission = async () => {
     try {
       if (missionInput.trim() === '') {
@@ -93,6 +101,7 @@ function App() {
             <div className="nav-bar">
               <img className="img-logo" onClick={()=>{navigate('/')}} src="/img/dream.png"/>
               <div>
+                <img className="img-profile" src={profileImage} alt="Profile"></img>
                 <h6>{ userName }</h6>
                 <h6>오늘의 미션 : { point }</h6>
                 <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png"/>
