@@ -99,7 +99,7 @@
 
         //이전 이미지 서버에서 삭제
         try{
-            $sql = "SELECT profile FROM member WHERE id = ?";
+            $sql = "SELECT profileImage FROM member WHERE id = ?";
             $stmt = $db->prepare($sql);
             $stmt->bind_param('s', $id);
             $stmt->execute();

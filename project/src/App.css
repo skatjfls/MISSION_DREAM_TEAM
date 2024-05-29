@@ -82,6 +82,11 @@ div {
   width: 24px;
 }
 
+.img-profile {
+  width: 28px;
+  border-radius: 100px;
+}
+
 .button-logout {
   border: solid 2px var(--main-color);
   border-radius: 30px;
