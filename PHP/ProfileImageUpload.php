@@ -127,7 +127,7 @@
                     $fileName = md5($name.'/'.time()).'.'.$ext;
                     $filePath = $folderPath . '/' . $fileName;
     
-                    $sql = "UPDATE member SET profile = ?, WHERE id = ?";
+                    $sql = "UPDATE member SET profileImage = ? WHERE id = ?";
                     $stmt = $db->prepare($sql);
                     $stmt->bind_param('ss', $filePath, $id);
                     $stmt->execute();
