@@ -60,7 +60,9 @@ function App() {
     const fetchProfileImage = async () => {
       try {
         const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageShow.php');
-        setProfileImage(res.data.profilePath);
+        let originalPath = res.data.profilePath
+        let trimmedPath = originalPath.replace(/^..\/project\/public/, "");
+        setProfileImage(trimmedPath);
       } catch (error) {
         console.log(error);
       }
@@ -609,20 +611,18 @@ function ChangeProfileImage({ onUploadComplete, setIsUploading, setSelectedFile 
     formData.append('imgFile', selectedFile);
 
     try {
-      const response = await fetch('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageUpload.php', {
-        method: 'POST',
-        body: formData,
+      const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageUpload.php', formData,{
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
       });
-
-      const result = await response.json();
-
-      if (result.error) {
-        console.log(`업로드 실패: ${result.error}`);
-      } else {
-        console.log('업로드 성공!');
+      if (res.data == true) {
         onUploadComplete(); // 업로드가 성공하면 부모 컴포넌트에 알림
         setIsUploading(false); // 업로드 완료 후 업로드 상태 해제
         setSelectedFile(null); // 업로드 완료 후 파일 상태 초기화
+      }
+      else {
+        console.log(res.data.error);
       }
     } catch (error) {
       console.log(`업로드 실패: ${error.message}`);

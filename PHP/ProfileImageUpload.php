@@ -106,7 +106,7 @@
             $result = $stmt->get_result();
 
             while($row = $result->fetch_assoc()){
-                $photo = $row['photo'];
+                $photo = $row['profileImage'];
                 if($photo != null){
                     $filePath = $photo;
                     if(file_exists($filePath)){
@@ -124,11 +124,11 @@
         try{
             if (is_uploaded_file($_FILES['imgFile']['tmp_name']) && getimagesize($_FILES['imgFile']['tmp_name']) != false){            
                 try{
-                    // DB에 이미지 경로 저장                    
+                    // DB에 이미지 경로 저장
                     $fileName = md5($name.'/'.time()).'.'.$ext;
                     $filePath = $folderPath . '/' . $fileName;
     
-                    $sql = "UPDATE member SET profile = ?, WHERE id = ?";
+                    $sql = "UPDATE member SET profileImage = ? WHERE id = ?";
                     $stmt = $db->prepare($sql);
                     $stmt->bind_param('ss', $filePath, $id);
                     $stmt->execute();
