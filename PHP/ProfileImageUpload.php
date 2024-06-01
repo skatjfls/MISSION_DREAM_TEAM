@@ -124,7 +124,7 @@
             if (is_uploaded_file($_FILES['imgFile']['tmp_name']) && getimagesize($_FILES['imgFile']['tmp_name']) != false){            
                 try{
                     // DB에 이미지 경로 저장                    
-                    $fileName = md5($name.'/'.time()).'.'.$ext;
+                    $fileName = md5($name.'/'.time().'/'.mt_rand()).'.'.$ext;
                     $filePath = $folderPath . '/' . $fileName;
     
                     $sql = "UPDATE member SET profileImage = ? WHERE id = ?";
