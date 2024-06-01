@@ -97,6 +97,30 @@ div {
   font-weight: bold;
 }
 
+.nav-profile {
+  position: relative;
+}
+
+.modal-profile {
+  position: absolute;
+  top: 35px;
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  border: solid 1px var(--gray-color);
+}
+
+.button-profile {
+  border-radius: 5px;
+  border: 0;
+  padding: 5px 10px;
+  background-color: var(--main-color);
+  font-family: "font_NanumSquare";
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 /*tap css*/
 .main-top {
   background: linear-gradient(to bottom right, var(--gra-color1), var(--gra-color2), var(--gra-color3));
@@ -269,10 +293,6 @@ div {
 }
 .calendar-tap > * {
   flex: 0 0 50%;
-}
-
-.myCalendar {
-  
 }
 
 .react-calendar__tile {
