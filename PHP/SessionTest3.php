@@ -1,6 +1,6 @@
 <?php
 
-require_once 'DefaultSetting.php';
+include('index.php');
 header("Content-Type: application/json");
 
 session_start();

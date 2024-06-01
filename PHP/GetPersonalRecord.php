@@ -1,8 +1,8 @@
 <?php
 // 240521 김현수 작성
 
-require_once 'dbConfig.php';
-require_once 'DefaultSetting.php';
+ 
+include('index.php');
 
 // 세션 여부 확인
 if(!session_id()){

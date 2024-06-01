@@ -3,7 +3,7 @@
 
 // db 연결
 require_once "dbConfig.php";
-require_once 'DefaultSetting.php';
+include('index.php');
 
 // 로그인 유지 추가
 $KeepLogIn = isset($_POST["KeepLogIn"]) ? $_POST["KeepLogIn"] : null;

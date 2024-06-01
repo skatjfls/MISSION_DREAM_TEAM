@@ -1,8 +1,8 @@
 <?php
 // 240521 김현수 작성
 // 그룹 포인트에 해당하는 GroupMember의 point_total 초기화( 그룹 멤버 전부 )
-require_once 'dbConfig.php';
-require_once 'DefaultSetting.php';
+ 
+include('index.php');
 
 if(!session_id()){
     session_start();

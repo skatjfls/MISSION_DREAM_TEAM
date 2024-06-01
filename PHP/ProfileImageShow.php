@@ -1,7 +1,7 @@
 <?php
 
-require_once 'dbConfig.php';
-require_once 'DefaultSetting.php';
+ 
+include('index.php');
 
 if(!session_id()){
     session_start();
@@ -16,13 +16,17 @@ if (!isset($_SESSION['id'])) {
 
 // 이미지 경로 가져오기
 try{
-    $sql = "SELECT profile FROM members WHERE id = ?";
+    $sql = "SELECT profileImage FROM member WHERE id = ?";
     $stmt = $db->prepare($sql);
     $stmt->bind_param('s', $id);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    $profile_path = $result->fetch_assoc()['profile'];
+    $profile_path = $result->fetch_assoc()['profileImage'];
+
+    if($profile_path == null){
+        $profile_path = "/img/default_profile.png";
+    }
 
     echo json_encode(array('profilePath' => $profile_path));
 

@@ -1,8 +1,8 @@
 <?php
 // 240522 김현수 작성
 // 사용자 아이디 가져오기
-require_once 'dbConfig.php';
-require_once 'DefaultSetting.php';
+ 
+include('index.php');
 
 // 세션 여부 확인
 if(!session_id()){

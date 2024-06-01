@@ -1,8 +1,8 @@
 <?php
 // 240515 김현수 작성
 
-require_once 'dbConfig.php';
-require_once 'DefaultSetting.php';
+ 
+include('index.php');
 
 $groupName = $_POST["groupName"];
 // $groupName = "더불어민주당";

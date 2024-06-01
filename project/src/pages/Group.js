@@ -24,6 +24,8 @@ function GroupPage(props) {
     const [modalPhotoSrc, setModalPhotoSrc] = useState(''); // 사진 경로
     const [modalMemberName, setModalMemberName] = useState(''); // 멤버 이름
     const [modalMissionName, setModalMissionName] = useState(''); // 미션 이름
+    const [notice, setNotice] = useState(''); // 공지
+    const [isNoticeExpanded, setIsNoticeExpanded] = useState(false); // 공지 드롭다운
 
     // 세션확인 및 유저 정보 가져오기
     useEffect(() => {
@@ -75,12 +77,8 @@ function GroupPage(props) {
         const fetchNotice = async () => {
             try {
                 const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowNotice.php', { groupName: group_name });
-                const notice = res.data; // 공지 가져오기
-                // 가져온 공지를 그룹 공지 위치에 넣기
-                const groupNoticeElement = document.querySelector('.groupNotice');
-                if (groupNoticeElement) {
-                    groupNoticeElement.innerText = notice;
-                }
+                const noticeData = res.data; // 공지 가져오기
+                setNotice(noticeData); // 가져온 공지를 상태에 설정
             } catch (error) {
                 console.error('에러 fetching notice:', error);
             }
@@ -170,6 +168,11 @@ function GroupPage(props) {
         setModalMissionName(missionName); // 미션 이름 저장
     };
 
+    const toggleNoticeExpansion = () => {
+        setIsNoticeExpanded(prevState => !prevState);
+    };
+    
+
     let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
     let [showModal, setShowModal] = useState(false);
     let navigate = useNavigate();
@@ -213,13 +216,11 @@ function GroupPage(props) {
                     }}>로그아웃</button>
                 </div>
                 </div>
-                <div className="content">
                 <div className="info-container">
-                <nav>
                 <div className="calculate" onClick={() => setShowModal(true)}>포인트 정산하기</div>
                 <div className="members">
                     <div className="infoMember">멤버</div>
-                    <div>
+                    <div className="infoMembers">
                     {Array.isArray(members) ? (
                         members.map((member, index) => {
                             // member를 파싱하여 각 키에 대한 변수 만들기
@@ -287,29 +288,28 @@ function GroupPage(props) {
                     <button className="button-exit" onClick={handleGroupExit}>그룹 탈퇴하기</button>
                 </div>
                 <div className="handle"></div>
-                </nav>
                 </div>
                 <div className="groupCalendar-container">
                     <div className="groupCalendar">
                         <div className="groupInfo">
-                            <table className="groupInfoTable">
+                            <table class="groupInfoTable">
                                 <thead>
                                     <tr>
-                                        <td>
-                                            <div className="groupName">{group_name}</div>
-                                        </td>
-                                        <td>
-                                            <div className="penaltyPerPoint">1 pt = {penaltyPerPoint} 원</div>
-                                        </td>
-                                        <td style={{ width: '500px' }}>&nbsp;</td>
-                                        <td>
-                                            <div className="groupOption" variant="primary" onClick={handleSettingModalOpen}><img className="imgs" src="/img/gear.png" /></div>
-                                        </td>
+                                    <th class="groupName">{group_name}</th>
+                                    <th class="penaltyPerPoint"><div>1 pt = {penaltyPerPoint} 원</div></th>
+                                    <th class="groupOption"><img class="imgs" src="/img/gear.png"  onClick={handleSettingModalOpen}/></th>
                                     </tr>
                                 </thead>
-                            </table>
+                                <tbody>
+                                </tbody>
+                                </table>
                         </div>
-                        <div className="groupNotice"></div>
+                        <div className="groupNotice" onClick={toggleNoticeExpansion}>
+                            공지: <span className="Notice">{isNoticeExpanded ? notice : notice.slice(0, 100)}</span>
+                            {notice.length > 20 && !isNoticeExpanded && <span>...</span>}
+                        </div>
+
+
                         <table className="table-bordered groupStats">
                             <thead>
                                 <tr>
@@ -331,7 +331,7 @@ function GroupPage(props) {
                                 <tr>
                                     <td>&nbsp;</td>
                                     {datesOfWeek.map((date, index) => (
-                                        <td key={index}>{date.getDate()}</td>
+                                        <td key={index} className="dateRow">{date.getDate()}</td>
                                     ))}
                                 </tr>
                                 {Array.isArray(members) ? (
@@ -341,7 +341,7 @@ function GroupPage(props) {
                                         const name = memberObject.name;
                                         return (
                                             <tr key={index}>
-                                                <td style={{ width: '200px' }}>{name}</td>
+                                                <td className="nameRow" style={{ width: '200px' }}>{name}</td>
                                                 {datesOfWeek.map((date, dateIndex) => {
                                                     const currentDate = moment(date).format('YYYY-MM-DD');
                                                     const today = moment().format('YYYY-MM-DD');
@@ -376,7 +376,6 @@ function GroupPage(props) {
                             </tbody>
                         </table>
                     </div>
-                </div>
                 </div>
                 </div>
                 } />

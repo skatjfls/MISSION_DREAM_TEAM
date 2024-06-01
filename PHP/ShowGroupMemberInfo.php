@@ -1,7 +1,7 @@
 <?php
 
-require_once("dbConfig.php");
-require_once("DefaultSetting.php");
+ 
+include('index.php');
 
 if (!session_id()) {
     session_start();

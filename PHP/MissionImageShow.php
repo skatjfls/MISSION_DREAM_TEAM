@@ -1,7 +1,7 @@
 <?php
 
-require_once 'dbConfig.php';
-require_once 'DefaultSetting.php';
+ 
+include('index.php');
 
 if(!session_id()){
     session_start();
@@ -25,6 +25,10 @@ try{
     $result = $stmt->get_result();
 
     $photo_path = $result->fetch_assoc()['photo'];
+
+    if($photo_path == null){
+        $photo_path = "../project/public/img/mission_default.png";
+    }
 
     echo json_encode(array('photoPath' => $photo_path));
 
