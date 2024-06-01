@@ -117,30 +117,39 @@ div {
 }
 
 
-.groupName{
-  font-size: 70px;
+.groupName {
+  font-size: 60px;
   font-weight: 500;
   font-family: "font_tennine" !important;
-  background: linear-gradient(to right,#30C8A4, #F9E23D, #FEBE01);
+  background: linear-gradient(to right, #30C8A4, #F9E23D, #FEBE01);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  width: auto;
-  text-align: left;
+  display: inline-block; /* 텍스트의 너비에 맞게 그라데이션 적용 */
 }
 
 
-.penaltyPerPoint{
-  background-color: var(--main-color);
-  border-radius: 20px;
-  padding-left: 30px;
-  padding-right: 30px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  margin: 0 auto;
+.penaltyPerPoint {
   font-weight: 700;
   color: white;
   font-size: 20px;
-  width: 80%;
+  width: 20%; /* 열의 너비를 20%로 설정 */
+  text-align: center; /* 가로 가운데 정렬 */
+  white-space: nowrap; /* 내용 줄바꿈 안하고 한줄로 나오게 하는 코드 */
+}
+
+.penaltyPerPoint div{
+  background-color: var(--main-color);
+  color: white;
+  font-size: 20px;
+  border-radius: 20px;
+  padding: 10px;
+  font-family: "font_tennine";
+  font-weight: 200;
+
+}
+
+.groupOption{
+  width: 10%;
 }
 
 .groupNotice{
@@ -153,10 +162,16 @@ div {
   margin-bottom: 10px;
   font-family: "font_NanumSquare";
   font-weight: bold;
+
 }
 
-.groupInfoTable{
+.groupInfoTable {
   width: 100%;
+}
+
+.groupInfoTable th,
+.groupInfoTable td {
+  vertical-align: middle; /* 세로 가운데 정렬 */
 }
 
 .groupStats{
@@ -229,8 +244,8 @@ div {
 }
 
 .button-exit{
-  background: none;
-  border: none;
+  background-color: transparent !important; /* 배경색 투명 */
+  border: none; /* border 제거 */
   color: var(--sub-color3);
   margin: 10px;
 }
