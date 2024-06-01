@@ -83,8 +83,11 @@ div {
 }
 
 .img-profile {
-  width: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 100px;
+  object-fit: cover;
+  border: solid 0.5px var(--sub-color3);
 }
 
 .button-logout {
