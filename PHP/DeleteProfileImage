@@ -27,6 +27,9 @@ if (!isset($_SESSION['id'])) {
                     }
                 }
             }
+        $profile_path = "/img/default_profile.png";
+
+echo $profile_path;
         }catch(Exception $e){
             echo json_encode(array('error' => '이전 이미지 삭제 중 오류가 발생하였습니다.'));
             exit;
