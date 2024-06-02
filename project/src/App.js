@@ -24,10 +24,11 @@ function App() {
   let [point, setPoint] = useState();
   let [missionInput, setMissionInput] = useState('');
   let [profileImage, setProfileImage] = useState('');
+  let [modal, setModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
   let [tap, setTap] = useState(0);
   let navigate = useNavigate();
-  
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
@@ -39,7 +40,9 @@ function App() {
     .catch(error => {
       console.error('Error fetching user info:', error)
     })
+  }, []);
 
+  useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
@@ -57,13 +60,15 @@ function App() {
     const fetchProfileImage = async () => {
       try {
         const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageShow.php');
-        setProfileImage(res.data.profilePath);
+        let originalPath = res.data.profilePath
+        let trimmedPath = originalPath.replace(/^..\/project\/public/, "");
+        setProfileImage(trimmedPath);
       } catch (error) {
         console.log(error);
       }
     };
     fetchProfileImage();
-  }, []);
+  });
   
   const handleAddMission = async () => {
     try {
@@ -92,16 +97,44 @@ function App() {
       console.error('Error adding mission:', error);
     }
   };
+
+  const handleMouseEnter = () => {
+    setModal(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (!isUploading && !selectedFile) {
+      setModal(false);
+    }
+  };
+
+  const handleUploadComplete = () => {
+    setIsUploading(false);
+    setSelectedFile(null); // 업로드 완료 후 파일 상태 초기화
+    setModal(false); // 업로드 완료 후 모달을 닫음
+  };
   
   return (
-    <div className="App">
+    <div className="App" onClick={() => {setModal(false);}}>
       <Routes>
         <Route path="/" element={
           <div>
             <div className="nav-bar">
               <img className="img-logo" onClick={()=>{navigate('/')}} src="/img/dream.png"/>
-              <div>
-                <img className="img-profile" src={profileImage} alt="Profile"></img>
+              <div className="nav-profile">
+                {
+                  modal == true ? <div className='modal-profile'
+                  onClick={(e) => e.stopPropagation()}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}>
+                    <ChangeProfileImage
+                      onUploadComplete={handleUploadComplete}
+                      setIsUploading={setIsUploading}
+                      setSelectedFile={setSelectedFile}
+                    />
+                    </div> : null
+                }
+                <img className="img-profile" src={profileImage} onMouseEnter={handleMouseEnter} alt="Profile"></img>
                 <h6>{ userName }</h6>
                 <h6>오늘의 미션 : { point }</h6>
                 <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png"/>
@@ -555,6 +588,53 @@ function JoinGroup(props) {
         <button className='button-join' onClick={onClickJoin}>그룹 가입하기</button>
       </Modal.Body>
     </Modal>
+  );
+}
+
+function ChangeProfileImage({ onUploadComplete, setIsUploading, setSelectedFile }) {
+  const [selectedFile, setFile] = useState(null);
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setFile(file);
+    setSelectedFile(file);
+    setIsUploading(true); // 파일이 선택되면 업로드 중 상태로 설정
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      alert('파일을 선택해주세요.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('imgFile', selectedFile);
+
+    try {
+      const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageUpload.php', formData,{
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+      if (res.data == true) {
+        onUploadComplete(); // 업로드가 성공하면 부모 컴포넌트에 알림
+        setIsUploading(false); // 업로드 완료 후 업로드 상태 해제
+        setSelectedFile(null); // 업로드 완료 후 파일 상태 초기화
+      }
+      else {
+        console.log(res.data.error);
+      }
+    } catch (error) {
+      console.log(`업로드 실패: ${error.message}`);
+      setIsUploading(false); // 업로드 실패 시 업로드 상태 해제
+    }
+  };
+
+  return (
+    <div>
+      <input type="file" onChange={handleFileChange} />
+      <button className='button-profile' onClick={handleUpload}>변경하기</button>
+    </div>
   );
 }
 
