@@ -15,7 +15,6 @@ function LogIn(props) {
     useEffect(() => {
         axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
         .then(res => {
-        console.log('로그인 상태 : ',res);
         if(res.data === true){
             navigate('/');
         }
@@ -31,6 +30,17 @@ function LogIn(props) {
         .catch(error => {
             console.error('Error fetching user count:', error)
         });
+
+        const handleKeyPress = (event) => {
+            if (event.key === 'Enter') {
+                onClickLogin(event);
+            }
+        };
+
+        document.addEventListener('keypress', handleKeyPress);
+        return () => {
+            document.removeEventListener('keypress', handleKeyPress);
+        };
     },[]);
 
     const onClickLogin = (event) => {
@@ -50,7 +60,6 @@ function LogIn(props) {
                 KeepLogIn: keepLogIn
             })
             .then((res)=>{
-                console.log(res)
                 if (res.data == true) {
                     alert('로그인에 성공했습니다.');
                     navigate('/');

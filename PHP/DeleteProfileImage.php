@@ -1,3 +1,4 @@
+<?php
 include('index.php');
 
 if(!session_id()){
@@ -19,7 +20,7 @@ if (!isset($_SESSION['id'])) {
             $result = $stmt->get_result();
 
             while($row = $result->fetch_assoc()){
-                $photo = $row['photo'];
+                $photo = $row['profileImage'];
                 if($photo != null){
                     $filePath = $photo;
                     if(file_exists($filePath)){
