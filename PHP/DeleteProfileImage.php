@@ -54,4 +54,5 @@ echo $profile_path;
 
 $db->close();
 $stmt->close();
+
 ?>
