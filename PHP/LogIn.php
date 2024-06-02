@@ -5,33 +5,61 @@
 require_once "dbConfig.php";
 include('index.php');
 
-// 로그인 유지 추가
-$KeepLogIn = isset($_POST["KeepLogIn"]) ? $_POST["KeepLogIn"] : null;
+// $KeepLogIn = False;
 
-if(!session_id()){
-    if($KeepLogIn){
+// if($KeepLogIn){
 
-        $duration = 24 * 60 * 60 * 30;
-        ini_set('session.gc_maxlifetime', $duration);
-        session_set_cookie_params($duration);
-        session_start();
-    }else{
-        session_start();
-    }
-}
-
-//session_start();
-// if(!session_id()){
+//     $duration = 24 * 60 * 60 * 30;
+//     ini_set('session.gc_maxlifetime', $duration);
+//     session_set_cookie_params($duration);
+//     session_start();
+// }else{
 //     session_start();
 // }
+
+// if(!session_id()){
+//     if($KeepLogIn){
+
+//         $duration = 24 * 60 * 60 * 30;
+//         ini_set('session.gc_maxlifetime', $duration);
+//         session_set_cookie_params($duration);
+//         session_start();
+//     }else{
+//         session_start();
+//     }
+// }
+
+if(!session_id()){
+    session_start();
+}
 
 $_SESSION['sess'] = "cur_session";
 
 // 프론트에서 json 형태로 쏴주는 데이터를 json_decode 하여 변환
 // id, password 받아서 변수에 저장
-$_POST = json_decode(file_get_contents('php://input'), true);
+// $_POST = json_decode(file_get_contents('php://input'), true);
 $id = $_POST["id"];
 $password = md5($_POST["password"]);
+
+// 로그인 유지 추가
+// $KeepLogIn = $_POST["keepLogIn"] ? True : False;
+
+$KeepLogIn = array_key_exists("KeepLogIn", $_POST) ? $_POST["KeepLogIn"] : null;
+
+if ($KeepLogIn !== null) {
+    $KeepLogIn = filter_var($KeepLogIn, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+}
+
+// $_SESSION['KeepLogIn'] = $KeepLogIn;
+
+// $temp = $_POST["keepLogIn"];
+// $KeepLogIn = True;
+
+// if($temp == true){
+//     $KeepLogIn = True;
+// }else{
+//     $KeepLogIn = False;
+// }
 
 // member 테이블에서 이용자 찾아서 member 연관 배열에 저장
 $query_findMember = "SELECT * FROM member WHERE id = '$id' AND password = '$password'";
@@ -52,6 +80,11 @@ if($res_group){
 
 if($row_member){
 
+    if($KeepLogIn == true){
+        setcookie("c_id", $id, (time() + 3600 * 24 * 30));
+        // setcookie("c_password", $password, (time()+3600*24*30), "/");
+    }
+
     //세션에 아이디, 이름 저장
     $_SESSION['id'] = $id;
     $_SESSION['name'] = $row_member['name'];
@@ -67,4 +100,3 @@ if($row_member){
 mysqli_close($db);
 
 ?>
-
