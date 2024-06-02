@@ -21,7 +21,7 @@ try{
     $result = $stmt->get_result();
 
     while($row = $result->fetch_assoc()){
-        $photo = $row['photo'];
+        $photo = $row['profileImage'];
         if($photo != null){
             $filePath = $photo;
             if(file_exists($filePath)){
@@ -36,9 +36,9 @@ try{
 
     // 프로필 이미지 경로 초기화
 try{
-    $sql = "UPDATE member SET profileImage = ? WHERE id = ?";
+    $sql = "UPDATE member SET profileImage = NULL WHERE id = ?";
     $stmt = $db->prepare($sql);
-    $stmt->bind_param('ss', NULL, $id);
+    $stmt->bind_param('s', $id);
     $stmt->execute();
 
 }catch(Exception $e){

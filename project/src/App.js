@@ -6,7 +6,7 @@ import { Button, Modal, Nav } from 'react-bootstrap';
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import './App.css';
 import Group from './pages/Group.js';
 import LogIn from './pages/LogIn.js';
@@ -189,13 +189,20 @@ function ToDo(props) {
   }, []);
   
   const handleDeleteMission = async (i) => {
-    try {
-      const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Delete_mission.php', {
-        mission_idx: props.missionList[i][0]
-      })
-      fetchMissions(props.setMissionList);
-    } catch (error) {
-      console.error('Error deleting mission:', error);
+    const currentDate = new Date();
+    const currentHour = currentDate.getHours();
+
+    if (currentHour >= 5 && currentHour < 21) {
+      try {
+        const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Delete_mission.php', {
+          mission_idx: props.missionList[i][0]
+        })
+        fetchMissions(props.setMissionList);
+      } catch (error) {
+        console.error('Error deleting mission:', error);
+      }
+    } else {
+      alert("미션은 05:00~21:00에만 삭제 가능합니다!");
     }
   };
   
@@ -286,7 +293,9 @@ function ToDo(props) {
 function MyCalendar() {
   const [value, setValue] = useState(new Date());
   const [pointsData, setPointsData] = useState([]);
-  
+  const [weeklyData, setWeeklyData] = useState([]);
+  const [dailyData, setDailyData] = useState([]);
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -294,7 +303,7 @@ function MyCalendar() {
         if (res.data) {
           const formattedData = res.data.map(entry => ({
             date: entry.date.split(' ')[0],
-            point: parseInt(entry.point, 10)*(-1)
+            point: parseInt(entry.point, 10) * (-1)
           }));
           setPointsData(formattedData);
         }
@@ -305,8 +314,8 @@ function MyCalendar() {
 
     fetchUserData();
   }, []);
-  
-  const maxYAxis = 0; // Set the maximum value for YAxis
+
+  const maxYAxis = 0;
 
   const getPointForDate = (date) => {
     const pointEntry = pointsData.find(
@@ -318,49 +327,126 @@ function MyCalendar() {
   const getColorForPoint = (point) => {
     if (point === null) return 'pointNull';
     if (point === 0) return 'point0';
-    if (point >= -2) return 'point2';
-    if (point >= -4) return 'point4';
-    return 'point5';
+    if (point >= -1) return 'point1';
+    if (point >= -3) return 'point3';
+    if (point >= -5) return 'point5';
+    return 'point6';
   };
+
+  const getChartColorForPoint = (point) => {
+    if (point === null) return '#ffffff';
+    if (point === 0) return '#ffffff';
+    if (point >= -1) return '#E7FDED';
+    if (point >= -3) return '#CFFBDB';
+    if (point >= -5) return '#B7FACA';
+    return '#9FF8B8';
+  };
+
+  useEffect(() => {
+    const calculateWeeklyData = () => {
+      const filteredData = pointsData.filter(entry => moment(entry.date).isAfter(moment().subtract(5, 'weeks')));
+      
+      const weeks = [];
+      const weekSums = {};
+
+      filteredData.forEach(entry => {
+        const week = moment(entry.date).startOf('isoWeek').format('YYYY-MM-DD');
+        if (!weekSums[week]) {
+          weekSums[week] = 0;
+        }
+        weekSums[week] += entry.point;
+      });
+
+      for (const week in weekSums) {
+        weeks.push({ week, point: weekSums[week] });
+      }
+
+      setWeeklyData(weeks);
+    };
+    calculateWeeklyData();
+  }, [pointsData]);
+
+  
+  const getDaysOfWeekData = (startOfWeek) => {
+    const daysOfWeek = [];
+    for (let i = 0; i < 7; i++) {
+      const currentDay = startOfWeek.clone().add(i, 'days');
+      const point = getPointForDate(currentDay.format('YYYY-MM-DD'));
+      daysOfWeek.push({ day: currentDay.format('YYYY-MM-DD'), point });
+    }
+    return daysOfWeek;
+  };
+
+  useEffect(() => {
+    const currentWeekStart = moment(value).startOf('isoWeek');
+    const dailyData = getDaysOfWeekData(currentWeekStart);
+    setDailyData(dailyData);
+  }, [value, pointsData]);
 
   return (
     <div className='calendar-tap'>
-      <Calendar
-        onChange={setValue}
-        value={value}
-        formatDay={(locale, date) => moment(date).format("DD")}
-        className="myCalendar"
-        tileContent={({ date, view }) => {
-          const point = getPointForDate(date);
-          return (
-            <div className={`point ${getColorForPoint(point)}`}>
-              {point !== null && <span className="point-value">{point}</span>}
-            </div>
-          );
-        }}
-        tileClassName={({ date }) => {
-          const point = getPointForDate(date);
-          return `react-calendar__tile--${getColorForPoint(point)}`;
-        }}
-      />
-      <div style={{ width: '100%', height: '300px' }}>
-        <ResponsiveContainer>
-          <LineChart
-            data={pointsData}
-            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis allowDataOverflow={false} domain={[maxYAxis, 0]} tickCount={5} />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="point" stroke="#8884d8" activeDot={{ r: 8 }} />
-          </LineChart>
-        </ResponsiveContainer>
+      <div className="row">
+        <div className="col-md-6">
+          <Calendar
+            onChange={setValue}
+            value={value}
+            formatDay={(locale, date) => moment(date).format("DD")}
+            className="myCalendar"
+            tileContent={({ date, view }) => {
+              const point = getPointForDate(date);
+              return (
+                <div className={`point ${getColorForPoint(point)}`}>
+                  {point !== null && <span className="point-value">{point}</span>}
+                </div>
+              );
+            }}
+            tileClassName={({ date }) => {
+              const point = getPointForDate(date);
+              return `react-calendar__tile--${getColorForPoint(point)}`;
+            }}
+          />
+        </div>
+        <div className="col-md-6 myChart">
+          <ResponsiveContainer>
+            <BarChart
+              data={dailyData}
+              margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="day" tickFormatter={(day) => moment(day).format('MM-DD')} />
+              <YAxis domain={[dataMin => (dataMin < 0 ? dataMin : 0), 0]} tickCount={5} />
+              <Tooltip />
+              <Bar
+                dataKey="point"
+                fill="#87F6A6"
+              >
+                {dailyData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={getChartColorForPoint(entry.point)} />
+                ))}
+              </Bar>
+            </BarChart>
+            <LineChart
+              data={weeklyData}
+              margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="week" tickFormatter={(week) => `${moment(week).format('YYYY-MM-DD')}~`} />
+              <YAxis domain={[dataMin => (dataMin < 0 ? dataMin : 0), 0]} tickCount={5} />
+              <Tooltip labelFormatter={(value) => `${moment(value).format('YYYY-MM-DD')}~${moment(value).add(6, 'days').format('YYYY-MM-DD')}`} />
+              <Line
+                type="linear"
+                dataKey="point"
+                stroke="#30C88B"
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
 }
+
 
 
 function CreateGroup(props) {
@@ -604,11 +690,16 @@ function ChangeProfileImage(props) {
   };
 
   const handleRemove = async () => {
+    const confirmRemove = window.confirm('정말로 프로필 사진을 제거하시겠습니까?');
+
+    if (!confirmRemove) {
+      return;
+    }
+
     try {
       const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/DeleteProfileImage.php');
-      console.log(res.data)
       if (res.data) {
-        alert('프로필 사진이 제거되었습니다.');
+        alert("프로필 사진이 제거되었습니다!");
         props.setChange(false);
       } else {
         console.log(res.data.error);
