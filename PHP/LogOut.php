@@ -3,6 +3,7 @@
 include('index.php');
 session_start();
 
+setcookie("c_id");
 unset($_SESSION['id']);
 unset($_SESSION['name']);
 unset($_SESSION['group']);
