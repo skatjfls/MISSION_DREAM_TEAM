@@ -137,7 +137,7 @@ div {
   white-space: nowrap; /* 내용 줄바꿈 안하고 한줄로 나오게 하는 코드 */
 }
 
-.penaltyPerPoint div{
+.penaltyPerPoint div, .penaltyPerPointDiv{
   background-color: var(--main-color);
   color: white;
   font-size: 20px;
@@ -292,6 +292,34 @@ div {
 
 .nameRow{
   height: 50px;
+}
+
+.modalClose{  
+  width: 140px;
+  background-color: var(--sub-color4);
+  border-radius: 25px;
+  padding: 10px 10px;
+  margin: 0px 5px;
+  border: 0;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: black;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
+}
+
+.doCalculate{  
+  width: 140px;
+  background-color: var(--main-color);
+  border-radius: 25px;
+  padding: 10px 10px;
+  margin: 0px 5px;
+  border: 0;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: black;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
 }
 
 

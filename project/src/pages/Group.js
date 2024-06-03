@@ -74,9 +74,13 @@ function GroupPage(props) {
         const fetchProfileImage = async () => {
             try {
               const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageShow.php');
-              let originalPath = res.data.profilePath
-              let trimmedPath = originalPath.replace(/^..\/project\/public/, "");
-              setProfileImage(trimmedPath);
+              let originalPath = res.data.profilePath;
+              if (originalPath === '/img/default_profile.png') {
+                  setProfileImage(originalPath);
+              } else {
+                  let trimmedPath = originalPath.replace(/^..\/project\/public/, "");
+                  setProfileImage(trimmedPath);
+              }
             } catch (error) {
               console.log(error);
             }
@@ -261,6 +265,7 @@ function GroupPage(props) {
                                             const memberObject = JSON.parse(member);
                                             const id = memberObject.id;
                                             const name = memberObject.name;
+                                            const profileImage = memberObject.profileImage;
                                             const missionList = memberObject.missionList;
                                             const missionTotalCount = memberObject.missionTotalCount;
                                             const missionNotCompleteCount = memberObject.missionNotCompleteCount;
@@ -271,6 +276,7 @@ function GroupPage(props) {
                                                         <table className="memberInfo" onClick={() => toggleMissionTable(id)}>
                                                             <tbody>
                                                                 <tr>
+                                                                    <td><img className="img-profile" src={profileImage === '/img/default_profile.png' ? profileImage : profileImage.replace(/^..\/project\/public/, "") } alt="Profile"/></td>
                                                                     <td>{name}</td>
                                                                     <td>{missionTotalCount - missionNotCompleteCount}/{missionTotalCount}</td>
                                                                     <td>{missionTotalPoint === 0 ? '0' : (missionTotalPoint > 0 ? `-${missionTotalPoint}` : missionTotalPoint)}pt</td>
@@ -490,7 +496,8 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                 <div className='d-flex justify-content-between align-items-center w-100'>
                     <div></div>
                     <div className='modalTitle'>이번 정산 결과는?</div>
-                    <div className='penaltyPerPoint'>1 pt = {penalty_per_point} 원</div>
+                    <div className='penaltyPerPointDiv'>1 pt = {penalty_per_point} 원</div>
+                    <div></div>
                 </div>
             </Modal.Header>
             <Modal.Body>
@@ -535,10 +542,10 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShowModal(false)}>
+                <Button className="modalClose"variant="secondary" onClick={() => setShowModal(false)}>
                     닫기
                 </Button>
-                <Button variant="primary" onClick={() => handlePointCalculation(group_name, penalty_per_point)}>정산 실행</Button>
+                <Button className="doCalculate" variant="primary" onClick={() => handlePointCalculation(group_name, penalty_per_point)}>정산 실행</Button>
             </Modal.Footer>
         </Modal>
     );
