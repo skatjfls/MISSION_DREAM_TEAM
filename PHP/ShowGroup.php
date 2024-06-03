@@ -49,7 +49,7 @@ foreach($groupList as $group){
     $res = $db->query($query);
 
     while($row = $res->fetch_array(MYSQLI_ASSOC)){
-        $groupMemberCnt[] = $row;
+        $groupMemberCnt[] = $row['count(*)'];
     }
 }
 
