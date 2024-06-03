@@ -57,6 +57,12 @@ if (empty($group_member_id_list)) {
             $member_name = $result->fetch_assoc()['name'];
             $member_profile = $result->fetch_assoc()['profileImage'];
             $stmt->close();
+
+            if($member_profile == null){
+                // $member_profile = "https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png";
+                $member_profile = "img/default_profile.png";
+            }
+
         } catch (Exception $e) {
             $member_name = null;
             $member_profile = null;
@@ -131,5 +137,4 @@ if (empty($group_member_id_list)) {
 echo json_encode($member_list);
 
 $db->close();
-$stmt->close();
 ?>
