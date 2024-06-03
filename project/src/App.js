@@ -58,9 +58,13 @@ function App() {
     const fetchProfileImage = async () => {
       try {
         const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageShow.php');
-        let originalPath = res.data.profilePath
-        let trimmedPath = originalPath.replace(/^..\/project\/public/, "");
-        setProfileImage(trimmedPath);
+        let originalPath = res.data.profilePath;
+        if (originalPath === '/img/default_profile.png') {
+            setProfileImage(originalPath);
+        } else {
+            let trimmedPath = originalPath.replace(/^..\/project\/public/, "");
+            setProfileImage(trimmedPath);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -163,12 +167,16 @@ function App() {
 
 const fetchMissions = async (setMissionList) => {
   try {
-      const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/Show_mission.php?`)
+    const res = await axios.get(`http://localhost/MISSION_DREAM_TEAM/PHP/Show_mission.php?`)
+    if (res.data == null) {
+      setMissionList([]);
+    } else {
       const missions = res.data.map(mission => ({
         ...mission,
         isCompleted: mission[4] === 1
       }));
       setMissionList(missions);
+    }
   } catch (error) {
       console.error('Error fetching missions:', error)
   }
