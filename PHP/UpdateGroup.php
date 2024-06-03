@@ -15,9 +15,9 @@ if (!isset($_SESSION['id'])) {
 }
 
 $groupName = isset($_POST["groupName"]) ? $_POST["groupName"] : null;
-$groupPassword = isset($_POST["CurPassword"]) ? $_POST["groupPassword"] : null;
+$groupPassword = isset($_POST["groupPassword"]) ? $_POST["groupPassword"] : null;
 $newNotice = isset($_POST["newNotice"]) ? $_POST['newNotice'] : null;
-$newPenalty = isset($_POST["Penalty"]) ? $_POST['Penalty'] : null;
+$newPenalty = array_key_exists("Penalty", $_POST) ? $_POST['Penalty'] : null;
 
 // $groupName = "대통령실";
 // $groupPassword = "0000";
@@ -40,7 +40,7 @@ if($newNotice == null){
     exit();
 }
 
-if($newPenalty == null){
+if($newPenalty === null){
     echo json_encode(array("error"=>"새로운 벌금이 없잖아;"));
     exit();
 }
@@ -52,16 +52,18 @@ $row = $res->fetch_row();
 // 사용자의 현재 비밀번호 확인
 if (!$row) {
     // echo "현재 비밀번호가 일치하지 않습니다.";
-    echo json_encode(array("error"=>"그룹 비밀번호가 일치하지 않습니다람쥐."));
+    echo json_encode(array("error"=>"그룹 비밀번호가 일치하지 않습니다."));
     exit();
 }
 
-$query = "UPDATE grouplist SET group_notice = '$newNotice' WHERE group_name = '$groupName'";
-$db->query($query);
+$query1 = "UPDATE grouplist SET group_notice = '$newNotice' WHERE group_name = '$groupName'";
+$query2 = "UPDATE grouplist SET PenaltyPerPoint = '$newPenalty' WHERE group_name = '$groupName'";
 
-$query = "UPDATE grouplist SET PenaltyPerPoint = '$newPenalty' WHERE group_name = '$groupName'";
-$db->query($query);
-
+if ($db->query($query1) === TRUE && $db->query($query2) === TRUE) {
+    echo json_encode(true);
+} else {
+    echo json_encode(false);
+}
 mysqli_close($db);
 
 ?>

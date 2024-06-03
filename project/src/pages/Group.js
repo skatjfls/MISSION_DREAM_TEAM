@@ -1,10 +1,10 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from 'moment';
-import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Modal } from 'react-bootstrap';
 import 'react-calendar/dist/Calendar.css';
-import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import './Group.css';
 
 axios.defaults.withCredentials = true;
@@ -37,6 +37,7 @@ function GroupPage(props) {
     const [modalMissionName, setModalMissionName] = useState(''); // 미션 이름
     const [notice, setNotice] = useState(''); // 공지
     const [isNoticeExpanded, setIsNoticeExpanded] = useState(false); // 공지 드롭다운
+    const [update, setUpdate] = useState(false); // 그룹 수정 모달 상태
 
     startOfWeek.setDate(startOfWeek.getDate() - ((startOfWeek.getDay() + 6) % 7)); // 주의 시작일을 월요일로 설정
     endOfWeek.setDate(endOfWeek.getDate() + 6); // 주의 마지막 날을 일요일로 설정
@@ -46,7 +47,6 @@ function GroupPage(props) {
         const checkLoginState = async () => {
             try {
                 const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php');
-                console.log('로그인 상태 : ', res);
                 if (res.data === 'true') {
                     setIsLoggedIN(true);
                 } else {
@@ -85,29 +85,29 @@ function GroupPage(props) {
         fetchProfileImage();
     }, []);
 
+    const fetchPenaltyPerPoint = async () => {
+        try {
+            const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowPenalty.php', { groupName: group_name });
+            const bringpenaltyPerPoint = res.data; // 벌점 당 포인트 가져 오기
+            setPenaltyPerPoint(bringpenaltyPerPoint); // 상태에 벌점 당 포인트 설정
+        } catch (error) {
+            console.error('에러 fetching penalty per point:', error);
+        }
+    };
     useEffect(() => {
-        const fetchPenaltyPerPoint = async () => {
-            try {
-                const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowPenalty.php', { groupName: group_name });
-                const bringpenaltyPerPoint = res.data; // 벌점 당 포인트 가져 오기
-                setPenaltyPerPoint(bringpenaltyPerPoint); // 상태에 벌점 당 포인트 설정
-            } catch (error) {
-                console.error('에러 fetching penalty per point:', error);
-            }
-        };
         fetchPenaltyPerPoint();
     }, [group_name]);
 
+    const fetchNotice = async () => {
+        try {
+            const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowNotice.php', { groupName: group_name });
+            const noticeData = res.data; // 공지 가져오기
+            setNotice(noticeData); // 가져온 공지를 상태에 설정
+        } catch (error) {
+            console.error('에러 fetching notice:', error);
+        }
+    };
     useEffect(() => {
-        const fetchNotice = async () => {
-            try {
-                const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowNotice.php', { groupName: group_name });
-                const noticeData = res.data; // 공지 가져오기
-                setNotice(noticeData); // 가져온 공지를 상태에 설정
-            } catch (error) {
-                console.error('에러 fetching notice:', error);
-            }
-        };
         fetchNotice();
     }, [group_name]);
 
@@ -342,7 +342,7 @@ function GroupPage(props) {
                                             <tr>
                                                 <th className="groupName">{group_name}</th>
                                                 <th className="penaltyPerPoint"><div>1 pt = {penaltyPerPoint} 원</div></th>
-                                                <th className="groupOption"><img className="imgs" src="/img/gear.png" onClick={handleSettingModalOpen} /></th>
+                                                <th className="groupOption"><img className="imgs" src="/img/gear.png" onClick={()=>{ setUpdate(true) }} /></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -438,6 +438,7 @@ function GroupPage(props) {
                 memberName={modalMemberName}
                 missionName={modalMissionName}
             />
+            <UpdateGroup update={update} setUpdate={setUpdate} group_name={group_name} penaltyPerPoint={penaltyPerPoint} notice={notice} fetchPenaltyPerPoint={fetchPenaltyPerPoint} fetchNotice={fetchNotice}/>
         </div>
     );
 }
@@ -693,5 +694,146 @@ function ChangeProfileImage({ onUploadComplete, setIsUploading, setSelectedFile 
         </div>
     );
 }
+
+function UpdateGroup(props) {
+    const [isSelectPrice, setIsSelectPrice] = useState(Array(6).fill(false));
+    const [groupName, setGroupName] = useState(props.group_name);
+    const [groupNotice, setGroupNotice] = useState(props.notice);
+    const [groupPassword, setGroupPassword] = useState('');
+    const [isPasswordTrue, setIsPasswordTrue] = useState(true);
+    const priceArr = ['₩ 0', '₩ 500', '₩ 1,000', '₩ 2,000', '₩ 3,000', '₩ 5,000'];
+
+    useEffect(() => {
+        const newArr = Array(priceArr.length).fill(false);
+        const numericalPriceArr = priceArr.map(price => price.replace(/[^\d]/g, ''), 10);
+        const index = numericalPriceArr.indexOf(props.penaltyPerPoint);
+        
+        if (index !== -1) {
+            newArr[index] = true;
+        }
+        setIsSelectPrice(newArr);
+    }, [props.penaltyPerPoint]);
+    
+    useEffect(() => {
+        if (!props.update) {
+        setGroupName(props.group_name);
+        setGroupNotice(props.notice);
+        setGroupPassword('');
+        const newArr = Array(priceArr.length).fill(false);
+        const numericalPriceArr = priceArr.map(price => price.replace(/[^\d]/g, ''), 10);
+        const index = numericalPriceArr.indexOf(props.penaltyPerPoint);
+        if (index !== -1) {
+            newArr[index] = true;
+        }
+        setIsSelectPrice(newArr);
+        setIsPasswordTrue(true);
+        }
+    }, [props.update]);
+
+    const handleClickPrice = (idx) => {
+        const newArr = Array(priceArr.length).fill(false);
+        newArr[idx] = true;
+        setIsSelectPrice(newArr);
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        const selectedPriceString = priceArr[isSelectPrice.indexOf(true)];
+        const selectedPrice = parseInt(selectedPriceString.replace(/[^\d]/g, ''), 10);
+        
+        try {
+        const response = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/UpdateGroup.php', {
+            groupName: groupName,
+            Penalty: selectedPrice,
+            newNotice: groupNotice,
+            groupPassword: groupPassword
+        });
+        if (response.data == true) {
+            alert('[ '+groupName+' ] 그룹 설정이 변경되었습니다!')
+            props.setUpdate(false);
+            props.fetchPenaltyPerPoint();
+            props.fetchNotice();
+        }
+        else if (response.data.error == '그룹 비밀번호가 일치하지 않습니다.'){
+            setIsPasswordTrue(false);
+        }
+        } catch (error) {
+        console.log(error);
+        }
+    };
+
+    return (
+        <Modal show={props.update} onHide={() => props.setUpdate(false)} className='main-modal modal-xl'>
+        <Modal.Header closeButton>
+            <Modal.Title className='main-modal-title'>그룹 설정 변경</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="modal-creategroup">
+            <form onSubmit={handleSubmit}>
+            <div className='modal-div'>
+                <h5>그룹 이름</h5>
+                <input
+                className="input-groupname"
+                type="text"
+                value={props.group_name}
+                onChange={(e) => setGroupName(e.target.value)}
+                placeholder="그룹 이름을 작성해주세요!"
+                disabled
+                />
+            </div>
+            <div className='modal-div'>
+                <h5>포인트 별 금액</h5>
+                <div>
+                {priceArr.map((content, i) => (
+                    <button
+                    key={i}
+                    type="button"
+                    className={`button-price ${isSelectPrice[i] ? 'button-price-clicked' : ''}`}
+                    onClick={() => handleClickPrice(i)}
+                    >
+                    {content}
+                    </button>
+                ))}
+                <div className='modal-p'>
+                    <p>동기부여를 위해 포인트별 금액을 설정해보세요! 벌금처럼 걷어서 회식이나 1/n을 해도 좋고, 꼴등이 1등에게 쏘기도 좋아요!</p>
+                    <p>벌금이 부담스럽다면 0원으로 설정 후 상벌을 정해보세요.</p>
+                </div>
+                </div>
+            </div>
+            <div className='modal-div'>
+                <h5>그룹 공지사항</h5>
+                <textarea
+                value={groupNotice}
+                onChange={(e) => setGroupNotice(e.target.value)}
+                placeholder="그룹 내에서 지켜야 할 규칙을 작성해주세요."
+                ></textarea>
+            </div>
+            <div className='modal-div'>
+                <h5>가입 비밀번호</h5>
+                <input
+                className="input-grouppw"
+                type="password"
+                value={groupPassword}
+                onChange={(e) => {setGroupPassword(e.target.value); setIsPasswordTrue(true);}}
+                placeholder="기존 비밀번호를 작성해주세요!"
+                />
+                {!isPasswordTrue && <p className='error-message'>비밀번호를 확인해주세요!</p>}
+            </div>
+            <Modal.Footer>
+                <Button
+                type='submit'
+                className={`button-group ${!groupName || !groupNotice || !groupPassword || isSelectPrice.indexOf(true) === -1 || !isPasswordTrue? 'button-disabled' : ''}`}
+                variant="secondary"
+                disabled={!groupName || !groupNotice || !groupPassword || isSelectPrice.indexOf(true) === -1 || !isPasswordTrue}
+                >
+                그룹 수정하기
+                </Button>
+            </Modal.Footer>
+            </form>
+        </Modal.Body>
+        </Modal>
+    );
+}
+
 
 export default GroupPage;
