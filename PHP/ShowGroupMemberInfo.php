@@ -111,6 +111,26 @@ if (empty($group_member_id_list)) {
             $mission_total_point = NULL;
         }
 
+        try{
+            $sql = "SELECT profileIamge FROM member WHERE id = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("s", $member_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            while($row = $result->fetch_assoc()){
+                $profile_image = $row['profileImage'];
+            }
+
+            if ($profile_image == null){
+                // $profile_image = "https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png";
+                $profile_image = "img/default_profile.png";
+            }
+            
+        }catch (Exception $e){
+            $error_message .= $e->getMessage() . "\n";
+        }
+
         array_push($member_list, json_encode(
             array(
                 "id" => $member_id,
@@ -119,6 +139,7 @@ if (empty($group_member_id_list)) {
                 "missionTotalCount" => $mission_total_count,
                 "missionNotCompleteCount" => $mission_not_complete_count,
                 "missionTotalPoint" => $mission_total_point,
+                "profileImage" => $profile_image,
                 "error" => $error_message
             )
         ));
@@ -128,5 +149,5 @@ if (empty($group_member_id_list)) {
 echo json_encode($member_list);
 
 $db->close();
-
+$stmt->close();
 ?>
