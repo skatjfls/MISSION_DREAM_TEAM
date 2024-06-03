@@ -21,6 +21,7 @@ function GroupPage(props) {
     let endOfWeek = new Date(startOfWeek);
     let daysOfWeek = ['월', '화', '수', '목', '금', '토', '일'];
     let datesOfWeek = [];
+    let [change, setChange] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const location = useLocation();
@@ -38,7 +39,6 @@ function GroupPage(props) {
     const [notice, setNotice] = useState(''); // 공지
     const [isNoticeExpanded, setIsNoticeExpanded] = useState(false); // 공지 드롭다운
     const [update, setUpdate] = useState(false); // 그룹 수정 모달 상태
-    let [change, setChange] = useState(false);
 
     startOfWeek.setDate(startOfWeek.getDate() - ((startOfWeek.getDay() + 6) % 7)); // 주의 시작일을 월요일로 설정
     endOfWeek.setDate(endOfWeek.getDate() + 6); // 주의 마지막 날을 일요일로 설정
@@ -73,18 +73,18 @@ function GroupPage(props) {
 
         const fetchProfileImage = async () => {
             try {
-                const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageShow.php');
-                let originalPath = res.data.profilePath;
-                let trimmedPath = originalPath.replace(/^..\/project\/public/, "");
-                setProfileImage(trimmedPath);
+              const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageShow.php');
+              let originalPath = res.data.profilePath
+              let trimmedPath = originalPath.replace(/^..\/project\/public/, "");
+              setProfileImage(trimmedPath);
             } catch (error) {
-                console.log(error);
+              console.log(error);
             }
-        };
+          };
         checkLoginState();
         fetchUserInfo();
         fetchProfileImage();
-    }, []);
+    });
 
     const fetchPenaltyPerPoint = async () => {
         try {
@@ -233,23 +233,23 @@ function GroupPage(props) {
                 <Route path="/" element={
                     <div>
                         <div className="nav-bar">
-                            <img className="img-logo" onClick={()=>{navigate('/')}} src="/img/dream.png"/>
-                            <div className="nav-profile">
-                                <img className="img-profile" onClick={()=>{ setChange(true) }} src={profileImage} alt="Profile"></img>
-                                <h6>{ userName }</h6>
-                                <h6>today { point }</h6>
-                                <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png"/>
-                                <button className="button-logout" onClick={()=>{
-                                axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
-                                .then(res => {
-                                    navigate('/login')
-                                })
-                                .catch(err => {
-                                    console.log(err)
-                                })
-                                }}>로그아웃</button>
-                            </div>
-                            </div>
+                        <img className="img-logo" onClick={()=>{navigate('/')}} src="/img/dream.png"/>
+                        <div className="nav-profile">
+                            <img className="img-profile" onClick={()=>{ setChange(true) }} src={profileImage} alt="Profile"></img>
+                            <h6>{ userName }</h6>
+                            <h6>today { point }</h6>
+                            <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png"/>
+                            <button className="button-logout" onClick={()=>{
+                            axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
+                            .then(res => {
+                                navigate('/login')
+                            })
+                            .catch(err => {
+                                console.log(err)
+                            })
+                            }}>로그아웃</button>
+                        </div>
+                        </div>
                         <div className="info-container">
                             <div className="calculate" onClick={() => setShowModal(true)}>포인트 정산하기</div>
                             <div className="members">
@@ -642,80 +642,80 @@ function ChangeProfileImage(props) {
     const [selectedFile, setFile] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [fileName, setFileName] = useState('');
-
+  
     useEffect(() => {
-        if (!props.change) {
+      if (!props.change) {
         setIsEditing(false);
-        }
+      }
     }, [props.change]);
-
+  
     const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        setFile(file);
+      const file = event.target.files[0];
+      setFile(file);
     };
-
+  
     const handleUpload = async () => {
-        if (!selectedFile) {
+      if (!selectedFile) {
         alert('파일을 선택해주세요.');
         return;
-        }
-
-        const formData = new FormData();
-        formData.append('imgFile', selectedFile);
-
-        try {
+      }
+  
+      const formData = new FormData();
+      formData.append('imgFile', selectedFile);
+  
+      try {
         const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageUpload.php', formData,{
-            headers: {
+          headers: {
             'Content-Type': 'multipart/form-data',
-            }
+          }
         });
         if (res.data == true) {
-            alert("프로필 사진이 변경되었습니다!");
-            props.setChange(false);
+          alert("프로필 사진이 변경되었습니다!");
+          props.setChange(false);
         }
         else {
-            console.log(res.data.error);
+          console.log(res.data.error);
         }
-        } catch (error) {
+      } catch (error) {
         console.log(`업로드 실패: ${error.message}`);
-        }
+      }
     };
-
+  
     const handleRemove = async () => {
-        const confirmRemove = window.confirm('정말로 프로필 사진을 제거하시겠습니까?');
-
-        if (!confirmRemove) {
+      const confirmRemove = window.confirm('정말로 프로필 사진을 제거하시겠습니까?');
+  
+      if (!confirmRemove) {
         return;
-        }
-
-        try {
+      }
+  
+      try {
         const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/DeleteProfileImage.php');
         if (res.data) {
-            alert("프로필 사진이 제거되었습니다!");
-            props.setChange(false);
+          alert("프로필 사진이 제거되었습니다!");
+          props.setChange(false);
         } else {
-            console.log(res.data.error);
+          console.log(res.data.error);
         }
-        } catch (error) {
+      } catch (error) {
         console.log(`제거 실패: ${error.message}`);
-        }
+      }
     };
-
+  
     const handleFileUpload = (event) => {
-        const newFileName = event.target.value.split('\\').pop();
-        setFileName(newFileName);
+      const newFileName = event.target.value.split('\\').pop();
+      setFileName(newFileName);
     };
-
+  
     return (
-        <Modal show={props.change} onHide={() => props.setChange(false) } className="main-modal">
+      <Modal show={props.change} onHide={() => props.setChange(false) } className="main-modal">
         <Modal.Header closeButton>
-            <Modal.Title className='main-modal-title'>프로필 사진</Modal.Title>
+          <Modal.Title className='main-modal-title'>프로필 사진</Modal.Title>
         </Modal.Header>
         <Modal.Body className='modal-change'>
-            {isEditing ? (
+          {isEditing ? (
             <>
-                <img className="img-left" src="/img/left.png" onClick={()=>{setIsEditing(false);}}></img>
-                <div className='modal-change-editing'>
+              <img className="img-left" src="/img/left.png" onClick={()=>{setIsEditing(false);}}></img>
+              <div className='modal-change-editing'>
                 <div>
                 <input type="file" onChange={(event) => {
                     handleFileChange(event);
@@ -725,21 +725,21 @@ function ChangeProfileImage(props) {
                 <input type="text" value={fileName} placeholder='선택된 파일이 없습니다.' readOnly></input>
                 </div>
                 <button className='button-profile' onClick={handleUpload}>변경하기</button>
-                </div>
+              </div>
             </>
-            ) : (
+          ) : (
             <>
-                <img className="img-profile-change" src={props.profileImage}></img>
-                <div className='modal-change-buttons'>
+              <img className="img-profile-change" src={props.profileImage}></img>
+              <div className='modal-change-buttons'>
                 <button className='button-profile profile-remove' onClick={handleRemove}>제거</button>
                 <button className='button-profile' onClick={()=> {setIsEditing(true);}}>변경</button>
-                </div>
+              </div>
             </>
-            )}
+          )}
         </Modal.Body>
-        </Modal>
+      </Modal>
     );
-}
+  }
 
 function UpdateGroup(props) {
     const [isSelectPrice, setIsSelectPrice] = useState(Array(6).fill(false));
