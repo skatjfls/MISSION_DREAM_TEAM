@@ -49,15 +49,17 @@ if (empty($group_member_id_list)) {
         $error_message = ""; // 각 회원 루프마다 에러 메시지 초기화
 
         try {
-            $sql = "SELECT name FROM member WHERE id = ?";
+            $sql = "SELECT name, profileImage FROM member WHERE id = ?";
             $stmt = $db->prepare($sql);
             $stmt->bind_param("s", $member_id);
             $stmt->execute();
             $result = $stmt->get_result();
             $member_name = $result->fetch_assoc()['name'];
+            $member_profile = $result->fetch_assoc()['profileImage'];
             $stmt->close();
         } catch (Exception $e) {
             $member_name = null;
+            $member_profile = null;
             $error_message .= $e->getMessage() . "\n";
         }
 
@@ -135,6 +137,7 @@ if (empty($group_member_id_list)) {
             array(
                 "id" => $member_id,
                 "name" => $member_name,
+                "profileImage"=>$member_profile,
                 "missionList" => $mission_list,
                 "missionTotalCount" => $mission_total_count,
                 "missionNotCompleteCount" => $mission_not_complete_count,

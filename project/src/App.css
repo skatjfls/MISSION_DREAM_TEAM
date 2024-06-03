@@ -12,6 +12,10 @@
   --tex-color1: #2AC8AB;
   --tex-color2: #F1DC0E;
   --tex-color3: #FFBD01;
+  --cal-color1: #FEFCEB;
+  --cal-color2: #FDFAD8;
+  --cal-color3: #FCF7C4;
+  --cal-color4: #FBF5B1;
 }
 
 
@@ -131,6 +135,12 @@ div {
   font-weight: bold;
 }
 
+
+.top-calendar-text {
+  margin-top: 40px;
+  font-weight: bold;
+}
+
 /*To do css*/
 .input-todo {
   width: 20%;
@@ -142,6 +152,7 @@ div {
   margin-top: 25px;
   padding-left: 10px;
   font-family: "font_NanumSquareR";
+  outline: none;
 }
 .button-todo-plus {
   background-color: var(--main-color);
@@ -253,13 +264,14 @@ div {
 }
 .myGroupPrice {
   display: block;
-  margin: 0px 10px;
+  margin: 0px 2px 0px 5px;
   background-color: var(--main-color);
   padding: 4px;
   border-radius: 20px;
   text-align: center;
   color: white;
   font-size: 12px;
+  height: fit-content;
   width: 70px;
 }
 .myGroupName {
@@ -267,21 +279,36 @@ div {
   text-align: right;
   overflow: auto;
 }
-
-/* MyCalendar.css */
-.calendar-tap {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 30px;
+.myGroupCount {
+  font-size: 10px;
+  margin-right: 5px;
+  align-self:self-end;
 }
-.calendar-tap > * {
-  flex: 0 0 50%;
+.myGroupBox {
+  display: flex;
+  height: fit-content;
+}
+/* MyCalendar.css */
+.col-md-5{
+  display: flex;
+  justify-content: center;
+}
+
+.calendar-tap {
+  align-items: center;
+  height: calc(100vh - 300px);
+}
+
+.react-calendar {
+  font-family: "font_tennine";
+}
+.react-calendar__month-view {
+  font-family: "font_NanumSquare";
+  font-weight: bold;
 }
 
 .react-calendar__tile {
-  width: 4.5em;
-  height: 4.5em;
+  height: 5em;
 }
 
 .react-calendar__tile:enabled:hover,
@@ -319,21 +346,41 @@ div {
 }
 
 .react-calendar .react-calendar__tile--point0 {
-  background-color:  var(--main-color);
+  background-color:  white;
 }
 
-.react-calendar .react-calendar__tile--point2 {
-  background-color: var(--gra-color3);
+.react-calendar .react-calendar__tile--point1 {
+  background-color: var(--cal-color1);
 }
 
-.react-calendar .react-calendar__tile--point4 {
-  background-color: var(--gra-color2);
+.react-calendar .react-calendar__tile--point3 {
+  background-color: var(--cal-color2);
 }
 
 .react-calendar .react-calendar__tile--point5 {
-  background-color: var(--gra-color1);
+  background-color: var(--cal-color3);
 }
 
+.react-calendar .react-calendar__tile--point6 {
+  background-color: var(--cal-color4);
+}
+
+.myCalendar {
+  align-self: center;
+  width: 70%;
+  border-radius: 10px;
+  border: var(--gray-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 30px;
+}
+.myChartContainer {
+  height: 280px;
+  padding: 30px;
+}
+
+.myCharts {
+  width: 70%;
+}
 
 /* modal css*/
 .main-modal {
@@ -438,14 +485,15 @@ div {
 .modal-change {
   display: flex;
   flex-direction: column;
+  align-self: center;
+  width: 490px;
+  height: 300px;
   align-items: center;
-  width: 500px;
-  height: 350px;
 }
 
 .img-profile-change {
-  width: 250px;
-  height: 250px;
+  width: 200px;
+  height: 200px;
   border-radius: 250px;
   object-fit: cover;
   border: solid 0.5px var(--sub-color3);
@@ -471,4 +519,40 @@ div {
 .img-left {
   width: 30px;
   align-self: baseline;
+}
+
+.modal-change-editing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+}
+
+.modal-change-editing input[type='file'] {
+  display: none;
+}
+
+.modal-change-editing input {
+  margin: 5px;
+  padding: 5px 15px;
+  outline: none;
+}
+
+.modal-change-editing label {
+  background-color: var(--gray-color);
+  padding: 5px 15px;
+  margin-right: 10px;
+  border-radius: 5px;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
+}
+
+.modal-change-editing button {
+  margin: 20px;
+  width: 100%;
+  padding: 8px;
+}
+
+.modal-change-buttons {
+  margin: auto;
 }

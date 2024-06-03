@@ -52,6 +52,7 @@
     font-family: "font_NanumSquare";
     font-weight: bold;
     font-size: small;
+    outline: none;
   }
 
   .login-inputtext {

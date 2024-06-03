@@ -1,10 +1,10 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from 'moment';
-import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Modal } from 'react-bootstrap';
 import 'react-calendar/dist/Calendar.css';
-import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import './Group.css';
 
 axios.defaults.withCredentials = true;
@@ -21,6 +21,7 @@ function GroupPage(props) {
     let endOfWeek = new Date(startOfWeek);
     let daysOfWeek = ['월', '화', '수', '목', '금', '토', '일'];
     let datesOfWeek = [];
+    let [change, setChange] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const location = useLocation();
@@ -37,6 +38,7 @@ function GroupPage(props) {
     const [modalMissionName, setModalMissionName] = useState(''); // 미션 이름
     const [notice, setNotice] = useState(''); // 공지
     const [isNoticeExpanded, setIsNoticeExpanded] = useState(false); // 공지 드롭다운
+    const [update, setUpdate] = useState(false); // 그룹 수정 모달 상태
 
     startOfWeek.setDate(startOfWeek.getDate() - ((startOfWeek.getDay() + 6) % 7)); // 주의 시작일을 월요일로 설정
     endOfWeek.setDate(endOfWeek.getDate() + 6); // 주의 마지막 날을 일요일로 설정
@@ -46,7 +48,6 @@ function GroupPage(props) {
         const checkLoginState = async () => {
             try {
                 const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php');
-                console.log('로그인 상태 : ', res);
                 if (res.data === 'true') {
                     setIsLoggedIN(true);
                 } else {
@@ -72,42 +73,42 @@ function GroupPage(props) {
 
         const fetchProfileImage = async () => {
             try {
-                const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageShow.php');
-                let originalPath = res.data.profilePath;
-                let trimmedPath = originalPath.replace(/^..\/project\/public/, "");
-                setProfileImage(trimmedPath);
+              const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageShow.php');
+              let originalPath = res.data.profilePath
+              let trimmedPath = originalPath.replace(/^..\/project\/public/, "");
+              setProfileImage(trimmedPath);
             } catch (error) {
-                console.log(error);
+              console.log(error);
             }
-        };
+          };
         checkLoginState();
         fetchUserInfo();
         fetchProfileImage();
-    }, []);
+    });
 
+    const fetchPenaltyPerPoint = async () => {
+        try {
+            const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowPenalty.php', { groupName: group_name });
+            const bringpenaltyPerPoint = res.data; // 벌점 당 포인트 가져 오기
+            setPenaltyPerPoint(bringpenaltyPerPoint); // 상태에 벌점 당 포인트 설정
+        } catch (error) {
+            console.error('에러 fetching penalty per point:', error);
+        }
+    };
     useEffect(() => {
-        const fetchPenaltyPerPoint = async () => {
-            try {
-                const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowPenalty.php', { groupName: group_name });
-                const bringpenaltyPerPoint = res.data; // 벌점 당 포인트 가져 오기
-                setPenaltyPerPoint(bringpenaltyPerPoint); // 상태에 벌점 당 포인트 설정
-            } catch (error) {
-                console.error('에러 fetching penalty per point:', error);
-            }
-        };
         fetchPenaltyPerPoint();
     }, [group_name]);
 
+    const fetchNotice = async () => {
+        try {
+            const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowNotice.php', { groupName: group_name });
+            const noticeData = res.data; // 공지 가져오기
+            setNotice(noticeData); // 가져온 공지를 상태에 설정
+        } catch (error) {
+            console.error('에러 fetching notice:', error);
+        }
+    };
     useEffect(() => {
-        const fetchNotice = async () => {
-            try {
-                const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowNotice.php', { groupName: group_name });
-                const noticeData = res.data; // 공지 가져오기
-                setNotice(noticeData); // 가져온 공지를 상태에 설정
-            } catch (error) {
-                console.error('에러 fetching notice:', error);
-            }
-        };
         fetchNotice();
     }, [group_name]);
 
@@ -232,34 +233,22 @@ function GroupPage(props) {
                 <Route path="/" element={
                     <div>
                         <div className="nav-bar">
-                            <img className="img-logo" onClick={() => { navigate('/') }} src="/img/dream.png" />
-                            <div className="nav-profile">
-                                {
-                                    modal == true ? <div className='modal-profile'
-                                        onClick={(e) => e.stopPropagation()}
-                                        onMouseEnter={handleMouseEnter}
-                                        onMouseLeave={handleMouseLeave}>
-                                        <ChangeProfileImage
-                                            onUploadComplete={handleUploadComplete}
-                                            setIsUploading={setIsUploading}
-                                            setSelectedFile={setSelectedFile}
-                                        />
-                                    </div> : null
-                                }
-                                <img className="img-profile" src={profileImage} onMouseEnter={handleMouseEnter} alt="Profile"></img>
-                                <h6>{userName}</h6>
-                                <h6>오늘의 미션 : {point}</h6>
-                                <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png" />
-                                <button className="button-logout" onClick={() => {
-                                    axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
-                                        .then(res => {
-                                            navigate('/login')
-                                        })
-                                        .catch(err => {
-                                            console.log(err)
-                                        })
-                                }}>로그아웃</button>
-                            </div>
+                        <img className="img-logo" onClick={()=>{navigate('/')}} src="/img/dream.png"/>
+                        <div className="nav-profile">
+                            <img className="img-profile" onClick={()=>{ setChange(true) }} src={profileImage} alt="Profile"></img>
+                            <h6>{ userName }</h6>
+                            <h6>today { point }</h6>
+                            <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png"/>
+                            <button className="button-logout" onClick={()=>{
+                            axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
+                            .then(res => {
+                                navigate('/login')
+                            })
+                            .catch(err => {
+                                console.log(err)
+                            })
+                            }}>로그아웃</button>
+                        </div>
                         </div>
                         <div className="info-container">
                             <div className="calculate" onClick={() => setShowModal(true)}>포인트 정산하기</div>
@@ -342,7 +331,7 @@ function GroupPage(props) {
                                             <tr>
                                                 <th className="groupName">{group_name}</th>
                                                 <th className="penaltyPerPoint"><div>1 pt = {penaltyPerPoint} 원</div></th>
-                                                <th className="groupOption"><img className="imgs" src="/img/gear.png" onClick={handleSettingModalOpen} /></th>
+                                                <th className="groupOption"><img className="imgs" src="/img/gear.png" onClick={()=>{ setUpdate(true) }} /></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -438,6 +427,8 @@ function GroupPage(props) {
                 memberName={modalMemberName}
                 missionName={modalMissionName}
             />
+            <UpdateGroup update={update} setUpdate={setUpdate} group_name={group_name} penaltyPerPoint={penaltyPerPoint} notice={notice} fetchPenaltyPerPoint={fetchPenaltyPerPoint} fetchNotice={fetchNotice}/>
+            <ChangeProfileImage change={change} setChange={setChange} profileImage={profileImage}/>
         </div>
     );
 }
@@ -647,51 +638,248 @@ function PhotoModal({ showPhotoModal, setShowPhotoModal, modalPhotoSrc, memberNa
     );
 }
 
-function ChangeProfileImage({ onUploadComplete, setIsUploading, setSelectedFile }) {
+function ChangeProfileImage(props) {
     const [selectedFile, setFile] = useState(null);
-
+    const [isEditing, setIsEditing] = useState(false);
+    const [fileName, setFileName] = useState('');
+  
+    useEffect(() => {
+      if (!props.change) {
+        setIsEditing(false);
+      }
+    }, [props.change]);
+  
     const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        setFile(file);
-        setSelectedFile(file);
-        setIsUploading(true); // 파일이 선택되면 업로드 중 상태로 설정
+      const file = event.target.files[0];
+      setFile(file);
+    };
+  
+    const handleUpload = async () => {
+      if (!selectedFile) {
+        alert('파일을 선택해주세요.');
+        return;
+      }
+  
+      const formData = new FormData();
+      formData.append('imgFile', selectedFile);
+  
+      try {
+        const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageUpload.php', formData,{
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        });
+        if (res.data == true) {
+          alert("프로필 사진이 변경되었습니다!");
+          props.setChange(false);
+        }
+        else {
+          console.log(res.data.error);
+        }
+      } catch (error) {
+        console.log(`업로드 실패: ${error.message}`);
+      }
+    };
+  
+    const handleRemove = async () => {
+      const confirmRemove = window.confirm('정말로 프로필 사진을 제거하시겠습니까?');
+  
+      if (!confirmRemove) {
+        return;
+      }
+  
+      try {
+        const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/DeleteProfileImage.php');
+        if (res.data) {
+          alert("프로필 사진이 제거되었습니다!");
+          props.setChange(false);
+        } else {
+          console.log(res.data.error);
+        }
+      } catch (error) {
+        console.log(`제거 실패: ${error.message}`);
+      }
+    };
+  
+    const handleFileUpload = (event) => {
+      const newFileName = event.target.value.split('\\').pop();
+      setFileName(newFileName);
+    };
+  
+    return (
+      <Modal show={props.change} onHide={() => props.setChange(false) } className="main-modal">
+        <Modal.Header closeButton>
+          <Modal.Title className='main-modal-title'>프로필 사진</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='modal-change'>
+          {isEditing ? (
+            <>
+              <img className="img-left" src="/img/left.png" onClick={()=>{setIsEditing(false);}}></img>
+              <div className='modal-change-editing'>
+                <div>
+                <input type="file" onChange={(event) => {
+                    handleFileChange(event);
+                    handleFileUpload(event);
+                }} id="input-file" />
+                <label for="input-file">업로드</label>
+                <input type="text" value={fileName} placeholder='선택된 파일이 없습니다.' readOnly></input>
+                </div>
+                <button className='button-profile' onClick={handleUpload}>변경하기</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <img className="img-profile-change" src={props.profileImage}></img>
+              <div className='modal-change-buttons'>
+                <button className='button-profile profile-remove' onClick={handleRemove}>제거</button>
+                <button className='button-profile' onClick={()=> {setIsEditing(true);}}>변경</button>
+              </div>
+            </>
+          )}
+        </Modal.Body>
+      </Modal>
+    );
+  }
+
+function UpdateGroup(props) {
+    const [isSelectPrice, setIsSelectPrice] = useState(Array(6).fill(false));
+    const [groupName, setGroupName] = useState(props.group_name);
+    const [groupNotice, setGroupNotice] = useState(props.notice);
+    const [groupPassword, setGroupPassword] = useState('');
+    const [isPasswordTrue, setIsPasswordTrue] = useState(true);
+    const priceArr = ['₩ 0', '₩ 500', '₩ 1,000', '₩ 2,000', '₩ 3,000', '₩ 5,000'];
+
+    useEffect(() => {
+        const newArr = Array(priceArr.length).fill(false);
+        const numericalPriceArr = priceArr.map(price => price.replace(/[^\d]/g, ''), 10);
+        const index = numericalPriceArr.indexOf(props.penaltyPerPoint);
+        
+        if (index !== -1) {
+            newArr[index] = true;
+        }
+        setIsSelectPrice(newArr);
+    }, [props.penaltyPerPoint]);
+    
+    useEffect(() => {
+        if (!props.update) {
+        setGroupName(props.group_name);
+        setGroupNotice(props.notice);
+        setGroupPassword('');
+        const newArr = Array(priceArr.length).fill(false);
+        const numericalPriceArr = priceArr.map(price => price.replace(/[^\d]/g, ''), 10);
+        const index = numericalPriceArr.indexOf(props.penaltyPerPoint);
+        if (index !== -1) {
+            newArr[index] = true;
+        }
+        setIsSelectPrice(newArr);
+        setIsPasswordTrue(true);
+        }
+    }, [props.update]);
+
+    const handleClickPrice = (idx) => {
+        const newArr = Array(priceArr.length).fill(false);
+        newArr[idx] = true;
+        setIsSelectPrice(newArr);
     };
 
-    const handleUpload = async () => {
-        if (!selectedFile) {
-            alert('파일을 선택해주세요.');
-            return;
-        }
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
-        const formData = new FormData();
-        formData.append('imgFile', selectedFile);
-
+        const selectedPriceString = priceArr[isSelectPrice.indexOf(true)];
+        const selectedPrice = parseInt(selectedPriceString.replace(/[^\d]/g, ''), 10);
+        
         try {
-            const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageUpload.php', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                }
-            });
-            if (res.data == true) {
-                onUploadComplete(); // 업로드가 성공하면 부모 컴포넌트에 알림
-                setIsUploading(false); // 업로드 완료 후 업로드 상태 해제
-                setSelectedFile(null); // 업로드 완료 후 파일 상태 초기화
-            }
-            else {
-                console.log(res.data.error);
-            }
+        const response = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/UpdateGroup.php', {
+            groupName: groupName,
+            Penalty: selectedPrice,
+            newNotice: groupNotice,
+            groupPassword: groupPassword
+        });
+        if (response.data == true) {
+            alert('[ '+groupName+' ] 그룹 설정이 변경되었습니다!')
+            props.setUpdate(false);
+            props.fetchPenaltyPerPoint();
+            props.fetchNotice();
+        }
+        else if (response.data.error == '그룹 비밀번호가 일치하지 않습니다.'){
+            setIsPasswordTrue(false);
+        }
         } catch (error) {
-            console.log(`업로드 실패: ${error.message}`);
-            setIsUploading(false); // 업로드 실패 시 업로드 상태 해제
+        console.log(error);
         }
     };
 
     return (
-        <div>
-            <input type="file" onChange={handleFileChange} />
-            <button className='button-profile' onClick={handleUpload}>변경하기</button>
-        </div>
+        <Modal show={props.update} onHide={() => props.setUpdate(false)} className='main-modal modal-xl'>
+        <Modal.Header closeButton>
+            <Modal.Title className='main-modal-title'>그룹 설정 변경</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="modal-creategroup">
+            <form onSubmit={handleSubmit}>
+            <div className='modal-div'>
+                <h5>그룹 이름</h5>
+                <input
+                className="input-groupname"
+                type="text"
+                value={props.group_name}
+                onChange={(e) => setGroupName(e.target.value)}
+                placeholder="그룹 이름을 작성해주세요!"
+                disabled
+                />
+            </div>
+            <div className='modal-div'>
+                <h5>포인트 별 금액</h5>
+                <div>
+                {priceArr.map((content, i) => (
+                    <button
+                    key={i}
+                    type="button"
+                    className={`button-price ${isSelectPrice[i] ? 'button-price-clicked' : ''}`}
+                    onClick={() => handleClickPrice(i)}
+                    >
+                    {content}
+                    </button>
+                ))}
+                <div className='modal-p'>
+                    <p>동기부여를 위해 포인트별 금액을 설정해보세요! 벌금처럼 걷어서 회식이나 1/n을 해도 좋고, 꼴등이 1등에게 쏘기도 좋아요!</p>
+                    <p>벌금이 부담스럽다면 0원으로 설정 후 상벌을 정해보세요.</p>
+                </div>
+                </div>
+            </div>
+            <div className='modal-div'>
+                <h5>그룹 공지사항</h5>
+                <textarea
+                value={groupNotice}
+                onChange={(e) => setGroupNotice(e.target.value)}
+                placeholder="그룹 내에서 지켜야 할 규칙을 작성해주세요."
+                ></textarea>
+            </div>
+            <div className='modal-div'>
+                <h5>가입 비밀번호</h5>
+                <input
+                className="input-grouppw"
+                type="password"
+                value={groupPassword}
+                onChange={(e) => {setGroupPassword(e.target.value); setIsPasswordTrue(true);}}
+                placeholder="기존 비밀번호를 작성해주세요!"
+                />
+                {!isPasswordTrue && <p className='error-message'>비밀번호를 확인해주세요!</p>}
+            </div>
+            <Modal.Footer>
+                <Button
+                type='submit'
+                className={`button-group ${!groupName || !groupNotice || !groupPassword || isSelectPrice.indexOf(true) === -1 || !isPasswordTrue? 'button-disabled' : ''}`}
+                variant="secondary"
+                disabled={!groupName || !groupNotice || !groupPassword || isSelectPrice.indexOf(true) === -1 || !isPasswordTrue}
+                >
+                그룹 수정하기
+                </Button>
+            </Modal.Footer>
+            </form>
+        </Modal.Body>
+        </Modal>
     );
 }
+
 
 export default GroupPage;
