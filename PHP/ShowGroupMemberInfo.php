@@ -54,8 +54,9 @@ if (empty($group_member_id_list)) {
             $stmt->bind_param("s", $member_id);
             $stmt->execute();
             $result = $stmt->get_result();
-            $member_name = $result->fetch_assoc()['name'];
-            $member_profile = $result->fetch_assoc()['profileImage'];
+            $row = $result->fetch_assoc();
+            $member_name = $row['name'];
+            $member_profile = $row['profileImage'];
             $stmt->close();
 
             if($member_profile == null){
