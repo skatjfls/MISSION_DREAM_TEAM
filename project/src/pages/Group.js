@@ -108,6 +108,7 @@ function GroupPage(props) {
             const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowNotice.php', { groupName: group_name });
             const noticeData = res.data; // 공지 가져오기
             setNotice(noticeData); // 가져온 공지를 상태에 설정
+            console.log(notice);
         } catch (error) {
             console.error('에러 fetching notice:', error);
         }
@@ -219,7 +220,7 @@ function GroupPage(props) {
     };
 
     const calculateColorByRank = (rank, totalRanks) => {
-        const mainColor = '#87F6A6';
+        const mainColor = '#FAF29D';
         const lightenFactor = 1 - (rank / totalRanks) * 0.8; // 순위가 높을수록 색상이 연해짐(overall이 클수록 색상이 진해짐)
         return `rgba(${parseInt(mainColor.slice(1, 3), 16)}, ${parseInt(mainColor.slice(3, 5), 16)}, ${parseInt(mainColor.slice(5, 7), 16)}, ${lightenFactor})`;
     };      
@@ -344,11 +345,11 @@ function GroupPage(props) {
                                         </tbody>
                                     </table>
                                 </div>
-                                <div className="groupNotice" onClick={toggleNoticeExpansion}>
-                                    공지: <span className="Notice">{isNoticeExpanded ? notice : notice.slice(0, 100)}</span>
+                                <div className="groupNotice" onClick={toggleNoticeExpansion}>                                   
+                                    <div className='noticeMent'>공지</div>
+                                    <span className="Notice" dangerouslySetInnerHTML={{ __html: isNoticeExpanded ? notice.replace(/\n/g, "<br>") : notice.slice(0, 100) }}></span>
                                     {notice.length > 20 && !isNoticeExpanded && <span>...</span>}
                                 </div>
-
                                 <table className="table-bordered groupStats">
                                     <thead>
                                         <tr>

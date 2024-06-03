@@ -157,12 +157,23 @@ div {
   text-align: left;
   width: 100%;
   background-color: var(--sub-color1);
-  padding: 5px;
+  padding: 30px;
   margin-top: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+.Notice{
+  font-family: "font_NanumSquare";
+}
+
+.noticeMent{
+  margin: -5px;
   margin-bottom: 10px;
   font-family: "font_NanumSquare";
   font-weight: bold;
-
+  font-size: 30px;
 }
 
 .groupInfoTable {
@@ -321,6 +332,7 @@ div {
   font-family: "font_NanumSquare";
   font-weight: bold;
 }
+
 
 
 
