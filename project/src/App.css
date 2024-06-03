@@ -135,6 +135,12 @@ div {
   font-weight: bold;
 }
 
+
+.top-calendar-text {
+  margin-top: 40px;
+  font-weight: bold;
+}
+
 /*To do css*/
 .input-todo {
   width: 20%;
@@ -146,6 +152,7 @@ div {
   margin-top: 25px;
   padding-left: 10px;
   font-family: "font_NanumSquareR";
+  outline: none;
 }
 .button-todo-plus {
   background-color: var(--main-color);
@@ -257,7 +264,7 @@ div {
 }
 .myGroupPrice {
   display: block;
-  margin: 0px 10px;
+  margin: 0px 2px 0px 5px;
   background-color: var(--main-color);
   padding: 4px;
   border-radius: 20px;
@@ -265,7 +272,6 @@ div {
   color: white;
   font-size: 12px;
   height: fit-content;
-  align-self: center;
   width: 70px;
 }
 .myGroupName {
@@ -273,9 +279,17 @@ div {
   text-align: right;
   overflow: auto;
 }
-
+.myGroupCount {
+  font-size: 10px;
+  margin-right: 5px;
+  align-self:self-end;
+}
+.myGroupBox {
+  display: flex;
+  height: fit-content;
+}
 /* MyCalendar.css */
-.col-md-6{
+.col-md-5{
   display: flex;
   justify-content: center;
 }
@@ -359,10 +373,13 @@ div {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin: 30px;
 }
-.myChart {
-  width: 600px;
+.myChartContainer {
   height: 280px;
   padding: 30px;
+}
+
+.myCharts {
+  width: 70%;
 }
 
 /* modal css*/
@@ -468,9 +485,10 @@ div {
 .modal-change {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 480px;
+  align-self: center;
+  width: 490px;
   height: 300px;
+  align-items: center;
 }
 
 .img-profile-change {
@@ -501,4 +519,40 @@ div {
 .img-left {
   width: 30px;
   align-self: baseline;
+}
+
+.modal-change-editing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+}
+
+.modal-change-editing input[type='file'] {
+  display: none;
+}
+
+.modal-change-editing input {
+  margin: 5px;
+  padding: 5px 15px;
+  outline: none;
+}
+
+.modal-change-editing label {
+  background-color: var(--gray-color);
+  padding: 5px 15px;
+  margin-right: 10px;
+  border-radius: 5px;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
+}
+
+.modal-change-editing button {
+  margin: 20px;
+  width: 100%;
+  padding: 8px;
+}
+
+.modal-change-buttons {
+  margin: auto;
 }

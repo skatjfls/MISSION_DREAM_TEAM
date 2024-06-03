@@ -105,7 +105,7 @@ function App() {
               <div className="nav-profile">
                 <img className="img-profile" onClick={()=>{ setChange(true) }} src={profileImage} alt="Profile"></img>
                 <h6>{ userName }</h6>
-                <h6>오늘의 미션 : { point }</h6>
+                <h6>today { point }</h6>
                 <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png"/>
                 <button className="button-logout" onClick={()=>{
                   axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
@@ -124,7 +124,11 @@ function App() {
                   <h1>To do list</h1>
                   <input className="input-todo" type="text" value={missionInput} onChange={(e)=>{ setMissionInput(e.target.value)}}placeholder="오늘의 할 일을 작성하세요!"></input>
                   <button className="button-todo-plus" onClick={handleAddMission}>+</button>
-                </> : <h1>Calendar</h1>
+                </> :
+                <>
+                <h1>Calendar</h1>
+                <h5 className="top-calendar-text">할 건 다하고 노는거니?</h5>
+                </>
               }
               <Nav variant="tabs" defaultActiveKey="todo" className="tap">
                 <Nav.Item>
@@ -182,6 +186,9 @@ const fetchGroups = async (setGroupList) => {
 // Todo 탭
 function ToDo(props) {
   const inputFileRef = useRef([]);
+  let [photo, setPhoto] = useState(false);
+  let [photoSrc, setPhotoSrc] = useState('');
+  let [photoMissionName, setPhotoMissionName] = useState('');
   
   useEffect(() => {
     fetchMissions(props.setMissionList);
@@ -235,6 +242,14 @@ function ToDo(props) {
     }
   };
 
+  const handlePhotoOpen = (photoPath, missionName) => {
+    let absolutePath = photoPath.replace('../project/public/', '');
+    absolutePath = absolutePath.replace('..', '');
+    setPhotoSrc(`/${absolutePath}`);
+    setPhoto(true);
+    setPhotoMissionName(missionName);
+  };
+
   return(
     <div className="todo-tap">
       <div className="row">
@@ -247,7 +262,16 @@ function ToDo(props) {
                   <input type="checkbox" className="mission-checkbox" checked={content.isCompleted || false} readOnly/>
                   <h6 id={ content[2] } style={{ textDecoration: content.isCompleted ? 'line-through' : 'none' }}>{ content[2] }</h6>
                   <input type="file" accept="image/*" ref={(el) => (inputFileRef.current[i] = el)} style={{ display: 'none' }} onChange={(e) => handleImageUpload(e, content[0], i)} />
-                  <img className="imgs" src={content.isCompleted ? "/img/camera_gray.png" : "/img/camera.png"} onClick={() => inputFileRef.current[i].click()} />
+                  <img className="imgs" src={content.isCompleted ? "/img/camera_gray.png" : "/img/camera.png"}
+                    onClick={() => {
+                    if (content.isCompleted) {
+                      handlePhotoOpen(content[3],content[2])
+                    } else {
+                      inputFileRef.current[i].click();
+                    }}}
+                    onContextMenu={() => {
+                      if (content.isCompleted) {
+                        inputFileRef.current[i].click();}}}/>
                   <button className={`button-x ${content.isCompleted ? 'gray-button' : ''}`} onClick={()=>{ handleDeleteMission(i) }}>X</button>
                 </div>
               )
@@ -270,7 +294,10 @@ function ToDo(props) {
                 const returnString = groupPrice?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 return (
                   <div className="groupList" key={i}>
-                    <span className='myGroupPrice'>{ '₩ '+returnString }</span>
+                    <div className='myGroupBox'>
+                      <span className='myGroupPrice'>{ '₩ '+returnString }</span>
+                      <span className="myGroupCount">{content.groupMemberCnt}</span>
+                    </div>
                     <div className="myGroupName" onClick={()=>{
                       props.navigate('/group', { state: { pageGroupName: content.groupName.group_name } });
                     }}>{ content.groupName.group_name }</div>
@@ -284,8 +311,30 @@ function ToDo(props) {
           </div>
         </div>
       </div>
+      <MissionPhoto
+        photo={photo}
+        setPhoto={setPhoto}
+        photoSrc={photoSrc}
+        photoMissionName={photoMissionName}
+      />
     </div>
   )
+}
+
+
+function MissionPhoto(props) {
+  const modalTitle = props.photoMissionName;
+
+  return (
+      <Modal show={props.photo} onHide={() => {props.setPhoto(false)}} className="main-modal">
+          <Modal.Header closeButton>
+              <Modal.Title>{modalTitle}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+              <img src={props.photoSrc} alt={modalTitle} style={{ width: '100%' }} />
+          </Modal.Body>
+      </Modal>
+  );
 }
 
 
@@ -386,7 +435,8 @@ function MyCalendar() {
   return (
     <div className='calendar-tap'>
       <div className="row">
-        <div className="col-md-6">
+        <div className="col-md-1"></div>
+        <div className="col-md-5">
           <Calendar
             onChange={setValue}
             value={value}
@@ -406,7 +456,8 @@ function MyCalendar() {
             }}
           />
         </div>
-        <div className="col-md-6 myChart">
+        <div className="col-md-5 myChartContainer">
+        <div className="myCharts">
           <ResponsiveContainer>
             <BarChart
               data={dailyData}
@@ -442,6 +493,8 @@ function MyCalendar() {
             </LineChart>
           </ResponsiveContainer>
         </div>
+        </div>
+        <div className="col-md-1"></div>
       </div>
     </div>
   );
@@ -651,6 +704,7 @@ function JoinGroup(props) {
 function ChangeProfileImage(props) {
   const [selectedFile, setFile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [fileName, setFileName] = useState('');
 
   useEffect(() => {
     if (!props.change) {
@@ -679,7 +733,8 @@ function ChangeProfileImage(props) {
         }
       });
       if (res.data == true) {
-        
+        alert("프로필 사진이 변경되었습니다!");
+        props.setChange(false);
       }
       else {
         console.log(res.data.error);
@@ -709,6 +764,11 @@ function ChangeProfileImage(props) {
     }
   };
 
+  const handleFileUpload = (event) => {
+    const newFileName = event.target.value.split('\\').pop();
+    setFileName(newFileName);
+  };
+
   return (
     <Modal show={props.change} onHide={() => props.setChange(false) } className="main-modal">
       <Modal.Header closeButton>
@@ -718,13 +778,22 @@ function ChangeProfileImage(props) {
         {isEditing ? (
           <>
             <img className="img-left" src="/img/left.png" onClick={()=>{setIsEditing(false);}}></img>
-            <input type="file" onChange={handleFileChange} />
-            <button className='button-profile' onClick={handleUpload}>변경하기</button>
+            <div className='modal-change-editing'>
+              <div>
+              <input type="file" onChange={(event) => {
+                  handleFileChange(event);
+                  handleFileUpload(event);
+              }} id="input-file" />
+              <label for="input-file">업로드</label>
+              <input type="text" value={fileName} placeholder='선택된 파일이 없습니다.' readOnly></input>
+              </div>
+              <button className='button-profile' onClick={handleUpload}>변경하기</button>
+            </div>
           </>
         ) : (
           <>
             <img className="img-profile-change" src={props.profileImage}></img>
-            <div>
+            <div className='modal-change-buttons'>
               <button className='button-profile profile-remove' onClick={handleRemove}>제거</button>
               <button className='button-profile' onClick={()=> {setIsEditing(true);}}>변경</button>
             </div>
