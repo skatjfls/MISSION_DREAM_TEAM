@@ -59,11 +59,13 @@ function App() {
       try {
         const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageShow.php');
         let originalPath = res.data.profilePath;
-        if (originalPath === '/img/default_profile.png') {
+        if (originalPath != null) {
+          if (originalPath === '/img/default_profile.png') {
             setProfileImage(originalPath);
-        } else {
+          } else {
             let trimmedPath = originalPath.replace(/^..\/project\/public/, "");
             setProfileImage(trimmedPath);
+          }
         }
       } catch (error) {
         console.log(error);
