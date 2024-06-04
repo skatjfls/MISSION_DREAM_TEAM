@@ -59,6 +59,10 @@ div {
   display: none;
 }
 
+.groupCalendar::-webkit-scrollbar {
+  display: none;
+}
+
 .infoMember{
   display: block;
   background-color: white;
@@ -100,20 +104,16 @@ div {
   padding-left: 30px;
 }
 
-.groupCalendar-container {
-  padding: 10px;
-}
-
 .groupCalendar {
   float: right;
   width: 75%;
-  min-height: calc(100vh - 100px);
-  height: 100%;
+  height: calc(100vh - 80px);
   background-color: white;
   padding: 40px;
   border: 1.5px solid var(--sub-color3);
   border-radius: 5px;
   margin: 0px;
+  overflow: scroll;
 }
 
 
@@ -192,20 +192,19 @@ div {
 }
 
 .memberInfo {
-  border-collapse: collapse;
   margin: 0 auto; /* 테이블을 상위 요소의 좌우 가운데에 배치 */
   width: 100%;
 }
 
 .memberInfo td {
-  padding: 8px; /* 셀 간의 간격을 설정 */
-  width: calc(100% / 3); /* 세 열이므로 각 열의 너비를 33.33%로 설정 */
+  padding: 5px; /* 셀 간의 간격을 설정 */
 }
 
 .missionTable{
-  background-color: white;
+  background-color: rgb(255, 255, 255);
   width: 100%;
-  margin: 0px auto;
+  display: table;
+  margin-top: 10px;
 }
 
 .missionTable th,
@@ -333,8 +332,46 @@ div {
   font-weight: bold;
 }
 
+.tableRank{
+  padding: 5px;
+  border-radius: 1000px;
+}
 
 
+.missionName{
+  max-width: 50px;
+  word-break:break-all;
+  border-bottom: 1px solid #a9a9a9;
+  padding: 5px;
+}
+
+.missionNameLast {
+  max-width: 50px;
+  word-break: break-all;
+  padding: 5px;
+}
+/*
+.align-top {
+  vertical-align: top;
+  padding-top: 5px;
+}
+*/
 
 
+.checkbox {
+  display: flex;
+  margin-left: 15px;
+  align-items: center;
+  height: 100%;
+}
 
+.memberName{
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 150px;
+}
+
+.memberInInfo{
+  width: 100%;
+}
