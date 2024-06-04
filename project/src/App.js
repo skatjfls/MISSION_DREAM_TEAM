@@ -29,7 +29,7 @@ function App() {
   let navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/setCookie.php')
+    axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/SetCookie.php')
     .then(res => {
       if(res.data == true){
       }
