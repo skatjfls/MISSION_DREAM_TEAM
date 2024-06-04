@@ -30,6 +30,28 @@ if(!($now >= $start_time && $now <= $end_time)){
 // Assuming you have the mission id stored in a variable
 $mission_idx = $_POST['mission_idx'];
 
+// 미션 삭제 전 서버에서 이미지 삭제
+try{
+    $sql = "SELECT photo FROM missions WHERE id = ? AND mission_idx = ?";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param('si', $id, $mission_idx);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    while($row = $result->fetch_assoc()){
+        $photo = $row['photo'];
+        if($photo != null){
+            $filePath = $photo;
+            if(file_exists($filePath)){
+                unlink($filePath);
+            }
+        }
+    }
+}catch(Exception $e){
+    echo json_encode(array('error' => '이미지 삭제 중 오류가 발생하였습니다.'));
+    exit;
+}
+
 // Prepare the SQL statement
 $sql = "DELETE FROM missions WHERE id = ? AND mission_idx = ?";
 
