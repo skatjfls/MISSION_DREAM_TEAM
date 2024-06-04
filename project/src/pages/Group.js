@@ -193,6 +193,7 @@ function GroupPage(props) {
     const handlePhotoOpen = (photoPath, memberName, missionName) => {
         let absolutePath = photoPath.replace('../project/public/', '');
         absolutePath = absolutePath.replace('..', '');
+        console.log(absolutePath);
         setModalPhotoSrc(`/${absolutePath}`);
         setShowPhotoModal(true);
         setModalMemberName(memberName); // 멤버 이름 저장
@@ -277,45 +278,48 @@ function GroupPage(props) {
                                                         <table className="memberInfo" onClick={() => toggleMissionTable(id)}>
                                                             <tbody>
                                                                 <tr>
-                                                                    <td><img className="img-profile" src={profileImage === '/img/default_profile.png' ? profileImage : profileImage.replace(/^..\/project\/public/, "") } alt="Profile"/></td>
-                                                                    <td>{name}</td>
-                                                                    <td>{missionTotalCount - missionNotCompleteCount}/{missionTotalCount}</td>
-                                                                    <td>{missionTotalPoint === 0 ? '0' : (missionTotalPoint > 0 ? `-${missionTotalPoint}` : missionTotalPoint)}pt</td>
+                                                                    <td style={{width: '10%'}}><img className="img-profile" src={profileImage === '/img/default_profile.png' ? profileImage : profileImage.replace(/^..\/project\/public/, "") } alt="Profile"/></td>
+                                                                    <td style={{width: '50%'}}>{name}</td>
+                                                                    <td style={{width: '20%'}}>{missionTotalCount - missionNotCompleteCount}/{missionTotalCount}</td>
+                                                                    <td style={{width: '20%'}}>{missionTotalPoint === 0 ? '0' : (missionTotalPoint > 0 ? `-${missionTotalPoint}` : missionTotalPoint)}pt</td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>
                                                     </span>
                                                     {memberMissionTables[id] && (
                                                         <table className="missionTable">
-                                                            <tbody>
-                                                                {/* missionList를 반복하여 각 미션을 출력 */}
-                                                                {missionList.map((mission, missionIndex) => {
-                                                                    const missionObject = JSON.parse(mission);
-                                                                    const missionComplete = missionObject.complete;
-                                                                    const missionName = missionObject.mission;
-                                                                    const missionPhoto = missionObject.photo;
-                                                                    return (
-                                                                        <tr key={missionIndex}>
-                                                                            <td>
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    checked={missionComplete === 1 ? true : false}
-                                                                                    disabled
-                                                                                />
-                                                                            </td>
-                                                                            <td>{missionName}</td>
-                                                                            <td>
-                                                                                {missionPhoto ? (
-                                                                                    <button className="button-camera" onClick={() => handlePhotoOpen(missionPhoto, name, missionName)}><img className="imgs" src="/img/camera.png" /></button>
-                                                                                ) : (
-                                                                                    <button className="button-camera" disabled><img className="imgs" src="/img/camera_gray.png" /></button>
-                                                                                )}
-                                                                            </td>
-                                                                        </tr>
-                                                                    );
-                                                                })}
-                                                            </tbody>
-                                                        </table>
+                                                        <tbody>
+                                                            {/* missionList를 반복하여 각 미션을 출력 */}
+                                                            {missionList.map((mission, missionIndex) => {
+                                                                const missionObject = JSON.parse(mission);
+                                                                const missionComplete = missionObject.complete;
+                                                                const missionName = missionObject.mission;
+                                                                const missionPhoto = missionObject.photo;
+                                                                const isLastMission = missionIndex === missionList.length - 1;
+                                                                return (
+                                                                    <tr key={missionIndex} className={isLastMission ? "missionNameLast" : "missionName"}>
+                                                                        <td valign='middle'>
+                                                                            <div className="checkbox">
+                                                                                <input type="checkbox" checked={missionComplete === 1 ? true : false} disabled/>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>{missionName}</td>
+                                                                        <td>
+                                                                            {missionPhoto ? (
+                                                                                <button className="button-camera" onClick={() => handlePhotoOpen(missionPhoto, name, missionName)}>
+                                                                                    <img className="imgs" src="/img/camera.png" />
+                                                                                </button>
+                                                                            ) : (
+                                                                                <button className="button-camera" disabled>
+                                                                                    <img className="imgs" src="/img/camera_gray.png" />
+                                                                                </button>
+                                                                            )}
+                                                                        </td>
+                                                                    </tr>
+                                                                );
+                                                            })}
+                                                        </tbody>
+                                                    </table>
                                                     )}
                                                 </div>
                                             );
@@ -427,13 +431,7 @@ function GroupPage(props) {
             </Routes>
             <PointModal showModal={showModal} setShowModal={setShowModal} members={members} penalty_per_point={penaltyPerPoint} group_name={group_name} />
             <SettingModal showSettingModal={showSettingModal} setShowSettingModal={setShowSettingModal} group_name={group_name} />
-            <PhotoModal
-                showPhotoModal={showPhotoModal}
-                setShowPhotoModal={setShowPhotoModal}
-                modalPhotoSrc={modalPhotoSrc}
-                memberName={modalMemberName}
-                missionName={modalMissionName}
-            />
+            <PhotoModal showPhotoModal={showPhotoModal} setShowPhotoModal={setShowPhotoModal} modalPhotoSrc={modalPhotoSrc} memberName={modalMemberName} missionName={modalMissionName}/>
             <UpdateGroup update={update} setUpdate={setUpdate} group_name={group_name} penaltyPerPoint={penaltyPerPoint} notice={notice} fetchPenaltyPerPoint={fetchPenaltyPerPoint} fetchNotice={fetchNotice}/>
             <ChangeProfileImage change={change} setChange={setChange} profileImage={profileImage}/>
         </div>
@@ -473,11 +471,11 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
         });
 
     const getRankStyle = (rank, index, totalMembers) => {
-        if (rank === 1) return { color: 'gold' };
-        if (rank === 2) return { color: 'silver' };
-        if (rank === 3) return { color: '#CD7F32' };
-        if (index === totalMembers - 1) return { color: 'red' };
-        return { color: '#87F6A6' };
+        if (rank === 1) return { backgroundColor: 'gold', color: 'white', textAlign: 'center'};
+        if (rank === 2) return { backgroundColor: 'silver', color: 'white', textAlign: 'center' };
+        if (rank === 3) return { backgroundColor: '#CD7F32', color: 'white', textAlign: 'center' };
+        if (index === totalMembers - 1) return {  backgroundColor: 'red', color: 'white', textAlign: 'center' };
+        return {  backgroundColor: '#87F6A6', color: 'white', textAlign: 'center' };
     };
 
     const handlePointCalculation = async (group_name, penalty_per_point) => {
@@ -511,7 +509,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                     <table className='table'>
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <th>등수</th>
                                 <th>이름</th>
                                 <th>포인트</th>
                                 <th>페널티 금액</th>
@@ -530,7 +528,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                                 const rankStyle = getRankStyle(rank, index, rankedMembers.length);
                                 return (
                                     <tr key={index}>
-                                        <td style={rankStyle}>{rank}</td>
+                                        <td style={ {width: '50px' }} ><div className='tableRank' style={rankStyle}>{rank}</div></td>
                                         <td>{member.name}</td>
                                         <td>{member.missionTotalPoint}pt</td>
                                         <td>{penalty_per_point}원</td>
