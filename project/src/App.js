@@ -29,6 +29,15 @@ function App() {
   let navigate = useNavigate();
 
   useEffect(() => {
+    axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/setCookie.php')
+    .then(res => {
+      if(res.data == true){
+      }
+    })
+    .catch(error => {
+      console.error('Error setting cookie:', error)
+    })
+
     axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
     .then(res => {
       if(res.data === false){
@@ -84,7 +93,6 @@ function App() {
       const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Insert_mission.php', {
         mission: missionInput // 미션 내용
       });
-      console.log('insert_mission',res)
     
       // 미션 목록 갱신
       // 미션 목록이 비어 있는지 확인하고 새로운 미션을 추가
@@ -238,11 +246,12 @@ function ToDo(props) {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log('Image uploaded:', res.data);
-      if (res.data == true) {
+
+      if (res.data) {
         props.setMissionList(prevMissions => {
           const newMissions = [...prevMissions];
           newMissions[index].isCompleted = true;
+          newMissions[index][3] = res.data;
           return newMissions;
         });
       }
@@ -252,7 +261,8 @@ function ToDo(props) {
     }
   };
 
-  const handlePhotoOpen = (photoPath, missionName) => {
+  const handlePhotoOpen = async (photoPath, missionName) => {
+    console.log(photoPath, missionName)
     let absolutePath = photoPath.replace('../project/public/', '');
     absolutePath = absolutePath.replace('..', '');
     setPhotoSrc(`/${absolutePath}`);

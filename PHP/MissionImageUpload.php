@@ -137,7 +137,7 @@
     
                     move_uploaded_file($_FILES['imgFile']['tmp_name'], $filePath);
     
-                    echo json_encode(true);
+                    echo json_encode($filePath);
                     exit;
     
                 } catch(Exception $e){
