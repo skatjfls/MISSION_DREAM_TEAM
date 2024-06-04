@@ -47,7 +47,7 @@ function App() {
     .catch(error => {
       console.error('Error fetching user info:', error)
     })
-  }, []);
+  });
 
   useEffect(() => {
     const fetchUserInfo = async () => {
