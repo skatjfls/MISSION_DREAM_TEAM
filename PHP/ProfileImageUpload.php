@@ -93,7 +93,9 @@
         $folderPath = '../project/public/uploads/' . $id . '/profile';
 
         if(!file_exists($folderPath)){
-            mkdir($folderPath, 0700, true);
+            mkdir($folderPath, 0775, true);
+            chown($folderPath, 'www-data');
+            chgrp($folderPath, 'www-data');
         }
 
         //이전 이미지 서버에서 삭제
