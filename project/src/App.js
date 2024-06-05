@@ -25,19 +25,11 @@ function App() {
   let [point, setPoint] = useState();
   let [missionInput, setMissionInput] = useState('');
   let [profileImage, setProfileImage] = useState('');
+  let [loading, setLoading] = useState(true);
   let [tap, setTap] = useState(0);
   let navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/SetCookie.php')
-    .then(res => {
-      if(res.data == true){
-      }
-    })
-    .catch(error => {
-      console.error('Error setting cookie:', error)
-    })
-
     axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
     .then(res => {
       if(res.data === false){
@@ -45,10 +37,10 @@ function App() {
       }
     })
     .catch(error => {
-      console.error('Error fetching user info:', error)
+      console.error('Error fetching user login data:', error)
     })
-  });
-
+  }, []);
+  
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -109,6 +101,7 @@ function App() {
       console.error('Error adding mission:', error);
     }
   };
+  
   return (
     <div className="App">
       <Routes>

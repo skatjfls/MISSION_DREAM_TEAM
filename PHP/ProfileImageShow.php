@@ -6,7 +6,9 @@ include('index.php');
 if(!session_id()){
     session_start();
 }
-
+if (isset($_COOKIE['c_id'])) {
+    $_SESSION['id'] = $_COOKIE['c_id'];
+}
 if (!isset($_SESSION['id'])) {
     echo json_encode(array('error' => '로그인이 필요합니다.'));
     exit;
