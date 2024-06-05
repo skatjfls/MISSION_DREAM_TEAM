@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button, Modal, Nav } from 'react-bootstrap';
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { Bar, BarChart, CartesianGrid, Cell, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import './App.css';
 import Group from './pages/Group.js';
@@ -25,7 +25,7 @@ function App() {
   let [point, setPoint] = useState();
   let [missionInput, setMissionInput] = useState('');
   let [profileImage, setProfileImage] = useState('');
-  let [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
   let [tap, setTap] = useState(0);
   let navigate = useNavigate();
 
@@ -33,13 +33,15 @@ function App() {
     axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
     .then(res => {
       if(res.data === false){
-        navigate('/login');
+        setIsLoggedIn(false);
+      } else {
+        setIsLoggedIn(true);
       }
     })
     .catch(error => {
       console.error('Error fetching user login data:', error)
     })
-  }, []);
+  }, [navigate]);
   
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -75,6 +77,12 @@ function App() {
     fetchProfileImage();
   });
   
+  if (isLoggedIn === null) {
+    return (
+      <div>Loading</div>
+    );
+  }
+
   const handleAddMission = async () => {
     try {
       if (missionInput.trim() === '') {
@@ -105,56 +113,60 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={
-          <div>
-            <div className="nav-bar">
-              <img className="img-logo" onClick={()=>{navigate('/')}} src="/img/dream.png"/>
-              <div className="nav-profile">
-                <img className="img-profile" onClick={()=>{ setChange(true) }} src={profileImage} alt="Profile"></img>
-                <h6>{ userName }</h6>
-                <h6>today { point }</h6>
-                <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png"/>
-                <button className="button-logout" onClick={()=>{
-                  axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
-                  .then(res => {
-                    navigate('/login')
-                  })
-                  .catch(err => {
-                    console.log(err)
-                  })
-                  }}>로그아웃</button>
-              </div>
-            </div>
-            <div className="main-top">
-              {
-                tap == 0? <>
-                  <h1>To do list</h1>
-                  <input className="input-todo" type="text" value={missionInput} onChange={(e)=>{ setMissionInput(e.target.value)}}placeholder="오늘의 할 일을 작성하세요!"></input>
-                  <button className="button-todo-plus" onClick={handleAddMission}>+</button>
-                </> :
-                <>
-                <h1>Calendar</h1>
-                <h5 className="top-calendar-text">할 건 다하고 노는거니?</h5>
-                </>
-              }
-              <Nav variant="tabs" defaultActiveKey="todo" className="tap">
-                <Nav.Item>
-                  <Nav.Link onClick={()=>{ setTap(0) }} eventKey="todo">to do</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link onClick={()=>{ setTap(1) }} eventKey="calendar">calendar</Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </div>
-            {
-              tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} setGroupList={setGroupList} navigate={navigate}/> : null
-            }
-            {
-              tap == 1 ? <MyCalendar/> : null
-            }
-          </div>
-        }/>
         <Route path="/login" element={ <LogIn navigate={navigate}/> }/>
+        {isLoggedIn ? (
+          <Route path="/" element={
+            <div>
+              <div className="nav-bar">
+                <img className="img-logo" onClick={()=>{navigate('/')}} src="/img/dream.png"/>
+                <div className="nav-profile">
+                  <img className="img-profile" onClick={()=>{ setChange(true) }} src={profileImage} alt="Profile"></img>
+                  <h6>{ userName }</h6>
+                  <h6>today { point }</h6>
+                  <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png"/>
+                  <button className="button-logout" onClick={()=>{
+                    axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
+                    .then(res => {
+                      navigate('/login')
+                    })
+                    .catch(err => {
+                      console.log(err)
+                    })
+                    }}>로그아웃</button>
+                </div>
+              </div>
+              <div className="main-top">
+                {
+                  tap == 0? <>
+                    <h1>To do list</h1>
+                    <input className="input-todo" type="text" value={missionInput} onChange={(e)=>{ setMissionInput(e.target.value)}}placeholder="오늘의 할 일을 작성하세요!"></input>
+                    <button className="button-todo-plus" onClick={handleAddMission}>+</button>
+                  </> :
+                  <>
+                  <h1>Calendar</h1>
+                  <h5 className="top-calendar-text">할 건 다하고 노는거니?</h5>
+                  </>
+                }
+                <Nav variant="tabs" defaultActiveKey="todo" className="tap">
+                  <Nav.Item>
+                    <Nav.Link onClick={()=>{ setTap(0) }} eventKey="todo">to do</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link onClick={()=>{ setTap(1) }} eventKey="calendar">calendar</Nav.Link>
+                  </Nav.Item>
+                </Nav>
+              </div>
+              {
+                tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} setGroupList={setGroupList} navigate={navigate}/> : null
+              }
+              {
+                tap == 1 ? <MyCalendar/> : null
+              }
+            </div>
+          }/>
+        ) : (
+          <Route path="*" element={<Navigate to="/login" />} />
+        )}
         <Route path="/signup" element={ <SignUp/> }/>
         <Route path="/group/*" element={ <Group/> }/>
         <Route path="/updateinfo" element={ <UpdateInfo/> }/>
