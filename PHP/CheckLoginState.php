@@ -14,9 +14,9 @@ if(!session_id()){
 //     $_SESSION['id'] = $_COOKIE['c_id'];
 // }
 
-// if (isset($_COOKIE['c_id'])) {
-//     $_SESSION['id'] = $_COOKIE['c_id'];
-// }
+if (isset($_COOKIE['c_id'])) {
+    $_SESSION['id'] = $_COOKIE['c_id'];
+}
 
 if (!isset($_SESSION['id'])){
     // Redirect to login page
