@@ -108,7 +108,6 @@ function GroupPage(props) {
             const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowNotice.php', { groupName: group_name });
             const noticeData = res.data; // 공지 가져오기
             setNotice(noticeData); // 가져온 공지를 상태에 설정
-            console.log(notice);
         } catch (error) {
             console.error('에러 fetching notice:', error);
         }
@@ -117,16 +116,16 @@ function GroupPage(props) {
         fetchNotice();
     }, [group_name]);
 
+    const fetchGroupMemberList = async () => {
+        try {
+            const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php', { groupName: group_name });
+            setMembers(res.data);
+        } catch (error) {
+            console.error('그룹멤버 실패', error);
+        }
+    };
+    
     useEffect(() => {
-        const fetchGroupMemberList = async () => {
-            try {
-                const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php', { groupName: group_name });
-                setMembers(res.data);
-            } catch (error) {
-                console.error('그룹멤버 실패', error);
-            }
-        };
-
         const fetchGroupMemberOverall = async () => {
             try {
                 const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberPoint.php', { groupName: group_name });
@@ -433,7 +432,7 @@ function GroupPage(props) {
             <SettingModal showSettingModal={showSettingModal} setShowSettingModal={setShowSettingModal} group_name={group_name} />
             <PhotoModal showPhotoModal={showPhotoModal} setShowPhotoModal={setShowPhotoModal} modalPhotoSrc={modalPhotoSrc} memberName={modalMemberName} missionName={modalMissionName}/>
             <UpdateGroup update={update} setUpdate={setUpdate} group_name={group_name} penaltyPerPoint={penaltyPerPoint} notice={notice} fetchPenaltyPerPoint={fetchPenaltyPerPoint} fetchNotice={fetchNotice}/>
-            <ChangeProfileImage change={change} setChange={setChange} profileImage={profileImage}/>
+            <ChangeProfileImage change={change} setChange={setChange} profileImage={profileImage} fetchGroupMemberList={fetchGroupMemberList}/>
         </div>
     );
 }
@@ -786,7 +785,7 @@ function ChangeProfileImage(props) {
                     handleFileChange(event);
                     handleFileUpload(event);
                 }} id="input-file" />
-                <label for="input-file">업로드</label>
+                <label htmlFor="input-file">업로드</label>
                 <input type="text" value={fileName} placeholder='선택된 파일이 없습니다.' readOnly></input>
                 </div>
                 <button className='button-profile' onClick={handleUpload}>변경하기</button>
@@ -824,6 +823,10 @@ function UpdateGroup(props) {
         }
         setIsSelectPrice(newArr);
     }, [props.penaltyPerPoint]);
+
+    useEffect(() => {
+        setGroupNotice(props.notice)
+    }, [props.notice])
     
     useEffect(() => {
         if (!props.update) {

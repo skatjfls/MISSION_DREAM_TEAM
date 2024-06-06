@@ -809,7 +809,7 @@ function ChangeProfileImage(props) {
                   handleFileChange(event);
                   handleFileUpload(event);
               }} id="input-file" />
-              <label for="input-file">업로드</label>
+              <label htmlFor="input-file">업로드</label>
               <input type="text" value={fileName} placeholder='선택된 파일이 없습니다.' readOnly></input>
               </div>
               <button className='button-profile' onClick={handleUpload}>변경하기</button>
