@@ -736,6 +736,7 @@ function ChangeProfileImage(props) {
         if (res.data == true) {
           alert("프로필 사진이 변경되었습니다!");
           props.setChange(false);
+          props.fetchGroupMemberList();
         }
         else {
           console.log(res.data.error);
