@@ -222,7 +222,7 @@ function GroupPage(props) {
 
     const calculateColorByRank = (rank, totalRanks) => {
         const mainColor = '#FAF29D';
-        const lightenFactor = 1 - (rank / totalRanks) * 0.8; // 순위가 높을수록 색상이 연해짐(overall이 클수록 색상이 진해짐)
+        const lightenFactor = 1 - (rank / totalRanks) * 0.9; // 순위가 높을수록 색상이 연해짐(overall이 클수록 색상이 진해짐)
         return `rgba(${parseInt(mainColor.slice(1, 3), 16)}, ${parseInt(mainColor.slice(3, 5), 16)}, ${parseInt(mainColor.slice(5, 7), 16)}, ${lightenFactor})`;
     };      
 
@@ -455,7 +455,11 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
     let rank = 1;
     let sameRankCount = 0;
 
-    const tipMessage = "이번엔 꼴찌가 1등에게 벌금을 몰아주세요!";
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [calculationResult, setCalculationResult] = useState(null);
+
+    const tipMessage = "꼴찌가 1등에게 벌금을 몰아주세요!";
 
     const parsedMembers = members.map((member) => JSON.parse(member));
     const rankedMembers = parsedMembers
@@ -471,82 +475,136 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
         });
 
     const getRankStyle = (rank, index, totalMembers) => {
-        if (rank === 1) return { backgroundColor: 'gold', color: 'white', textAlign: 'center'};
+        if (rank === 1) return { backgroundColor: 'gold', color: 'white', textAlign: 'center' };
         if (rank === 2) return { backgroundColor: 'silver', color: 'white', textAlign: 'center' };
         if (rank === 3) return { backgroundColor: '#CD7F32', color: 'white', textAlign: 'center' };
-        if (index === totalMembers - 1) return {  backgroundColor: 'red', color: 'white', textAlign: 'center' };
-        return {  backgroundColor: '#87F6A6', color: 'white', textAlign: 'center' };
+        if (index === totalMembers - 1) return { backgroundColor: 'red', color: 'white', textAlign: 'center' };
+        return { backgroundColor: '#87F6A6', color: 'white', textAlign: 'center' };
     };
 
     const handlePointCalculation = async (group_name, penalty_per_point) => {
+        setLoading(true);
+        setShowConfirmModal(false);
+
         try {
             await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Do_cost_settlement.php', { group_name: group_name });
-            console.log(group_name);
-            alert("드림이가 정산에 성공했어요!");
-            window.location.reload();
+            setCalculationResult('success');
         } catch (err) {
-            alert("드림이가 정산에 실패했어요...");
+            setCalculationResult('failure');
+        } finally {
+            setLoading(false);
+            setShowResultModal(true);
         }
     };
 
+    const [showResultModal, setShowResultModal] = useState(false);
+
     return (
-        <Modal show={showModal} onHide={() => setShowModal(false)} className='calculateModal modal-xl'>
-            <Modal.Header closeButton>
-                <div className='d-flex justify-content-between align-items-center w-100'>
-                    <div></div>
-                    <div className='modalTitle'>이번 정산 결과는?</div>
-                    <div className='penaltyPerPointDiv'>1 pt = {penalty_per_point} 원</div>
-                    <div></div>
-                </div>
-            </Modal.Header>
-            <Modal.Body>
-                <div className='row'>
-                    <div className='col text-center'>
-                        <div className='tipMessage'>tip: {tipMessage}</div>
+        <>
+            <Modal show={showModal} onHide={() => setShowModal(false)} className='calculateModal modal-xl'>
+                <Modal.Header closeButton>
+                    <div className='d-flex justify-content-between align-items-center w-100'>
+                        <div></div>
+                        <div className='modalTitle'>이번 정산 결과는?</div>
+                        <div className='penaltyPerPointDiv'>1 pt = {penalty_per_point} 원</div>
+                        <div></div>
                     </div>
-                </div>
-                <div className='table-responsive'>
-                    <table className='table'>
-                        <thead>
-                            <tr>
-                                <th>등수</th>
-                                <th>이름</th>
-                                <th>포인트</th>
-                                <th>페널티 금액</th>
-                                <th>총 벌금</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rankedMembers.map((member, index) => {
-                                if (prevPoint !== member.missionTotalPoint) {
-                                    rank += sameRankCount;
-                                    sameRankCount = 1;
-                                } else {
-                                    sameRankCount++;
-                                }
-                                prevPoint = member.missionTotalPoint;
-                                const rankStyle = getRankStyle(rank, index, rankedMembers.length);
-                                return (
-                                    <tr key={index}>
-                                        <td style={ {width: '50px' }} ><div className='tableRank' style={rankStyle}>{rank}</div></td>
-                                        <td>{member.name}</td>
-                                        <td>{member.missionTotalPoint}pt</td>
-                                        <td>{penalty_per_point}원</td>
-                                        <td>{member.calculatedPoint === 0 ? '0' : (member.calculatedPoint > 0 ? `-${member.calculatedPoint}` : member.calculatedPoint)}원</td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button className="modalClose"variant="secondary" onClick={() => setShowModal(false)}>
-                    닫기
-                </Button>
-                <Button className="doCalculate" variant="primary" onClick={() => handlePointCalculation(group_name, penalty_per_point)}>정산 실행</Button>
-            </Modal.Footer>
-        </Modal>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className='row'>
+                        <div className='col text-center'>
+                            <div className='tipMessage'>tip: {tipMessage}</div>
+                        </div>
+                    </div>
+                    <div className='table-responsive'>
+                        <table className='table'>
+                            <thead>
+                                <tr>
+                                    <th>등수</th>
+                                    <th>이름</th>
+                                    <th>포인트</th>
+                                    <th></th>
+                                    <th>페널티 금액</th>
+                                    <th></th>
+                                    <th>총 벌금</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rankedMembers.map((member, index) => {
+                                    if (prevPoint !== member.missionTotalPoint) {
+                                        rank += sameRankCount;
+                                        sameRankCount = 1;
+                                    } else {
+                                        sameRankCount++;
+                                    }
+                                    prevPoint = member.missionTotalPoint;
+                                    const rankStyle = getRankStyle(rank, index, rankedMembers.length);
+                                    return (
+                                        <tr key={index}>
+                                            <td style={{ width: '50px', verticalAlign: 'middle' }}><div className='tableRank' style={{ ...rankStyle, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{rank}</div></td>
+                                            <td style={{ verticalAlign: 'middle' }}>{member.name}</td>
+                                            <td style={{ verticalAlign: 'middle' }}>{member.missionTotalPoint} Point</td>
+                                            <td style={{ verticalAlign: 'middle' }}>X</td>
+                                            <td style={{ verticalAlign: 'middle' }}>{penalty_per_point}원</td>
+                                            <td style={{ verticalAlign: 'middle' }}>=</td>
+                                            <td style={{ verticalAlign: 'middle' }}>{member.calculatedPoint === 0 ? '0' : (member.calculatedPoint > 0 ? `-${member.calculatedPoint}` : member.calculatedPoint)}원</td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button className="modalClose" variant="secondary" onClick={() => setShowModal(false)}>
+                        닫기
+                    </Button>
+                    <Button className="doCalculate" variant="primary" onClick={() => setShowConfirmModal(true)}>정산 실행</Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)} className='calculateModal'>
+                <Modal.Header closeButton>
+                    <Modal.Title className="modalTitle">정산 확인</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className='text-center modalBody'>
+                    <p>정말 정산을 실행하시겠습니까? 되돌릴 수 없어요!</p>
+                    <img className="dreams" src="/img/dream_loading_1.gif" alt="loading" />
+                    <p>드림이는 열심히 정산중이에요...</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button className="modalClose" variant="secondary" onClick={() => setShowConfirmModal(false)}>
+                        아니요
+                    </Button>
+                    <Button className="doCalculate" variant="primary" onClick={() => handlePointCalculation(group_name, penalty_per_point)}>
+                        예
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showResultModal} onHide={() => setShowResultModal(false)} className='calculateModal'>
+                <Modal.Header closeButton>
+                    <Modal.Title className="modalTitle">정산 결과</Modal.Title>
+                </Modal.Header>
+                <Modal.Body  className='text-center modalBody'>
+                    {calculationResult === 'success' ? (
+                        <>
+                            <p>드림이가 정산에 성공했어요!</p>
+                            <img className="dreams" src="/img/dream_O.gif" alt="success"/>
+                        </>
+                    ) : (
+                        <>
+                            <p>드림이가 정산에 실패했어요...</p>
+                            <img className="dreams" src="/img/dream_X.gif" alt="failure"/>
+                        </>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button className="modalClose" variant="secondary" onClick={() => setShowResultModal(false)}>
+                        닫기
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </>
     );
 }
 
