@@ -189,11 +189,12 @@ div {
   width: 100%;
   height: auto;
   border: var(--sub-color3) 2px solid;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
 }
 
 .memberInfo {
   margin: 0 auto; /* 테이블을 상위 요소의 좌우 가운데에 배치 */
-  width: 100%;
 }
 
 .memberInfo td {
@@ -279,7 +280,7 @@ div {
   font-family: "font_tennine";
 }
 
-.modalTitle{
+.modalTitle{ 
   font-family: "font_tennine";
   font-size: 50px;
 }
@@ -375,3 +376,13 @@ div {
 .memberInInfo{
   width: 100%;
 }
+
+.dreams{
+  width: 300px !important;
+}
+
+.modalBody{
+  font-family: "font_NanumSquare";
+  font-weight: bold;
+}
+

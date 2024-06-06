@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Form, Button, Row, Col, Modal } from 'react-bootstrap';
+import { Form, Button, Row, Col, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import './SignUp.css';
 import axios from 'axios';
@@ -24,6 +24,8 @@ const SignUpForm = () => {
     const [isNameDuplicateChecked, setIsNameDuplicateChecked] = useState(false);
     const [formIsValid, setFormIsValid] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [modalContent, setModalContent] = useState('');
+    const [modalImage, setModalImage] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -76,10 +78,12 @@ const SignUpForm = () => {
                 });
                 console.log(res.data);
                 if (res.data === true) {
-                    alert(`${formData.id}은(는) 이미 사용중인 아이디입니다.`);
+                    setModalContent(`${formData.id}은(는) 이미 사용중인 아이디입니다.`);
+                    setShowModal(true);
                     setIsIDDuplicateChecked(false);
                 } else {
-                    alert(`${formData.id}은(는) 사용 가능한 아이디입니다.`);
+                    setModalContent(`${formData.id}은(는) 사용 가능한 아이디입니다.`);
+                    setShowModal(true);
                     setIsIDDuplicateChecked(true);
                 }
             } catch (error) {
@@ -87,11 +91,13 @@ const SignUpForm = () => {
                 alert('아이디 중복 확인 중 오류가 발생했습니다.');
             }
         } else {
-            alert(`ID의 입력 조건을 확인해주세요.`);
+            setModalContent(`ID의 입력 조건을 확인해주세요.`);
+            setShowModal(true);
             setIsIDDuplicateChecked(false);
         }
+        setModalImage(''); // 모달 이미지 초기화
     };
-
+    
     const handleCheckDuplicateNickName = async () => {
         const nameValidationResult = formData.nickName.match(/^(?=.*[a-zA-Z가-힣]).{2,10}$/);
         if (nameValidationResult) {
@@ -101,10 +107,12 @@ const SignUpForm = () => {
                 });
                 console.log(res.data);
                 if (res.data === true) {
-                    alert(`${formData.nickName}은(는) 이미 사용중인 닉네임입니다.`);
+                    setModalContent(`${formData.nickName}은(는) 이미 사용중인 닉네임입니다.`);
+                    setShowModal(true);
                     setIsNameDuplicateChecked(false);
                 } else {
-                    alert(`${formData.nickName}은(는) 사용 가능한 닉네임입니다.`);
+                    setModalContent(`${formData.nickName}은(는) 사용 가능한 닉네임입니다.`);
+                    setShowModal(true);
                     setIsNameDuplicateChecked(true);
                 }
             } catch (error) {
@@ -112,8 +120,20 @@ const SignUpForm = () => {
                 alert('닉네임 중복 확인 중 오류가 발생했습니다.');
             }
         } else {
-            alert(`닉네임의 입력 조건을 확인해주세요.`);
+            setModalContent(`닉네임의 입력 조건을 확인해주세요.`);
+            setShowModal(true);
             setIsNameDuplicateChecked(false);
+        }
+        setModalImage(''); // 모달 이미지 초기화
+    };
+    
+    
+    const handleCloseModal = () => {
+        if (modalContent === '회원가입에 성공했습니다.') {
+            setShowModal(false);
+            navigate('/login'); // 로그인 페이지로 이동
+        } else {
+            setShowModal(false);
         }
     };
     
@@ -135,10 +155,13 @@ const SignUpForm = () => {
                 console.log(res.data);
 
                 if (res.data === true) {
-                    alert('회원가입에 성공했습니다.');
-                    navigate('/login');
+                    setModalContent('회원가입에 성공했습니다.');
+                    setModalImage('/img/dream_O.gif'); // 회원가입 성공 시 이미지 변경
+                    setShowModal(true);
                 } else {
-                    alert('회원가입에 실패했습니다.');
+                    setModalContent('회원가입에 실패했습니다.');
+                    setModalImage('/img/dream_X.gif'); // 회원가입 실패 시 이미지 변경
+                    setShowModal(true);
                 }
             } catch (error) {
                 console.error('Error submitting form:', error);
@@ -202,6 +225,20 @@ const SignUpForm = () => {
                     </Button>
                 </Form>
             </div>
+            <Modal className="modal"show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title></Modal.Title>
+                </Modal.Header>
+                <Modal.Body className='text-center modalBody'>
+                    <p>{modalContent}</p>
+                    {modalImage && <img className="dreams" src={modalImage} alt="Result" style={{ width: '100px' }} />}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button className="modalClose" variant="secondary" onClick={handleCloseModal}>
+                        닫기
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

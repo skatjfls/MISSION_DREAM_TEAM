@@ -128,3 +128,14 @@
     background-color: var(--sub-color3);
     border: none;
 }
+
+.dreams{
+    width: 300px !important;
+  }
+
+.modal{align-content: center;}
+
+.modalBody{
+    font-family: "font_NanumSquare";
+    font-weight: bold;
+  }
