@@ -95,8 +95,9 @@ const SignUpForm = () => {
             setShowModal(true);
             setIsIDDuplicateChecked(false);
         }
+        setModalImage(''); // 모달 이미지 초기화
     };
-
+    
     const handleCheckDuplicateNickName = async () => {
         const nameValidationResult = formData.nickName.match(/^(?=.*[a-zA-Z가-힣]).{2,10}$/);
         if (nameValidationResult) {
@@ -123,7 +124,9 @@ const SignUpForm = () => {
             setShowModal(true);
             setIsNameDuplicateChecked(false);
         }
+        setModalImage(''); // 모달 이미지 초기화
     };
+    
     
     const handleCloseModal = () => {
         if (modalContent === '회원가입에 성공했습니다.') {
