@@ -77,9 +77,13 @@ function App() {
     fetchProfileImage();
   });
   
+
   if (isLoggedIn === null) {
     return (
-      <div>Loading</div>
+      <div className='page-loading'>
+        <img className="img-loading" src="/img/dream_loading_2.gif"></img>
+        <div className='text-loading'>로딩중...</div>
+      </div>
     );
   }
 
