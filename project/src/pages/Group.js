@@ -10,10 +10,7 @@ import './Group.css';
 axios.defaults.withCredentials = true;
 
 function GroupPage(props) {
-    let [userName, setUserName] = useState(); // 로그인된 이름
-    let [point, setPoint] = useState(); // 로그인된 포인트
-    let [modal, setModal] = useState(false);
-    let [profileImage, setProfileImage] = useState('');
+    let { userName, profileImage, Point } = props;
     let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
     let [showModal, setShowModal] = useState(false);
     let navigate = useNavigate();
@@ -22,12 +19,9 @@ function GroupPage(props) {
     let daysOfWeek = ['월', '화', '수', '목', '금', '토', '일'];
     let datesOfWeek = [];
     let [change, setChange] = useState(false);
-    const [isUploading, setIsUploading] = useState(false);
-    const [selectedFile, setSelectedFile] = useState(null);
     const location = useLocation();
     const group_name = location.state.pageGroupName; // app.js에서 받아오게 되면 여기다가 넣기
     const [penaltyPerPoint, setPenaltyPerPoint] = useState(0); // 빈 배열 대신 0으로 초기화
-    const [isLoggerIn, setIsLoggedIN] = useState(false); // 로그인됐나
     const [members, setMembers] = useState([]); // 여기서 members 상태 정의
     const [membersOverall, setMembersOverall] = useState({}); // 멤버별 개인 날짜별 포인트를 객체로 초기화
     const [memberMissionTables, setMemberMissionTables] = useState({}); // 클릭한 멤버의 미션 테이블 표시 상태를 관리하는 객체
@@ -39,56 +33,10 @@ function GroupPage(props) {
     const [notice, setNotice] = useState(''); // 공지
     const [isNoticeExpanded, setIsNoticeExpanded] = useState(false); // 공지 드롭다운
     const [update, setUpdate] = useState(false); // 그룹 수정 모달 상태
+    const [showExitModal, setShowExitModal] = useState(false);
 
     startOfWeek.setDate(startOfWeek.getDate() - ((startOfWeek.getDay() + 6) % 7)); // 주의 시작일을 월요일로 설정
     endOfWeek.setDate(endOfWeek.getDate() + 6); // 주의 마지막 날을 일요일로 설정
-
-    // 세션확인 및 유저 정보 가져오기
-    useEffect(() => {
-        const checkLoginState = async () => {
-            try {
-                const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php');
-                if (res.data === 'true') {
-                    setIsLoggedIN(true);
-                } else {
-                    setIsLoggedIN(false);
-                }
-            } catch (error) {
-                console.error('Error fetching user info:', error);
-            }
-        };
-
-        const fetchUserInfo = async () => {
-            try {
-                const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
-                const userData = res.data;
-                setUserName(userData.name);
-                const missionCnt = userData.totalMissionCnt - userData.noMissionCnt;
-                const string = missionCnt + ' / ' + userData.totalMissionCnt;
-                setPoint(string);
-            } catch (error) {
-                console.error('Error fetching user info:', error);
-            }
-        };
-
-        const fetchProfileImage = async () => {
-            try {
-              const res = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/ProfileImageShow.php');
-              let originalPath = res.data.profilePath;
-              if (originalPath === '/img/default_profile.png') {
-                  setProfileImage(originalPath);
-              } else {
-                  let trimmedPath = originalPath.replace(/^..\/project\/public/, "");
-                  setProfileImage(trimmedPath);
-              }
-            } catch (error) {
-              console.log(error);
-            }
-          };
-        checkLoginState();
-        fetchUserInfo();
-        fetchProfileImage();
-    });
 
     const fetchPenaltyPerPoint = async () => {
         try {
@@ -116,16 +64,16 @@ function GroupPage(props) {
         fetchNotice();
     }, [group_name]);
 
-        const fetchGroupMemberList = async () => {
-            try {
-                const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php', { groupName: group_name });
-                setMembers(res.data);
-            } catch (error) {
-                console.error('그룹멤버 실패', error);
-            }
-        };
+    const fetchGroupMemberList = async () => {
+        try {
+            const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberInfo.php', { groupName: group_name });
+            setMembers(res.data);
+        } catch (error) {
+            console.error('그룹멤버 실패', error);
+        }
+    };
 
-        useEffect(() => {
+    useEffect(() => {
         const fetchGroupMemberOverall = async () => {
             try {
                 const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ShowGroupMemberPoint.php', { groupName: group_name });
@@ -161,23 +109,6 @@ function GroupPage(props) {
         fetchGroupMemberOverall();
     }, [group_name]);
 
-    const handleGroupExit = async () => {
-        const confirmed = window.confirm("진짜 탈퇴할거에요?진짜?ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ가지마세용");
-        if (confirmed) {
-            try {
-                await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ExitGroup.php', { groupName: group_name });
-                alert("탈퇴 성공..... 메인페이지로 이동할게요....");
-                // 메인 페이지로 이동
-                navigate('/');
-            } catch (err) {
-                console.error('그룹 탈퇴 실패!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 히히히', err);
-            }
-        } else {
-            // 아니오를 클릭한 경우 그냥 무시
-            console.log("탈퇴안해줄거지롱");
-        }
-    };
-
     const toggleMissionTable = (memberId) => {
         setMemberMissionTables(prevState => ({
             ...prevState,
@@ -203,20 +134,10 @@ function GroupPage(props) {
         setIsNoticeExpanded(prevState => !prevState);
     };
 
-    const handleMouseEnter = () => {
-        setModal(true);
-    };
-
-    const handleMouseLeave = () => {
-        if (!isUploading && !selectedFile) {
-            setModal(false);
-        }
-    };
-
-    const handleUploadComplete = () => {
-        setIsUploading(false);
-        setSelectedFile(null); // 업로드 완료 후 파일 상태 초기화
-        setModal(false); // 업로드 완료 후 모달을 닫음
+    // 탈퇴 후 적절한 동작을 위한 콜백 함수
+    const handleExitCallback = () => {
+        setShowExitModal(false); // 모달 닫기
+        navigate('/');
     };
 
     const calculateColorByRank = (rank, totalRanks) => {
@@ -224,7 +145,6 @@ function GroupPage(props) {
         const lightenFactor = 1 - (rank / totalRanks) * 0.9; // 순위가 높을수록 색상이 연해짐(overall이 클수록 색상이 진해짐)
         return `rgba(${parseInt(mainColor.slice(1, 3), 16)}, ${parseInt(mainColor.slice(3, 5), 16)}, ${parseInt(mainColor.slice(5, 7), 16)}, ${lightenFactor})`;
     };      
-
 
     for (let i = 0; i < 7; i++) {
         let date = new Date(startOfWeek);
@@ -237,205 +157,291 @@ function GroupPage(props) {
             <Routes>
                 <Route path="/" element={
                     <div>
-                        <div className="nav-bar">
-                        <img className="img-logo" onClick={()=>{navigate('/')}} src="/img/dream.png"/>
-                        <div className="nav-profile">
-                            <img className="img-profile" onClick={()=>{ setChange(true) }} src={profileImage} alt="Profile"></img>
-                            <h6>{ userName }</h6>
-                            <h6>today { point }</h6>
-                            <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png"/>
-                            <button className="button-logout" onClick={()=>{
-                            axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
-                            .then(res => {
-                                navigate('/login')
-                            })
-                            .catch(err => {
-                                console.log(err)
-                            })
-                            }}>로그아웃</button>
-                        </div>
-                        </div>
+                        <NavBar
+                            userName={userName}
+                            profileImage={profileImage}
+                            point={Point}
+                            setChange={setChange}
+                            navigate={navigate}
+                        />
                         <div className="info-container">
                             <div className="calculate" onClick={() => setShowModal(true)}>포인트 정산하기</div>
-                            <div className="members">
-                                <div className="infoMember">멤버</div>
-                                <div className="infoMembers">
-                                    {Array.isArray(members) ? (
-                                        members.map((member, index) => {
-                                            // member를 파싱하여 각 키에 대한 변수 만들기
-                                            const memberObject = JSON.parse(member);
-                                            const id = memberObject.id;
-                                            const name = memberObject.name;
-                                            const profileImage = memberObject.profileImage;
-                                            const missionList = memberObject.missionList;
-                                            const missionTotalCount = memberObject.missionTotalCount;
-                                            const missionNotCompleteCount = memberObject.missionNotCompleteCount;
-                                            const missionTotalPoint = memberObject.missionTotalPoint;
-                                            return (
-                                                <div key={index} className="member">
-                                                    <span>
-                                                        <table className="memberInfo" onClick={() => toggleMissionTable(id)}>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td style={{width: '10%'}}><img className="img-profile" src={profileImage === '/img/default_profile.png' ? profileImage : profileImage.replace(/^..\/project\/public/, "") } alt="Profile"/></td>
-                                                                    <td style={{width: '50%'}}>{name}</td>
-                                                                    <td style={{width: '20%'}}>{missionTotalCount - missionNotCompleteCount}/{missionTotalCount}</td>
-                                                                    <td style={{width: '20%'}}>{missionTotalPoint === 0 ? '0' : (missionTotalPoint > 0 ? `-${missionTotalPoint}` : missionTotalPoint)}pt</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </span>
-                                                    {memberMissionTables[id] && (
-                                                        <table className="missionTable">
-                                                        <tbody>
-                                                            {/* missionList를 반복하여 각 미션을 출력 */}
-                                                            {missionList.map((mission, missionIndex) => {
-                                                                const missionObject = JSON.parse(mission);
-                                                                const missionComplete = missionObject.complete;
-                                                                const missionName = missionObject.mission;
-                                                                const missionPhoto = missionObject.photo;
-                                                                const isLastMission = missionIndex === missionList.length - 1;
-                                                                return (
-                                                                    <tr key={missionIndex} className={isLastMission ? "missionNameLast" : "missionName"}>
-                                                                        <td valign='middle'>
-                                                                            <div className="checkbox">
-                                                                                <input type="checkbox" checked={missionComplete === 1 ? true : false} disabled/>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td>{missionName}</td>
-                                                                        <td>
-                                                                            {missionPhoto ? (
-                                                                                <button className="button-camera" onClick={() => handlePhotoOpen(missionPhoto, name, missionName)}>
-                                                                                    <img className="imgs" src="/img/camera.png" />
-                                                                                </button>
-                                                                            ) : (
-                                                                                <button className="button-camera" disabled>
-                                                                                    <img className="imgs" src="/img/camera_gray.png" />
-                                                                                </button>
-                                                                            )}
-                                                                        </td>
-                                                                    </tr>
-                                                                );
-                                                            })}
-                                                        </tbody>
-                                                    </table>
-                                                    )}
-                                                </div>
-                                            );
-                                        })
-                                    ) : (
-                                        <p>Members is not an array</p>
-                                    )}
-                                </div>
-                            </div>
+                            <MemberList
+                                members={members}
+                                memberMissionTables={memberMissionTables}
+                                toggleMissionTable={toggleMissionTable}
+                                handlePhotoOpen={handlePhotoOpen}
+                            />
                             <div className="groupExit">
-                                <button className="button-exit" onClick={handleGroupExit}>그룹 탈퇴하기</button>
+                                <button className="button-exit" onClick={() => setShowExitModal(true)}>그룹 탈퇴하기</button>
                             </div>
                             <div className="handle"></div>
                         </div>
-                        <div className="groupCalendar-container">
-                            <div className="groupCalendar">
-                                <div className="groupInfo">
-                                    <table className="groupInfoTable">
-                                        <thead>
-                                            <tr>
-                                                <th className="groupName">{group_name}</th>
-                                                <th className="penaltyPerPoint"><div>1 pt = {penaltyPerPoint} 원</div></th>
-                                                <th className="groupOption"><img className="imgs" src="/img/gear.png" onClick={()=>{ setUpdate(true) }} /></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div className="groupNotice" onClick={toggleNoticeExpansion}>                                   
-                                    <div className='noticeMent'>공지</div>
-                                    <span className="Notice" dangerouslySetInnerHTML={{ __html: isNoticeExpanded ? notice.replace(/\n/g, "<br>") : notice.slice(0, 100) }}></span>
-                                    {notice.length > 20 && !isNoticeExpanded && <span>...</span>}
-                                </div>
-                                <table className="table-bordered groupStats">
-                                    <thead>
-                                        <tr>
-                                            <th>&nbsp;</th>
-                                            <th colSpan="8">
-                                                <button className="backOfWeek" onClick={() => handleBackOfWeekClick(currentWeekStart, setCurrentWeekStart)}>◀</button>
-                                                <span className="date">{startOfWeek.getMonth() + 1}월 {startOfWeek.getDate()}일 ~ {endOfWeek.getMonth() + 1}월 {endOfWeek.getDate()}일</span>
-                                                <button className="frontOfWeek" onClick={() => handleFrontOfWeekClick(currentWeekStart, setCurrentWeekStart)}>▶</button>
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th>&nbsp;</th>
-                                            {daysOfWeek.map((day, index) => (
-                                                <th key={index}>{day}</th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>&nbsp;</td>
-                                            {datesOfWeek.map((date, index) => (
-                                                <td key={index} className="dateRow">{date.getDate()}</td>
-                                            ))}
-                                        </tr>
-                                        {Array.isArray(members) ? (
-                                            members.map((member, index) => {
-                                                const memberObject = JSON.parse(member);
-                                                const memberId = memberObject.id;
-                                                const name = memberObject.name;
-                                                return (
-                                                    <tr key={index}>
-                                                        <td className="nameRow" style={{ width: '200px' }}>{name}</td>
-                                                        {datesOfWeek.map((date, dateIndex) => {
-                                                            const currentDate = moment(date).format('YYYY-MM-DD');
-                                                            const today = moment().format('YYYY-MM-DD');
-                                                            if (currentDate === today) {
-                                                                return <td key={dateIndex} style={{ width: '100px' }}></td>;
-                                                            }
-                                                            let memberPoint;
-                                                            if (membersOverall[currentDate] && membersOverall[currentDate][memberId] !== undefined) {
-                                                                memberPoint = membersOverall[currentDate][memberId];
-                                                            } else {
-                                                                const prevDate = moment(date).subtract(1, 'days').format('YYYY-MM-DD');
-                                                                if (currentDate < today) {
-                                                                    memberPoint = '-'; // 과거 날짜에는 "-" 표시
-                                                                } else {
-                                                                    memberPoint = ''; // 미래 날짜에는 공백으로 표시
-                                                                }
-                                                            }
-                                                            const dailyPoints = Object.values(membersOverall[currentDate] || {}); // 현재 날짜의 모든 포인트
-                                                            const sortedPoints = [...dailyPoints].sort((a, b) => b - a); // 포인트 내림차순 정렬
-                                                            const rank = sortedPoints.indexOf(memberPoint) + 1; // 현재 포인트의 순위 계산
-                                                            const totalRanks = sortedPoints.length; // 총 순위 개수
-                                                            const cellColor = memberPoint !== '-' && memberPoint !== '' ? calculateColorByRank(rank, totalRanks) : 'transparent'; // 순위에 따른 색상 계산
-                                                            return (
-                                                                <td key={dateIndex} style={{ width: '100px', backgroundColor: cellColor }}>
-                                                                    {memberPoint}
-                                                                </td>
-                                                            );
-                                                        })}
-                                                    </tr>
-                                                );
-                                            })
-                                        ) : (
-                                            <tr>
-                                                <td colSpan={8}>Members is not an array</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <GroupCalendar
+                            group_name={group_name}
+                            penaltyPerPoint={penaltyPerPoint}
+                            notice={notice}
+                            isNoticeExpanded={isNoticeExpanded}
+                            toggleNoticeExpansion={toggleNoticeExpansion}
+                            startOfWeek={startOfWeek}
+                            endOfWeek={endOfWeek}
+                            daysOfWeek={daysOfWeek}
+                            datesOfWeek={datesOfWeek}
+                            members={members}
+                            membersOverall={membersOverall}
+                            handleBackOfWeekClick={handleBackOfWeekClick}
+                            handleFrontOfWeekClick={handleFrontOfWeekClick}
+                            setCurrentWeekStart={setCurrentWeekStart}
+                            calculateColorByRank={calculateColorByRank}
+                        />
                     </div>
                 } />
             </Routes>
-            <PointModal showModal={showModal} setShowModal={setShowModal} members={members} penalty_per_point={penaltyPerPoint} group_name={group_name} />
-            <SettingModal showSettingModal={showSettingModal} setShowSettingModal={setShowSettingModal} group_name={group_name} />
-            <PhotoModal showPhotoModal={showPhotoModal} setShowPhotoModal={setShowPhotoModal} modalPhotoSrc={modalPhotoSrc} memberName={modalMemberName} missionName={modalMissionName}/>
-            <UpdateGroup update={update} setUpdate={setUpdate} group_name={group_name} penaltyPerPoint={penaltyPerPoint} notice={notice} fetchPenaltyPerPoint={fetchPenaltyPerPoint} fetchNotice={fetchNotice}/>
-            <ChangeProfileImage change={change} setChange={setChange} profileImage={profileImage} fetchGroupMemberList={fetchGroupMemberList}/>
+            <PointModal
+                showModal={showModal}
+                setShowModal={setShowModal}
+                members={members}
+                penalty_per_point={penaltyPerPoint}
+                group_name={group_name}
+            />
+            <SettingModal
+                showSettingModal={showSettingModal}
+                setShowSettingModal={setShowSettingModal}
+                group_name={group_name}
+            />
+            <PhotoModal
+                showPhotoModal={showPhotoModal}
+                setShowPhotoModal={setShowPhotoModal}
+                modalPhotoSrc={modalPhotoSrc}
+                memberName={modalMemberName}
+                missionName={modalMissionName}
+            />
+            <UpdateGroup
+                update={update}
+                setUpdate={setUpdate}
+                group_name={group_name}
+                penaltyPerPoint={penaltyPerPoint}
+                notice={notice}
+                fetchPenaltyPerPoint={fetchPenaltyPerPoint}
+                fetchNotice={fetchNotice}
+            />
+            <ChangeProfileImage
+                change={change}
+                setChange={setChange}
+                profileImage={profileImage}
+                fetchGroupMemberList={fetchGroupMemberList}
+            />
+            <GroupExitModal
+                showExitModal={showExitModal}
+                setShowExitModal={setShowExitModal}
+                group_name={group_name}
+                exitCallback={handleExitCallback}
+                navigate={navigate}
+            />
         </div>
     );
 }
+
+function NavBar({ userName, profileImage, point, setChange, navigate }) {
+    return (
+        <div className="nav-bar">
+            <img className="img-logo" onClick={() => { navigate('/') }} src="/img/dream.png" />
+            <div className="nav-profile">
+                <img className="img-profile" onClick={() => { setChange(true) }} src={profileImage} alt="Profile"></img>
+                <h6>{userName}</h6>
+                <h6>today {point}</h6>
+                <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png" />
+                <button className="button-logout" onClick={() => {
+                    axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
+                        .then(res => {
+                            navigate('/login');
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
+                }}>로그아웃</button>
+            </div>
+        </div>
+    );
+}
+
+function GroupInfo({ group_name, penaltyPerPoint, setUpdate }) {
+    return (
+        <div className="groupInfo">
+            <table className="groupInfoTable">
+                <thead>
+                    <tr>
+                        <th className="groupName">{group_name}</th>
+                        <th className="penaltyPerPoint"><div>1 pt = {penaltyPerPoint} 원</div></th>
+                        <th className="groupOption"><img className="imgs" src="/img/gear.png" onClick={() => { setUpdate(true) }} /></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+function MemberList({ members, memberMissionTables, toggleMissionTable, handlePhotoOpen }) {
+    return (
+        <div className="members">
+            <div className="infoMember">멤버</div>
+            <div className="infoMembers">
+                {Array.isArray(members) ? (
+                    members.map((member, index) => {
+                        const memberObject = JSON.parse(member);
+                        const id = memberObject.id;
+                        const name = memberObject.name;
+                        const profileImage = memberObject.profileImage;
+                        const missionList = memberObject.missionList;
+                        const missionTotalCount = memberObject.missionTotalCount;
+                        const missionNotCompleteCount = memberObject.missionNotCompleteCount;
+                        const missionTotalPoint = memberObject.missionTotalPoint;
+                        return (
+                            <div key={index} className="member">
+                                <span>
+                                    <table className="memberInfo" onClick={() => toggleMissionTable(id)}>
+                                        <tbody>
+                                            <tr>
+                                                <td style={{ width: '10%' }}><img className="img-profile" src={profileImage === '/img/default_profile.png' ? profileImage : profileImage.replace(/^..\/project\/public/, "")} alt="Profile" /></td>
+                                                <td className="MemberName" style={{ width: '50%' }}>{name}</td>
+                                                <td style={{ width: '20%' }}>{missionTotalCount - missionNotCompleteCount}/{missionTotalCount}</td>
+                                                <td style={{ width: '20%' }}>{missionTotalPoint === 0 ? '0' : (missionTotalPoint > 0 ? `-${missionTotalPoint}` : missionTotalPoint)}pt</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </span>
+                                {memberMissionTables[id] && (
+                                    <table className="missionTable">
+                                        <tbody>
+                                            {missionList.map((mission, missionIndex) => {
+                                                const missionObject = JSON.parse(mission);
+                                                const missionComplete = missionObject.complete;
+                                                const missionName = missionObject.mission;
+                                                const missionPhoto = missionObject.photo;
+                                                const isLastMission = missionIndex === missionList.length - 1;
+                                                return (
+                                                    <tr key={missionIndex} className={isLastMission ? "missionNameLast" : "missionName"}>
+                                                        <td valign='middle'>
+                                                            <div className="checkbox">
+                                                                <input type="checkbox" checked={missionComplete === 1 ? true : false} disabled />
+                                                            </div>
+                                                        </td>
+                                                        <td>{missionName}</td>
+                                                        <td>
+                                                            {missionPhoto ? (
+                                                                <button className="button-camera" onClick={() => handlePhotoOpen(missionPhoto, name, missionName)}>
+                                                                    <img className="imgs" src="/img/camera.png" />
+                                                                </button>
+                                                            ) : (
+                                                                <button className="button-camera" disabled>
+                                                                    <img className="imgs" src="/img/camera_gray.png" />
+                                                                </button>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
+                        );
+                    })
+                ) : (
+                    <p>Members is not an array</p>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function GroupCalendar({ group_name, penaltyPerPoint, notice, isNoticeExpanded, toggleNoticeExpansion, startOfWeek, endOfWeek, daysOfWeek, datesOfWeek, members, membersOverall, handleBackOfWeekClick, handleFrontOfWeekClick, setCurrentWeekStart, calculateColorByRank }) {
+    return (
+        <div className="groupCalendar-container">
+            <div className="groupCalendar">
+                <GroupInfo group_name={group_name} penaltyPerPoint={penaltyPerPoint} />
+                <div className="groupNotice" onClick={toggleNoticeExpansion}>
+                    <div className='noticeMent'>공지</div>
+                    <span className="Notice" dangerouslySetInnerHTML={{ __html: isNoticeExpanded ? notice.replace(/\n/g, "<br>") : notice.slice(0, 100) }}></span>
+                    {notice.length > 20 && !isNoticeExpanded && <span>...</span>}
+                </div>
+                <table className="table-bordered groupStats">
+                    <thead>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <th colSpan="8">
+                                <button className="backOfWeek" onClick={() => handleBackOfWeekClick(startOfWeek, setCurrentWeekStart)}>◀</button>
+                                <span className="date">{startOfWeek.getMonth() + 1}월 {startOfWeek.getDate()}일 ~ {endOfWeek.getMonth() + 1}월 {endOfWeek.getDate()}일</span>
+                                <button className="frontOfWeek" onClick={() => handleFrontOfWeekClick(startOfWeek, setCurrentWeekStart)}>▶</button>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>&nbsp;</th>
+                            {daysOfWeek.map((day, index) => (
+                                <th key={index}>{day}</th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>&nbsp;</td>
+                            {datesOfWeek.map((date, index) => (
+                                <td key={index} className="dateRow">{date.getDate()}</td>
+                            ))}
+                        </tr>
+                        {Array.isArray(members) ? (
+                            members.map((member, index) => {
+                                const memberObject = JSON.parse(member);
+                                const memberId = memberObject.id;
+                                const name = memberObject.name;
+                                return (
+                                    <tr key={index}>
+                                        <td className="nameRow" style={{ width: '200px' }}>{name}</td>
+                                        {datesOfWeek.map((date, dateIndex) => {
+                                            const currentDate = moment(date).format('YYYY-MM-DD');
+                                            const today = moment().format('YYYY-MM-DD');
+                                            if (currentDate === today) {
+                                                return <td key={dateIndex} style={{ width: '100px' }}></td>;
+                                            }
+                                            let memberPoint;
+                                            if (membersOverall[currentDate] && membersOverall[currentDate][memberId] !== undefined) {
+                                                memberPoint = membersOverall[currentDate][memberId];
+                                            } else {
+                                                const prevDate = moment(date).subtract(1, 'days').format('YYYY-MM-DD');
+                                                if (currentDate < today) {
+                                                    memberPoint = '-';
+                                                } else {
+                                                    memberPoint = '';
+                                                }
+                                            }
+                                            const dailyPoints = Object.values(membersOverall[currentDate] || {});
+                                            const sortedPoints = [...dailyPoints].sort((a, b) => b - a);
+                                            const rank = sortedPoints.indexOf(memberPoint) + 1;
+                                            const totalRanks = sortedPoints.length;
+                                            const cellColor = memberPoint !== '-' && memberPoint !== '' ? calculateColorByRank(rank, totalRanks) : 'transparent';
+                                            return (
+                                                <td key={dateIndex} style={{ width: '100px', backgroundColor: cellColor }}>
+                                                    {memberPoint}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
+                                );
+                            })
+                        ) : (
+                            <tr>
+                                <td colSpan={8}>Members is not an array</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+}
+
 
 function handleBackOfWeekClick(currentWeekStart, setCurrentWeekStart) {
     let prevWeekStart = new Date(currentWeekStart);
@@ -598,7 +604,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                                     return (
                                         <tr key={index}>
                                             <td style={{ width: '50px', verticalAlign: 'middle' }}><div className='tableRank' style={{ ...rankStyle, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{rank}</div></td>
-                                            <td style={{ verticalAlign: 'middle' }}>{member.name}</td>
+                                            <td className="ModalName" style={{ verticalAlign: 'middle' }}>{member.name}</td>
                                             <td style={{ verticalAlign: 'middle' }}>- {member.missionTotalPoint} Point</td>
                                             <td style={{ verticalAlign: 'middle' }}>X</td>
                                             <td style={{ verticalAlign: 'middle' }}>{penalty_per_point}원</td>
@@ -731,9 +737,14 @@ function SettingModal({ showSettingModal, setShowSettingModal, group_name, curre
 }
 
 function getModalTitle(memberName, missionName) {
-    return `${memberName}: ${missionName}`;
+    return (
+        <>
+            {memberName}
+            <br />
+            : {missionName}
+        </>
+    );
 }
-
 function PhotoModal({ showPhotoModal, setShowPhotoModal, modalPhotoSrc, memberName, missionName }) {
     const handlePhotoClose = () => {
         setShowPhotoModal(false);
@@ -1006,5 +1017,82 @@ function UpdateGroup(props) {
     );
 }
 
+// 회원탈퇴 모달
+function GroupExitModal({ showExitModal, setShowExitModal, group_name, exitCallback }) {
+    const [calculationResult, setCalculationResult] = useState(null); // 탈퇴 결과 상태
+
+    const handleGroupExit = async () => {
+        try {
+            await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/ExitGroup.php', { groupName: group_name });
+            // 탈퇴 성공 시
+            setCalculationResult('success'); // 탈퇴 성공 상태 설정
+        } catch (err) {
+            // 탈퇴 실패 시
+            console.error('그룹 탈퇴 실패!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 히히히', err);
+            setCalculationResult('failure'); // 탈퇴 실패 상태 설정
+        }
+    };
+
+    const handleCloseModal = () => {
+        // 모달을 닫을 때 app.js로 이동
+        exitCallback();
+    };
+
+    return (
+        <Modal show={showExitModal} onHide={() => setShowExitModal(false)} className='calculateModal'>
+            <Modal.Header closeButton>
+                <Modal.Title className="modalTitle">그룹 탈퇴</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className='text-center modalBody'>
+                <p>정말 탈퇴하시겠어요?</p>
+                <img className="dreams" src="/img/dream_X.gif" alt="failure"/>
+                <p>(드림이는 속상해)</p>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button  className="modalClose" variant="secondary" onClick={() => setShowExitModal(false)}>
+                    취소
+                </Button>
+                <Button className="doCalculate" variant="primary" onClick={handleGroupExit}>
+                    탈퇴하기
+                </Button>
+            </Modal.Footer>
+            {/* 탈퇴 성공 시 모달 */}
+            {calculationResult === 'success' && (
+                <Modal show={true} className='calculateModal'>
+                    <Modal.Header closeButton>
+                        <Modal.Title className="modalTitle">탈퇴 성공</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body className='text-center modalBody'>
+                        <p>그룹에서 성공적으로 탈퇴되었습니다!</p>
+                        <img className="dreams" src="/img/dream_O.gif" alt="success"/>
+                        <p>다음에 또 만나요!</p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button  className="modalClose" variant="secondary" onClick={handleCloseModal}>
+                            확인
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            )}
+            {/* 탈퇴 실패 시 모달 */}
+            {calculationResult === 'failure' && (
+                <Modal show={true} className='calculateModal'>
+                    <Modal.Header closeButton>
+                        <Modal.Title className="modalTitle">탈퇴 실패</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body className='text-center modalBody'>
+                        <p>그룹 탈퇴에 실패했습니다...</p>
+                        <img className="dreams" src="/img/dream_X.gif" alt="failure"/>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button  className="modalClose" variant="secondary" onClick={handleCloseModal}>
+                            확인
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            )}
+        </Modal>
+    );
+}
 
 export default GroupPage;
