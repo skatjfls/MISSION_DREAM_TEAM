@@ -161,7 +161,7 @@ function App() {
                 </Nav>
               </div>
               {
-                tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} setGroupList={setGroupList} navigate={navigate}/> : null
+                tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} setGroupList={setGroupList} navigate={navigate} userName={userName} point={point} profileImage={profileImage}/> : null
               }
               {
                 tap == 1 ? <MyCalendar/> : null
@@ -328,7 +328,12 @@ function ToDo(props) {
                       <span className="myGroupCount">{content.groupMemberCnt}</span>
                     </div>
                     <div className="myGroupName" onClick={()=>{
-                      props.navigate('/group', { state: { pageGroupName: content.groupName.group_name } });
+                      props.navigate('/group', { state: {
+                        pageGroupName: content.groupName.group_name,
+                        userName: props.userName,
+                        point: props.point,
+                        profileImage: props.profileImage
+                      } });
                     }}>{ content.groupName.group_name }</div>
                   </div>
                 );
