@@ -177,7 +177,7 @@ function App() {
         <Route path="*" element={<div>404</div>}/>
       </Routes>
       <CreateGroup create={create} setCreate={setCreate} setGroupList={setGroupList}/>
-      <JoinGroup join={join} setJoin={setJoin} setGroupList={setGroupList}/>
+      <JoinGroup join={join} setJoin={setJoin} groupList={groupList} setGroupList={setGroupList}/>
       <ChangeProfileImage change={change} setChange={setChange} profileImage={profileImage}/>
     </div>
   );
@@ -362,7 +362,7 @@ function MissionPhoto(props) {
   return (
       <Modal show={props.photo} onHide={() => {props.setPhoto(false)}} className="main-modal">
           <Modal.Header closeButton>
-              <Modal.Title>{modalTitle}</Modal.Title>
+              <Modal.Title className='mission-photo-title'>{modalTitle}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
               <img src={props.photoSrc} alt={modalTitle} style={{ width: '100%' }} />
@@ -683,29 +683,40 @@ function JoinGroup(props) {
     event.preventDefault();
     const nameIsEmpty = checkField('name', '그룹 이름을 입력해주세요.');
     const passwordIsEmpty = checkField('password', '비밀번호를 입력해주세요.');
-  
+    let groupNames = []
+    
+    if (props.groupList) {
+      groupNames = props.groupList.map(group => group.groupName.group_name);
+    }
+    
     if (!nameIsEmpty && !passwordIsEmpty) {
         const inputName = document.getElementById('name').value;
         const inputPw = document.getElementById('password').value;
-  
-        axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/EnterGroup.php',
-        {
-            group_name: inputName,
-            group_password: inputPw
-        })
-        .then((res)=>{
-            if (res.data == true) {
-                alert('[ '+inputName+' ] 그룹에 가입되었습니다!')
-                props.setJoin(false)
-                fetchGroups(props.setGroupList);
-            }
-            else {
-                alert('그룹 이름 또는 비밀번호를 확인해주세요.')
-            }
-        })
-        .catch((err)=>{
-            console.log(err)
-        })
+        
+        if (groupNames.includes(inputName)) {
+          alert('이미 가입된 그룹입니다.')
+          props.setJoin(false)
+        }
+        else {
+          axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/EnterGroup.php',
+          {
+              group_name: inputName,
+              group_password: inputPw
+          })
+          .then((res)=>{
+              if (res.data == true) {
+                  alert('[ '+inputName+' ] 그룹에 가입되었습니다!')
+                  props.setJoin(false)
+                  fetchGroups(props.setGroupList);
+              }
+              else {
+                  alert('그룹 이름 또는 비밀번호를 확인해주세요.')
+              }
+          })
+          .catch((err)=>{
+              console.log(err)
+          })
+        }
     }
   }
   
