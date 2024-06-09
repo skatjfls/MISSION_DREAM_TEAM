@@ -172,7 +172,7 @@ function App() {
           <Route path="*" element={<Navigate to="/login" />} />
         )}
         <Route path="/signup" element={ <SignUp/> }/>
-        <Route path="/group/*" element={ <Group/> }/>
+        <Route path="/group/*" element={ <Group userName={userName} point={point} profileImage={profileImage}/> }/>
         <Route path="/updateinfo" element={ <UpdateInfo/> }/>
         <Route path="*" element={<div>404</div>}/>
       </Routes>
