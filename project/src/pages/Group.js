@@ -10,7 +10,7 @@ import './Group.css';
 axios.defaults.withCredentials = true;
 
 function GroupPage(props) {
-    let { userName, profileImage, Point } = props;
+    let { userName, profileImage, point } = props;  // Point를 받아옴
     let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
     let [showModal, setShowModal] = useState(false);
     let navigate = useNavigate();
@@ -160,7 +160,7 @@ function GroupPage(props) {
                         <NavBar
                             userName={userName}
                             profileImage={profileImage}
-                            point={Point}
+                            Point={point}  
                             setChange={setChange}
                             navigate={navigate}
                         />
@@ -242,14 +242,14 @@ function GroupPage(props) {
     );
 }
 
-function NavBar({ userName, profileImage, point, setChange, navigate }) {
+function NavBar({ userName, profileImage, Point, setChange, navigate }) {
     return (
         <div className="nav-bar">
             <img className="img-logo" onClick={() => { navigate('/') }} src="/img/dream.png" />
             <div className="nav-profile">
                 <img className="img-profile" onClick={() => { setChange(true) }} src={profileImage} alt="Profile"></img>
                 <h6>{userName}</h6>
-                <h6>today {point}</h6>
+                <h6>today {Point}</h6>
                 <img className="imgs" onClick={() => { navigate('/updateinfo') }} src="/img/gear.png" />
                 <button className="button-logout" onClick={() => {
                     axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/LogOut.php')
@@ -264,6 +264,7 @@ function NavBar({ userName, profileImage, point, setChange, navigate }) {
         </div>
     );
 }
+
 
 function GroupInfo({ group_name, penaltyPerPoint, setUpdate }) {
     return (
@@ -402,19 +403,14 @@ function GroupCalendar({ group_name, penaltyPerPoint, notice, isNoticeExpanded, 
                                         {datesOfWeek.map((date, dateIndex) => {
                                             const currentDate = moment(date).format('YYYY-MM-DD');
                                             const today = moment().format('YYYY-MM-DD');
+                                            let memberPoint = '';
                                             if (currentDate === today) {
                                                 return <td key={dateIndex} style={{ width: '100px' }}></td>;
                                             }
-                                            let memberPoint;
                                             if (membersOverall[currentDate] && membersOverall[currentDate][memberId] !== undefined) {
                                                 memberPoint = membersOverall[currentDate][memberId];
-                                            } else {
-                                                const prevDate = moment(date).subtract(1, 'days').format('YYYY-MM-DD');
-                                                if (currentDate < today) {
-                                                    memberPoint = '-';
-                                                } else {
-                                                    memberPoint = '';
-                                                }
+                                            } else if (currentDate < today) {
+                                                memberPoint = '-';  // 과거 날짜는 '-'
                                             }
                                             const dailyPoints = Object.values(membersOverall[currentDate] || {});
                                             const sortedPoints = [...dailyPoints].sort((a, b) => b - a);
@@ -423,7 +419,7 @@ function GroupCalendar({ group_name, penaltyPerPoint, notice, isNoticeExpanded, 
                                             const cellColor = memberPoint !== '-' && memberPoint !== '' ? calculateColorByRank(rank, totalRanks) : 'transparent';
                                             return (
                                                 <td key={dateIndex} style={{ width: '100px', backgroundColor: cellColor }}>
-                                                    {memberPoint}
+                                                    {memberPoint !== '' && memberPoint !== '-' && memberPoint !== 0 ? `-${memberPoint}` : memberPoint}
                                                 </td>
                                             );
                                         })}
@@ -441,6 +437,7 @@ function GroupCalendar({ group_name, penaltyPerPoint, notice, isNoticeExpanded, 
         </div>
     );
 }
+
 
 
 function handleBackOfWeekClick(currentWeekStart, setCurrentWeekStart) {
@@ -609,7 +606,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                                             <td style={{ verticalAlign: 'middle' }}>X</td>
                                             <td style={{ verticalAlign: 'middle' }}>{penalty_per_point}원</td>
                                             <td style={{ verticalAlign: 'middle' }}>=</td>
-                                            <td style={{ verticalAlign: 'middle' }}>{member.calculatedPoint === 0 ? '0' : (member.calculatedPoint > 0 ? `-${member.calculatedPoint}` : member.calculatedPoint)}원</td>
+                                            <td style={{ verticalAlign: 'middle' }}>{member.calculatedPoint === 0 ? '0' : (member.calculatedPoint > 0 ? `- ${member.calculatedPoint}` : member.calculatedPoint)}원</td>
                                         </tr>
                                     );
                                 })}
