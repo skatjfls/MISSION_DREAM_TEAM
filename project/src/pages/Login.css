@@ -62,6 +62,7 @@
   
   #keepLogIn {
     margin: 0px 5px;
+    accent-color: var(--sub-color3);
   }
   .login-button {
     text-align: center;

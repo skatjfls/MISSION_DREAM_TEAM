@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Button, Row, Col, Modal } from 'react-bootstrap';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import './SignUp.css';
-import axios from 'axios';
 
 const useFormState = () => {
     const [formData, setFormData] = useState({
@@ -53,6 +53,18 @@ const SignUpForm = () => {
         validateForm(formData, setFormIsValid, isIDDuplicateChecked, isNameDuplicateChecked);
     }, [formData, isIDDuplicateChecked, isNameDuplicateChecked]);
 
+    useEffect(() => {
+        axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
+        .then(res => {
+        if(res.data === true){
+            navigate('/');
+        }
+        })
+        .catch(error => {
+        console.error('Error fetching user info:', error)
+        })
+    }, [])
+    
     return (
         <div className="background">
             <div className="input">
