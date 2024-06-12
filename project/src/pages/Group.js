@@ -5,12 +5,13 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import 'react-calendar/dist/Calendar.css';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 import './Group.css';
 
 axios.defaults.withCredentials = true;
 
 function GroupPage(props) {
-    let { userName, profileImage, point } = props;  // Point를 받아옴
+    let {userName, point, profileImage, fetchProfileImage} = props // Point를 받아옴
     let [currentWeekStart, setCurrentWeekStart] = useState(new Date());
     let [showModal, setShowModal] = useState(false);
     let navigate = useNavigate();
@@ -193,6 +194,7 @@ function GroupPage(props) {
                             handleFrontOfWeekClick={handleFrontOfWeekClick}
                             setCurrentWeekStart={setCurrentWeekStart}
                             calculateColorByRank={calculateColorByRank}
+                            setUpdate={setUpdate}
                         />
                     </div>
                 } />
@@ -229,6 +231,7 @@ function GroupPage(props) {
                 change={change}
                 setChange={setChange}
                 profileImage={profileImage}
+                fetchProfileImage = {fetchProfileImage}
                 fetchGroupMemberList={fetchGroupMemberList}
             />
             <GroupExitModal
@@ -358,11 +361,11 @@ function MemberList({ members, memberMissionTables, toggleMissionTable, handlePh
     );
 }
 
-function GroupCalendar({ group_name, penaltyPerPoint, notice, isNoticeExpanded, toggleNoticeExpansion, startOfWeek, endOfWeek, daysOfWeek, datesOfWeek, members, membersOverall, handleBackOfWeekClick, handleFrontOfWeekClick, setCurrentWeekStart, calculateColorByRank }) {
+function GroupCalendar({ group_name, penaltyPerPoint, notice, isNoticeExpanded, toggleNoticeExpansion, startOfWeek, endOfWeek, daysOfWeek, datesOfWeek, members, membersOverall, handleBackOfWeekClick, handleFrontOfWeekClick, setCurrentWeekStart, calculateColorByRank, setUpdate }) {
     return (
         <div className="groupCalendar-container">
             <div className="groupCalendar">
-                <GroupInfo group_name={group_name} penaltyPerPoint={penaltyPerPoint} />
+                <GroupInfo group_name={group_name} penaltyPerPoint={penaltyPerPoint} setUpdate={setUpdate} />
                 <div className="groupNotice" onClick={toggleNoticeExpansion}>
                     <div className='noticeMent'>공지</div>
                     <span className="Notice" dangerouslySetInnerHTML={{ __html: isNoticeExpanded ? notice.replace(/\n/g, "<br>") : notice.slice(0, 100) }}></span>
@@ -492,6 +495,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
 
         try {
             await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Do_cost_settlement.php', { group_name: group_name });
+            createExcelFile(rankedMembers, group_name, penalty_per_point);
             setCalculationResult('success');
         } catch (err) {
             setCalculationResult('failure');
@@ -551,6 +555,27 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
 
         return randomTip.replace('{n}', n).replace('{m}', m);
     };
+
+    const createExcelFile = (rankedMembers, group_name, penalty_per_point) => {
+        const worksheetData = rankedMembers.map((member, index) => ({
+            '등수': index + 1,
+            '이름': member.name,
+            '포인트': member.missionTotalPoint,
+            '페널티 금액': penalty_per_point,
+            '총 벌금': member.calculatedPoint,
+        }));
+        const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, '정산 결과');
+
+        const date = new Date();
+        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    
+
+        console.log(group_name)
+        const fileName = `정산결과_${group_name}_${formattedDate}.xlsx`;
+        XLSX.writeFile(workbook, fileName);
+    }
 
     useEffect(() => {
         if (showModal) {
@@ -658,7 +683,11 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button className="modalClose" variant="secondary" onClick={() => setShowResultModal(false)}>
+                    <Button className="modalClose" variant="secondary" onClick={() => {
+
+                        setShowResultModal(false)
+                        setShowModal(false)
+                    }}>
                         닫기
                     </Button>
                 </Modal.Footer>
@@ -774,6 +803,7 @@ function ChangeProfileImage(props) {
     useEffect(() => {
       if (!props.change) {
         setIsEditing(false);
+        setFileName('');
       }
     }, [props.change]);
   
@@ -799,6 +829,7 @@ function ChangeProfileImage(props) {
         });
         if (res.data == true) {
           alert("프로필 사진이 변경되었습니다!");
+          props.fetchProfileImage();
           props.setChange(false);
           props.fetchGroupMemberList();
         }
@@ -821,6 +852,7 @@ function ChangeProfileImage(props) {
         const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/DeleteProfileImage.php');
         if (res.data) {
           alert("프로필 사진이 제거되었습니다!");
+          props.fetchProfileImage();
           props.setChange(false);
         } else {
           console.log(res.data.error);

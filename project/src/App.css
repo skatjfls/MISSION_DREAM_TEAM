@@ -34,6 +34,10 @@
   src: url("./font/NanumSquareR.ttf");
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 .App {
   text-align: center;
   user-select: none;
@@ -51,6 +55,10 @@ h5, h6 {
 
 div {
   box-sizing: border-box;
+}
+
+button :disabled {
+  background-color: var(--sub-color4);
 }
 
 /*Nav css*/
@@ -178,6 +186,7 @@ div {
   text-align: left;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  word-break:break-all;
 }
 
 .mission-checkbox {
@@ -466,6 +475,11 @@ div {
   font-family: "font_NanumSquare";
   font-weight: bold;
 }
+
+.button-disabled {
+  background-color: var(--sub-color4) !important;
+}
+
 .button-join {
   margin: 10px;
   border: 0;
