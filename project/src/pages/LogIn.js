@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BrowserRouter as useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 axios.defaults.withCredentials = true;
 
