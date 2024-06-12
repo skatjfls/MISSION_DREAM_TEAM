@@ -99,7 +99,7 @@
 }
 
 .complete:disabled {
-    background-color: var(--sub-color3);
+    background-color: var(--sub-color4) !important;
 }
 
 .complete {
@@ -131,11 +131,16 @@
 
 .dreams{
     width: 300px !important;
-  }
+}
 
 .modal{align-content: center;}
 
 .modalBody{
     font-family: "font_NanumSquare";
     font-weight: bold;
-  }
+}
+
+.background Button:hover {
+    background-color: var(--sub-color4) !important;
+}
+

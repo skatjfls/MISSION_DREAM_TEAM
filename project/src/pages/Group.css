@@ -308,7 +308,7 @@ div {
 
 .modalClose{  
   width: 140px;
-  background-color: var(--sub-color4);
+  background-color: var(--sub-color3);
   border-radius: 25px;
   padding: 10px 10px;
   margin: 0px 5px;
@@ -318,6 +318,10 @@ div {
   color: black;
   font-family: "font_NanumSquare";
   font-weight: bold;
+}
+
+.modalClose:hover {
+  background-color: var(--sub-color4);
 }
 
 .doCalculate{  
@@ -332,6 +336,10 @@ div {
   color: black;
   font-family: "font_NanumSquare";
   font-weight: bold;
+}
+
+.doCalculate:hover {
+  background-color: var(--sub-color2) !important;
 }
 
 .tableRank{
