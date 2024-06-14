@@ -17,14 +17,14 @@ header('Access-Control-Allow-Origin: http://localhost:3000');
 
 // ini_set("session.cookie_domain", '.dev.local');
 // session_set_cookie_params(3600, '/', '.dev.local');
-ini_set('session.gc_maxlifetime', 120);
+ini_set('session.gc_maxlifetime', 3600);
 
 // 세션 시작
 if(!session_id()){
     session_start();
 }
 
-if(isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 60)){
+if(isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)){
     session_unset();
     session_destroy();
     echo json_encode(false);
