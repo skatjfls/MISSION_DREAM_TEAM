@@ -22,7 +22,7 @@ div {
 .info-container {
   flex-direction: column;
   background-color: var(--sub-color1);
-  width: 25%;
+  width: 23%;
   height: calc(100vh - 80px);
   min-height: 100%;
   float: left;
@@ -106,10 +106,10 @@ div {
 
 .groupCalendar {
   float: right;
-  width: 75%;
+  width: 77%;
   height: calc(100vh - 80px);
   background-color: white;
-  padding: 40px;
+  padding: 40px 55px;
   border: 1.5px solid var(--sub-color3);
   border-radius: 5px;
   margin: 0px;
@@ -118,7 +118,7 @@ div {
 
 
 .groupName {
-  font-size: 60px;
+  font-size: 48px;
   font-weight: 500;
   font-family: "font_tennine" !important;
   background: linear-gradient(to right, #30C8A4, #F9E23D, #FEBE01);
@@ -132,7 +132,7 @@ div {
   font-weight: 700;
   color: white;
   font-size: 20px;
-  width: 20%; /* 열의 너비를 20%로 설정 */
+  width: 220px; /* 열의 너비를 20%로 설정 */
   text-align: center; /* 가로 가운데 정렬 */
   white-space: nowrap; /* 내용 줄바꿈 안하고 한줄로 나오게 하는 코드 */
 }
@@ -142,14 +142,28 @@ div {
   color: white;
   font-size: 20px;
   border-radius: 20px;
-  padding: 10px;
+  padding: 8px 15px;
   font-family: "font_tennine";
   font-weight: 200;
+  max-width: 200px;
+  align-self: center;
+  text-align: center;
+}
 
+.modalTitle-div {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.modalTitle-side {
+  width: 25%;
+  align-items: center;
 }
 
 .groupOption{
-  width: 10%;
+  width: 50px;
 }
 
 .groupNotice{
@@ -157,7 +171,7 @@ div {
   text-align: left;
   width: 100%;
   background-color: var(--sub-color1);
-  padding: 30px;
+  padding: 15px 30px;
   margin-top: 10px;
   margin-bottom: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -169,11 +183,10 @@ div {
 }
 
 .noticeMent{
-  margin: -5px;
-  margin-bottom: 10px;
+  margin-left: 10px;
   font-family: "font_NanumSquare";
   font-weight: bold;
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .groupInfoTable {
@@ -230,35 +243,38 @@ div {
 }
 
 .backOfWeek{
-  background: var(--gra-color3);
-  color: white;
+  background: transparent;
+  color: var(--gra-color3);
   border: 0px;
   border-radius: 5px;
   font-family: "font_NanumSquare";
   font-size: 25px;
+  filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.13));
 }
 
 .frontOfWeek{
-  background: var(--gra-color3);
-  color: white;
+  background: transparent;
+  color: var(--gra-color3);
   border: 0px;
   border-radius: 5px;
   font-family: "font_NanumSquare";
   font-size: 25px;
+  filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.13));
 }
 
 .date{
   font-family: "font_NanumSquare";
   width: 300px;
   display: inline-block;
-  font-size: 25px;
+  font-size: 20px;
 }
 
 .button-exit{
   background-color: transparent !important; /* 배경색 투명 */
   border: none; /* border 제거 */
   color: var(--sub-color3);
-  margin: 10px;
+  margin: 5px;
+  font-size: 12px !important;
 }
 
 .noticeText{
@@ -282,14 +298,16 @@ div {
 
 .modalTitle{ 
   font-family: "font_tennine";
-  font-size: 50px;
+  font-size: 40px;
 }
 
 .tipMessage{
-  font-family: "font_tennine";
+  font-family: "font_NanumSquare";
+  font-weight: bold;
   color: #8a8a8a;
   text-align: center; /* 가운데 정렬 */
     left: 50%; /* 가로 중앙 정렬을 위해 왼쪽 위치를 화면 가로 중앙으로 이동 */
+  margin-bottom: 7px;
 }
 
 .table-responsive{
@@ -299,7 +317,9 @@ div {
 
 .dateRow{
   height: 50px;
-  font-size: larger;
+  font-size: 19px;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
 }
 
 .nameRow{
@@ -397,3 +417,15 @@ div {
   font-weight: bold;
 }
 
+.xlsx-checkbox {
+  margin-right: 5px;
+  accent-color: var(--sub-color3);
+}
+
+.img-notice {
+  width: 20px;
+}
+
+.noticeMent-box {
+  margin-bottom: 10px;
+}

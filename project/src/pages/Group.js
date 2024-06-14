@@ -270,13 +270,14 @@ function NavBar({ userName, profileImage, Point, setChange, navigate }) {
 
 
 function GroupInfo({ group_name, penaltyPerPoint, setUpdate }) {
+    const penaltyString = penaltyPerPoint?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return (
         <div className="groupInfo">
             <table className="groupInfoTable">
                 <thead>
                     <tr>
                         <th className="groupName">{group_name}</th>
-                        <th className="penaltyPerPoint"><div>1 pt = {penaltyPerPoint} 원</div></th>
+                        <th className="penaltyPerPoint"><div>1 pt = {penaltyString} 원</div></th>
                         <th className="groupOption"><img className="imgs" src="/img/gear.png" onClick={() => { setUpdate(true) }} /></th>
                     </tr>
                 </thead>
@@ -310,8 +311,8 @@ function MemberList({ members, memberMissionTables, toggleMissionTable, handlePh
                                             <tr>
                                                 <td style={{ width: '10%' }}><img className="img-profile" src={profileImage === '/img/default_profile.png' ? profileImage : profileImage.replace(/^..\/project\/public/, "")} alt="Profile" /></td>
                                                 <td className="MemberName" style={{ width: '50%' }}>{name}</td>
-                                                <td style={{ width: '20%' }}>{missionTotalCount - missionNotCompleteCount}/{missionTotalCount}</td>
-                                                <td style={{ width: '20%' }}>{missionTotalPoint === 0 ? '0' : (missionTotalPoint > 0 ? `-${missionTotalPoint}` : missionTotalPoint)}pt</td>
+                                                <td style={{ width: '15%' }}>{missionTotalCount - missionNotCompleteCount}/{missionTotalCount}</td>
+                                                <td style={{ width: '15%' }}>{missionTotalPoint === 0 ? '0' : (missionTotalPoint > 0 ? `-${missionTotalPoint}` : missionTotalPoint)}pt</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -367,7 +368,10 @@ function GroupCalendar({ group_name, penaltyPerPoint, notice, isNoticeExpanded, 
             <div className="groupCalendar">
                 <GroupInfo group_name={group_name} penaltyPerPoint={penaltyPerPoint} setUpdate={setUpdate} />
                 <div className="groupNotice" onClick={toggleNoticeExpansion}>
-                    <div className='noticeMent'>공지</div>
+                    <div className='noticeMent-box'>
+                        <img className="img-notice" src="/img/notice.png"></img>
+                        <span className='noticeMent'>공지</span>
+                    </div>
                     <span className="Notice" dangerouslySetInnerHTML={{ __html: isNoticeExpanded ? notice.replace(/\n/g, "<br>") : notice.slice(0, 100) }}></span>
                     {notice.length > 20 && !isNoticeExpanded && <span>...</span>}
                 </div>
@@ -467,6 +471,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
     const [tipMessage, setTipMessage] = useState('');
     const [prevN, setPrevN] = useState(null);
     const [prevM, setPrevM] = useState(null);
+    const [isChecked, setIsChecked] = useState(true);
 
     const parsedMembers = members.map((member) => JSON.parse(member));
     const rankedMembers = parsedMembers
@@ -495,7 +500,9 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
 
         try {
             await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/Do_cost_settlement.php', { group_name: group_name });
-            createExcelFile(rankedMembers, group_name, penalty_per_point);
+            if(isChecked === true) {
+                createExcelFile(rankedMembers, group_name, penalty_per_point);
+            }
             setCalculationResult('success');
         } catch (err) {
             setCalculationResult('failure');
@@ -557,12 +564,13 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
     };
 
     const createExcelFile = (rankedMembers, group_name, penalty_per_point) => {
+        const penaltyString = penalty_per_point?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+'원';
         const worksheetData = rankedMembers.map((member, index) => ({
             '등수': index + 1,
             '이름': member.name,
             '포인트': member.missionTotalPoint,
-            '페널티 금액': penalty_per_point,
-            '총 벌금': member.calculatedPoint,
+            '페널티 금액': penaltyString,
+            '총 벌금': member.calculatedPoint?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+'원'
         }));
         const worksheet = XLSX.utils.json_to_sheet(worksheetData);
         const workbook = XLSX.utils.book_new();
@@ -581,17 +589,31 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
         if (showModal) {
             setTipMessage(generateTipMessage());
         }
+        if (!showModal) {
+            setIsChecked(true);
+        }
     }, [showModal]);
+
+    useEffect(() => {
+        if (!showConfirmModal) {
+            setIsChecked(true);
+        }
+    }, [showConfirmModal])
+
+    const handleCheckboxChange = (event) => {
+        setIsChecked(event.target.checked);
+    };
 
     return (
         <>
             <Modal show={showModal} onHide={() => setShowModal(false)} className='calculateModal modal-xl'>
                 <Modal.Header closeButton>
-                    <div className='d-flex justify-content-between align-items-center w-100'>
-                        <div></div>
+                    <div className='modalTitle-div'>
+                        <div className='modalTitle-side'></div>
                         <div className='modalTitle'>이번 정산 결과는?</div>
-                        <div className='penaltyPerPointDiv'>1 pt = {penalty_per_point} 원</div>
-                        <div></div>
+                        <div className='modalTitle-side'>
+                            <div className='penaltyPerPointDiv'>1 pt = {penalty_per_point?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} 원</div>
+                        </div>
                     </div>
                 </Modal.Header>
                 <Modal.Body>
@@ -622,6 +644,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                                         sameRankCount++;
                                     }
                                     prevPoint = member.missionTotalPoint;
+                                    const penaltyString = penalty_per_point?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                                     const rankStyle = getRankStyle(rank, index, rankedMembers.length);
                                     return (
                                         <tr key={index}>
@@ -629,9 +652,9 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                                             <td className="ModalName" style={{ verticalAlign: 'middle' }}>{member.name}</td>
                                             <td style={{ verticalAlign: 'middle' }}>- {member.missionTotalPoint} Point</td>
                                             <td style={{ verticalAlign: 'middle' }}>X</td>
-                                            <td style={{ verticalAlign: 'middle' }}>{penalty_per_point}원</td>
+                                            <td style={{ verticalAlign: 'middle' }}>{penaltyString}원</td>
                                             <td style={{ verticalAlign: 'middle' }}>=</td>
-                                            <td style={{ verticalAlign: 'middle' }}>{member.calculatedPoint === 0 ? '0' : (member.calculatedPoint > 0 ? `- ${member.calculatedPoint}` : member.calculatedPoint)}원</td>
+                                            <td style={{ verticalAlign: 'middle' }}>{(member.calculatedPoint*(-1))?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원</td>
                                         </tr>
                                     );
                                 })}
@@ -652,6 +675,10 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                 </Modal.Header>
                 <Modal.Body className='text-center modalBody'>
                     <p>정말 정산을 실행하시겠습니까? 되돌릴 수 없어요!</p>
+                    <label>
+                        <input type="checkbox" className='xlsx-checkbox' checked={isChecked} onChange={handleCheckboxChange}></input>
+                        정산 파일 다운 받기 (xlsx)
+                    </label>
                     <img className="dreams" src="/img/dream_loading_1.gif" alt="loading" />
                     <p>드림이는 열심히 정산중이에요...</p>
                 </Modal.Body>
@@ -684,7 +711,6 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                 </Modal.Body>
                 <Modal.Footer>
                     <Button className="modalClose" variant="secondary" onClick={() => {
-
                         setShowResultModal(false)
                         setShowModal(false)
                     }}>
