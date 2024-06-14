@@ -205,6 +205,7 @@ function GroupPage(props) {
                 members={members}
                 penalty_per_point={penaltyPerPoint}
                 group_name={group_name}
+                fetchGroupMemberList={fetchGroupMemberList}
             />
             <SettingModal
                 showSettingModal={showSettingModal}
@@ -268,23 +269,29 @@ function NavBar({ userName, profileImage, Point, setChange, navigate }) {
     );
 }
 
-
 function GroupInfo({ group_name, penaltyPerPoint, setUpdate }) {
     const penaltyString = penaltyPerPoint?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
     return (
-        <div className="groupInfo">
-            <table className="groupInfoTable">
-                <thead>
-                    <tr>
-                        <th className="groupName">{group_name}</th>
-                        <th className="penaltyPerPoint"><div>1 pt = {penaltyString} 원</div></th>
-                        <th className="groupOption"><img className="imgs" src="/img/gear.png" onClick={() => { setUpdate(true) }} /></th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
+<div className="groupInfo">
+    <table className="groupTable">
+        <tbody>
+            <tr className="desktopRow">
+                <th className="groupName">{group_name}</th>
+                <th className="penaltyPerPoint"><div>1 pt = {penaltyString} 원</div></th>
+                <th className="groupOption"><img className="imgs" src="/img/gear.png" onClick={() => { setUpdate(true) }} /></th>
+            </tr>
+            <tr className="mobileRow">
+                <th className="groupName">{group_name}</th>
+                <th className="groupOption"><img className="imgs" src="/img/gear.png" onClick={() => { setUpdate(true) }} /></th>
+            </tr>
+            <tr className="mobileRow">
+                <th className="penaltyPerPoint"><div>1 pt = {penaltyString} 원</div></th>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
     );
 }
 
@@ -459,7 +466,7 @@ function handleFrontOfWeekClick(currentWeekStart, setCurrentWeekStart) {
     setCurrentWeekStart(nextWeekStart);
 }
 
-function PointModal({ showModal, setShowModal, members, penalty_per_point, group_name }) {
+function PointModal({ showModal, setShowModal, members, penalty_per_point, group_name, fetchGroupMemberList }) {
     let prevPoint = Number.NEGATIVE_INFINITY;
     let rank = 1;
     let sameRankCount = 0;
@@ -504,6 +511,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                 createExcelFile(rankedMembers, group_name, penalty_per_point);
             }
             setCalculationResult('success');
+            fetchGroupMemberList(); // 정산 성공 후 멤버 리스트 갱신
         } catch (err) {
             setCalculationResult('failure');
         } finally {
@@ -568,9 +576,9 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
         const worksheetData = rankedMembers.map((member, index) => ({
             '등수': index + 1,
             '이름': member.name,
-            '포인트': member.missionTotalPoint,
+            '포인트': member.missionTotalPoint*(-1),
             '페널티 금액': penaltyString,
-            '총 벌금': member.calculatedPoint?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+'원'
+            '총 벌금': (member.calculatedPoint)*(-1)?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+'원'
         }));
         const worksheet = XLSX.utils.json_to_sheet(worksheetData);
         const workbook = XLSX.utils.book_new();
@@ -650,7 +658,9 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
                                         <tr key={index}>
                                             <td style={{ width: '50px', verticalAlign: 'middle' }}><div className='tableRank' style={{ ...rankStyle, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{rank}</div></td>
                                             <td className="ModalName" style={{ verticalAlign: 'middle' }}>{member.name}</td>
-                                            <td style={{ verticalAlign: 'middle' }}>- {member.missionTotalPoint} Point</td>
+                                            <td style={{ verticalAlign: 'middle' }}>
+                                                {member.missionTotalPoint !== 0 ? `- ${member.missionTotalPoint} Point` : `${member.missionTotalPoint} Point`}
+                                            </td>
                                             <td style={{ verticalAlign: 'middle' }}>X</td>
                                             <td style={{ verticalAlign: 'middle' }}>{penaltyString}원</td>
                                             <td style={{ verticalAlign: 'middle' }}>=</td>

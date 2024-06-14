@@ -18,7 +18,6 @@ div {
   box-sizing: border-box;
 }
 
-
 .info-container {
   flex-direction: column;
   background-color: var(--sub-color1);
@@ -27,7 +26,6 @@ div {
   min-height: 100%;
   float: left;
 }
-
 
 .calculate {
   border-radius: 30px;
@@ -42,7 +40,7 @@ div {
   font-size: 20px;
 }
 
-.members{
+.members {
   background-color: rgb(255, 255, 255);
   width: 80%;
   margin: 0 auto;
@@ -63,7 +61,7 @@ div {
   display: none;
 }
 
-.infoMember{
+.infoMember {
   display: block;
   background-color: white;
   font-size: 30px;
@@ -74,12 +72,12 @@ div {
   font-family: "font_tennine";
 }
 
-.infoMembers{
+.infoMembers {
   overflow-y: scroll;
   height: 90%;
 }
 
-.member{
+.member {
   background: linear-gradient(to right, var(--gra-color3), var(--gra-color2), var(--gra-color1));
   width: 90%;
   margin: 0 auto;
@@ -90,15 +88,15 @@ div {
   font-weight: bold;
 }
 
-.memberMissionList{
+.memberMissionList {
   background-color: white;
   width: 95%;
   margin: 0 auto;
   margin-top: 10px;
 }
 
-.groupExit{
-  color:#a1a1a1;
+.groupExit {
+  color: #a1a1a1;
   text-align: left;
   padding-top: 20px;
   padding-left: 30px;
@@ -116,7 +114,6 @@ div {
   overflow: scroll;
 }
 
-
 .groupName {
   font-size: 48px;
   font-weight: 500;
@@ -127,7 +124,6 @@ div {
   display: inline-block; /* 텍스트의 너비에 맞게 그라데이션 적용 */
 }
 
-
 .penaltyPerPoint {
   font-weight: 700;
   color: white;
@@ -137,7 +133,8 @@ div {
   white-space: nowrap; /* 내용 줄바꿈 안하고 한줄로 나오게 하는 코드 */
 }
 
-.penaltyPerPoint div, .penaltyPerPointDiv{
+.penaltyPerPoint div,
+.penaltyPerPointDiv {
   background-color: var(--main-color);
   color: white;
   font-size: 20px;
@@ -162,11 +159,11 @@ div {
   align-items: center;
 }
 
-.groupOption{
+.groupOption {
   width: 50px;
 }
 
-.groupNotice{
+.groupNotice {
   display: block;
   text-align: left;
   width: 100%;
@@ -178,11 +175,11 @@ div {
   border-radius: 5px;
 }
 
-.Notice{
+.Notice {
   font-family: "font_NanumSquare";
 }
 
-.noticeMent{
+.noticeMent {
   margin-left: 10px;
   font-family: "font_NanumSquare";
   font-weight: bold;
@@ -198,7 +195,7 @@ div {
   vertical-align: middle; /* 세로 가운데 정렬 */
 }
 
-.groupStats{
+.groupStats {
   width: 100%;
   height: auto;
   border: var(--sub-color3) 2px solid;
@@ -219,7 +216,7 @@ div {
   white-space: nowrap; /* 텍스트 줄바꿈 방지 */
 }
 
-.missionTable{
+.missionTable {
   background-color: rgb(255, 255, 255);
   width: 100%;
   display: table;
@@ -250,9 +247,7 @@ div {
   width: 15%; /* 인증의 너비를 20%로 설정 */
 }
 
-
-
-.backOfWeek{
+.backOfWeek {
   background: transparent;
   color: var(--gra-color3);
   border: 0px;
@@ -262,7 +257,7 @@ div {
   filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.13));
 }
 
-.frontOfWeek{
+.frontOfWeek {
   background: transparent;
   color: var(--gra-color3);
   border: 0px;
@@ -272,14 +267,14 @@ div {
   filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.13));
 }
 
-.date{
+.date {
   font-family: "font_NanumSquare";
   width: 300px;
   display: inline-block;
   font-size: 20px;
 }
 
-.button-exit{
+.button-exit {
   background-color: transparent !important; /* 배경색 투명 */
   border: none; /* border 제거 */
   color: var(--sub-color3);
@@ -287,12 +282,11 @@ div {
   font-size: 12px !important;
 }
 
-.noticeText{
+.noticeText {
   font-weight: bold;
 }
 
-
-.calculateModal{
+.calculateModal {
   align-content: center;
 }
 
@@ -301,42 +295,43 @@ div {
   background-color: white;
 }
 
-.photoModal{
+.photoModal {
   align-content: center;
   font-family: "font_tennine";
+  word-break: break-all;
 }
 
-.modalTitle{ 
+.modalTitle {
   font-family: "font_tennine";
   font-size: 40px;
 }
 
-.tipMessage{
+.tipMessage {
   font-family: "font_NanumSquare";
   font-weight: bold;
   color: #8a8a8a;
   text-align: center; /* 가운데 정렬 */
-    left: 50%; /* 가로 중앙 정렬을 위해 왼쪽 위치를 화면 가로 중앙으로 이동 */
+  left: 50%; /* 가로 중앙 정렬을 위해 왼쪽 위치를 화면 가로 중앙으로 이동 */
   margin-bottom: 7px;
 }
 
-.table-responsive{
+.table-responsive {
   font-family: "font_NanumSquare";
   font-weight: bold;
 }
 
-.dateRow{
+.dateRow {
   height: 50px;
   font-size: 19px;
   font-family: "font_NanumSquare";
   font-weight: bold;
 }
 
-.nameRow{
+.nameRow {
   height: 50px;
 }
 
-.modalClose{  
+.modalClose {
   width: 140px;
   background-color: var(--sub-color3);
   border-radius: 25px;
@@ -354,7 +349,7 @@ div {
   background-color: var(--sub-color4);
 }
 
-.doCalculate{  
+.doCalculate {
   width: 140px;
   background-color: var(--main-color);
   border-radius: 25px;
@@ -372,15 +367,14 @@ div {
   background-color: var(--sub-color2) !important;
 }
 
-.tableRank{
+.tableRank {
   padding: 5px;
   border-radius: 1000px;
 }
 
-
-.missionName{
+.missionName {
   max-width: 50px;
-  word-break:break-all;
+  word-break: break-all;
   border-bottom: 1px solid #a9a9a9;
   padding: 5px;
   text-align: left;
@@ -392,13 +386,6 @@ div {
   padding: 5px;
   text-align: left;
 }
-/*
-.align-top {
-  vertical-align: top;
-  padding-top: 5px;
-}
-*/
-
 
 .checkbox {
   display: flex;
@@ -407,22 +394,22 @@ div {
   height: 100%;
 }
 
-.memberName{
+.memberName {
   background-color: white;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 150px;
 }
 
-.memberInInfo{
+.memberInInfo {
   width: 100%;
 }
 
-.dreams{
+.dreams {
   width: 300px !important;
 }
 
-.modalBody{
+.modalBody {
   font-family: "font_NanumSquare";
   font-weight: bold;
 }
@@ -439,3 +426,129 @@ div {
 .noticeMent-box {
   margin-bottom: 10px;
 }
+
+/* 모바일 최적화를 위한 미디어 쿼리 */
+@media (max-width: 600px) {
+  .info-container,
+  .groupCalendar {
+    float: none;
+    width: 100%;
+    height: auto;
+    padding: 20px;
+  }
+
+  .calculate,
+  .members,
+  .groupNotice {
+    width: 100%;
+  }
+
+  .groupName {
+    font-size: 32px;
+  }
+
+  .penaltyPerPoint,
+  .penaltyPerPoint div,
+  .penaltyPerPointDiv {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .modalTitle {
+    font-size: 30px;
+  }
+
+  .tipMessage {
+    font-size: 16px;
+  }
+
+  .date {
+    width: auto;
+    font-size: 18px;
+  }
+
+  .modalClose,
+  .doCalculate {
+    width: 100%;
+    margin: 5px 0;
+    padding: 15px;
+    font-size: 16px;
+  }
+
+  .missionTable th,
+  .missionTable td {
+    font-size: 12px;
+  }
+
+  .groupInfoTable,
+  .memberInfo,
+  .missionTable {
+    width: 100%;
+  }
+
+  .member {
+    width: 100%;
+  }
+
+  .modalTitle-div {
+    flex-direction: column;
+  }
+
+  .modalTitle-side {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .groupOption {
+    width: auto;
+  }
+
+  .groupExit {
+    text-align: center;
+  }
+}
+
+.groupTable {
+  width: 100%;
+  table-layout: fixed; /* 테이블 너비 고정 */
+}
+
+.groupTable th {
+  text-align: center;
+}
+
+.groupTable th img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  /* 웹 화면에서만 적용될 스타일 */
+  .mobileRow {
+    display: none; /* 휴대폰 사이즈에서 숨김 */
+  }
+}
+
+@media (max-width: 767px) {
+  /* 휴대폰 사이즈에서만 적용될 스타일 */
+  .desktopRow {
+    display: none; /* 웹 화면에서 숨김 */
+  }
+}
+
+@media (max-width: 767px) {
+  .groupTable tr {
+    text-align: center; /* 모든 행을 가운데 정렬 */
+  }
+
+  .groupTable th,
+  .groupTable td {
+    text-align: center; /* 모든 헤더 셀과 데이터 셀을 가운데 정렬 */
+  }
+}
+
+
+
+
