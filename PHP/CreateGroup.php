@@ -4,7 +4,9 @@
  
 include('index.php');
 
-session_start();
+if(!session_id()){
+    session_start();
+}
 
 // 세션 여부 확인
 if (!isset($_SESSION['id'])) {

@@ -1,9 +1,11 @@
 <?php
      
     include('index.php');
-
-    session_start();
     
+    if(!session_id()){
+        session_start();
+    }
+
     if (!isset($_SESSION['id'])) {
         echo json_encode(array('error' => '로그인이 필요합니다.'));
         exit;

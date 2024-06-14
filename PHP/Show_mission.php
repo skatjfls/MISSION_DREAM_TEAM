@@ -7,9 +7,6 @@ include('index.php');
 if(!session_id()){
     session_start();
 }
-else{
-    echo "Session already started";
-}
 
 if (!isset($_SESSION['id'])){
     // Redirect to login page

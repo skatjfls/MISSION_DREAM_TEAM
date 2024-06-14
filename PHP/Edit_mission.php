@@ -4,7 +4,9 @@
  
 include('index.php');
 
-session_start();
+if(!session_id()){
+    session_start();
+}
 
 if (!isset($_SESSION['id'])) {
     // Redirect to login page

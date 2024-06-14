@@ -2,7 +2,6 @@
 // 240410 김현수 작성
 
 // db 연결
-require_once "dbConfig.php";
 include('index.php');
 
 // $KeepLogIn = False;
