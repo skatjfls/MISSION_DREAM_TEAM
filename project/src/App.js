@@ -184,6 +184,9 @@ function App() {
           <>
           <Route path="/login" element={<Navigate to="/login" />} />
           <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/signup" element={ <Navigate to="/signup" /> }/>
+          <Route path="/group/*" element={<Navigate to="/login" />} />
+          <Route path="/updateinfo" element={<Navigate to="/login" />} />
           </>
         )}
         <Route path="*" element={<Page404 navigate={navigate} isLoggedIn={isLoggedIn}/>}/>
