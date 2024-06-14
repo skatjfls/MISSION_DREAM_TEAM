@@ -269,22 +269,32 @@ const UpdateInfoForm = () => {
                             <Form.Label className="form-label"><span className='notion'>*</span> 기존 Password</Form.Label>
                             <Form.Text className="error-message">{formErrors.CurPassword}</Form.Text>
                         </div>
-                            <Form.Control className="form-control" type="password" name="CurPassword" placeholder="기존 PW 입력 (8~20자)" value={formData.CurPassword} onChange={(e) => handleChange(e, setFormData, userName, setIsNameDuplicateChecked, (name, value) => validateField(name, value, formData, formErrors, setFormErrors, () => validateForm(formData, setFormIsValid, isNameDuplicateChecked, showNewPasswordFields)))} required />
+                        <Row>
+                            <Col xs={8}>
+                                <Form.Control className="form-control" type="password" name="CurPassword" placeholder="기존 PW 입력 (8~20자)" value={formData.CurPassword} onChange={(e) => handleChange(e, setFormData, userName, setIsNameDuplicateChecked, (name, value) => validateField(name, value, formData, formErrors, setFormErrors, () => validateForm(formData, setFormIsValid, isNameDuplicateChecked, showNewPasswordFields)))} required />
+                            </Col>
+                            <Col xs={4}>
+                                <Button variant="secondary" onClick={() => setShowNewPasswordFields(!showNewPasswordFields)} className={`mb-3 button-change-pw check-duplicate ${showNewPasswordFields ? 'newPwTrue' : 'newPwFalse'}`}>
+                                    비밀번호 바꾸기
+                                </Button>
+                            </Col>
+                        </Row>
                     </Form.Group>
-                    <Button variant="secondary" onClick={() => setShowNewPasswordFields(!showNewPasswordFields)} className="mb-3">
-                        비밀번호 바꾸기
-                    </Button>
                     {showNewPasswordFields && (
                         <>
                             <Form.Group className="form-group" controlId="formBasicNewPassword">
-                                <Form.Label className={`form-label ${showNewPasswordFields ? 'visible' : ''}`}>새 Password</Form.Label>
+                                <div className="labelAlign">
+                                    <Form.Label className={`form-label ${showNewPasswordFields ? 'visible' : ''}`}>새 Password</Form.Label>
+                                    <Form.Text className="error-message">{formErrors.newPassword}</Form.Text>
+                                </div>
                                 <Form.Control className="form-control" type="password" name="newPassword" placeholder="새 PW 입력 (8~20자)" value={formData.newPassword} onChange={(e) => handleChange(e, setFormData, userName, setIsNameDuplicateChecked, (name, value) => validateField(name, value, formData, formErrors, setFormErrors, () => validateForm(formData, setFormIsValid, isNameDuplicateChecked, showNewPasswordFields)))} />
-                                <Form.Text className="error-message">{formErrors.newPassword}</Form.Text>
                             </Form.Group>
                             <Form.Group className="form-group" controlId="formBasicReNewPassword">
-                                <Form.Label className={`form-label ${showNewPasswordFields ? 'visible' : ''}`}>비밀번호 재입력</Form.Label>
+                                <div className="labelAlign">
+                                    <Form.Label className={`form-label ${showNewPasswordFields ? 'visible' : ''}`}>비밀번호 재입력</Form.Label>
+                                    <Form.Text className="error-message">{formErrors.repassword}</Form.Text>
+                                </div>
                                 <Form.Control className="form-control" type="password" name="repassword" placeholder="새 PW 재입력" value={formData.repassword} onChange={(e) => handleChange(e, setFormData, userName, setIsNameDuplicateChecked, (name, value) => validateField(name, value, formData, formErrors, setFormErrors, () => validateForm(formData, setFormIsValid, isNameDuplicateChecked, showNewPasswordFields)))} />
-                                <Form.Text className="error-message">{formErrors.repassword}</Form.Text>
                             </Form.Group>
                         </>
                     )}

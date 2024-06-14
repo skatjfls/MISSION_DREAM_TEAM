@@ -11,6 +11,7 @@ function LogIn(props) {
     const [userCount, setUserCount] = useState(0);
     const dispatch = useDispatch();
     const userId = useSelector((state) => state.user.userId)
+    const [showRightPanel, setShowRightPanel] = useState(false);
 
     useEffect(() => {
         axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
@@ -87,12 +88,14 @@ function LogIn(props) {
 
     return (
         <div className="Login">
-            <div className="login-box">
+            <div className={`login-box ${showRightPanel ? 'show-right-panel' : ''}`}>
                 <div className="login-left">
                     <h1 className='text-title text-today'>오늘의 갓생러는 {userCount}명!</h1>
                     <h3 className='text-title'>로그인으로 미션을 Unlock -☆</h3>
-                    <div className='text-today-box'>오늘의 미션은 무엇일까요?</div>
-                    <img className="img-cursor" src="/img/cursor.png"></img>
+                    <div>
+                        <button className='text-today-box' onClick={() => setShowRightPanel(!showRightPanel)}>오늘의 미션은 무엇일까요? <span>click!</span></button>
+                        <img className="img-cursor" src="/img/cursor.png"></img>
+                    </div>
                 </div>
                 <div className="login-right">
                     <div className='login-logo'>

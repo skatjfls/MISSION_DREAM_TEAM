@@ -122,10 +122,10 @@ function App() {
   
   return (
     <div className="App">
+      <div className="content">
       <Routes>
         <Route path="/login" element={ <LogIn navigate={navigate}/> }/>
         <Route path="/signup" element={ <SignUp/> }/>
-        <Route path="*" element={<Navigate to="/login"/>}/>
         {isLoggedIn ? (
           <>
           <Route path="/" element={
@@ -181,16 +181,29 @@ function App() {
           <Route path="/updateinfo" element={ <UpdateInfo/> }/>
           </>
         ) : (
-          <Route path="*" element={<Navigate to="/login" />} />
+          <>
+          <Route path="/login" element={<Navigate to="/login" />} />
+          <Route path="/" element={<Navigate to="/login" />} />
+          </>
         )}
+        <Route path="*" element={<Page404 navigate={navigate} isLoggedIn={isLoggedIn}/>}/>
       </Routes>
       <CreateGroup create={create} setCreate={setCreate} setGroupList={setGroupList}/>
       <JoinGroup join={join} setJoin={setJoin} groupList={groupList} setGroupList={setGroupList}/>
       <ChangeProfileImage change={change} setChange={setChange} profileImage={profileImage} setProfileImage={setProfileImage}/>
+      </div>
+      {['/'].includes(window.location.pathname) && <Footer />}
     </div>
   );
 }
 
+const Footer = () => {
+  return (
+    <footer className="footer">
+      <p>© 2024 mission dream team. All rights reserved.</p>
+    </footer>
+  );
+}
 
 const fetchMissions = async (setMissionList) => {
   try {
@@ -500,14 +513,14 @@ function MyCalendar() {
         </div>
         <div className="col-md-5 myChartContainer">
         <div className="myCharts">
-          <ResponsiveContainer>
+          <ResponsiveContainer width="100%" height="50%">
             <BarChart
               data={dailyData}
               margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="day" tickFormatter={(day) => moment(day).format('MM-DD')} />
-              <YAxis domain={[dataMin => (dataMin < 0 ? dataMin : 0), 0]} tickCount={5} />
+              <YAxis domain={[0, dataMax => (dataMax < 0 ? dataMax : 0)]} tickCount={5} />
               <Tooltip />
               <Bar
                 dataKey="point"
@@ -524,7 +537,7 @@ function MyCalendar() {
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="week" tickFormatter={(week) => `${moment(week).format('YYYY-MM-DD')}~`} />
-              <YAxis domain={[dataMin => (dataMin < 0 ? dataMin : 0), 0]} tickCount={5} />
+              <YAxis domain={[0, dataMax => (dataMax < 0 ? dataMax : 0)]} tickCount={5} />
               <Tooltip labelFormatter={(value) => `${moment(value).format('YYYY-MM-DD')}~${moment(value).add(6, 'days').format('YYYY-MM-DD')}`} />
               <Line
                 type="linear"
@@ -860,5 +873,22 @@ function ChangeProfileImage(props) {
   );
 }
 
+function Page404(props) {
+  const handleClick = () => {
+    if (props.isLoggedIn) {
+      props.navigate('/');
+    } else {
+      props.navigate('/login');
+    }
+  };
+
+  return (
+    <div className='page-loading'>
+      <img className="img-nonepage" src="/img/dream_X.gif"></img>
+      <div className='text-loading'>페이지를 찾을 수 없습니다.</div>
+      <button className="button-nonepage" onClick={handleClick}>메인으로 돌아가기</button>
+    </div>
+  );
+}
 
 export default App;

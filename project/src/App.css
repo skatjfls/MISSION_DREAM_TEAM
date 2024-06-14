@@ -38,10 +38,23 @@
   display: none;
 }
 
+body, html, #root, .App {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .App {
   text-align: center;
   user-select: none;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 h1, h3 {
@@ -57,8 +70,23 @@ div {
   box-sizing: border-box;
 }
 
+.content {
+  flex: 1;
+}
+
 button :disabled {
   background-color: var(--sub-color4);
+}
+
+.footer {
+  width: 100%;
+  padding-top: 5px;
+  background-color: transparent;
+  text-align: center;
+  bottom: 0px;
+  left: 0;
+  color: var(--gray-color);
+  margin-top: auto;
 }
 
 /*Nav css*/
@@ -100,6 +128,9 @@ button :disabled {
   border-radius: 100px;
   object-fit: cover;
   border: solid 0.5px var(--sub-color3);
+  display: block;
+  text-align: center;
+  line-height: 32px;
 }
 
 .button-logout {
@@ -123,6 +154,11 @@ button :disabled {
   padding-top: 40px;
   height: 220px;
   position: relative;
+  flex: 1;
+}
+
+.main-top h1 {
+  font-size: 42px;
 }
 
 .todo-tap h6 {
@@ -382,13 +418,22 @@ button :disabled {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin: 30px;
 }
+
 .myChartContainer {
-  height: 280px;
+  height: 500px;
   padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: white;
+  z-index: 1;
 }
+
 
 .myCharts {
   width: 75%;
+  height: 100%;
 }
 
 /* modal css*/
@@ -582,6 +627,10 @@ button :disabled {
   width: 100px;
 }
 
+.img-nonepage {
+  width: 130px;
+}
+
 .text-loading {
   font-family: "font_NanumSquare";
   font-weight: bold;
@@ -589,4 +638,15 @@ button :disabled {
 
 .mission-photo-title {
   font-family: "font_tennine";
+}
+
+.button-nonepage {
+  background-color: var(--main-color);
+  border: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  font-family: "font_NanumSquare";
+  font-weight: bold;
+  padding: 5px 10px;
+  margin-top: 20px;
 }

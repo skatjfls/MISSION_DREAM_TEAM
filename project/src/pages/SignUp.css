@@ -33,12 +33,11 @@
 
 .input {
     background-color: rgb(255, 255, 255);
-    width: 650px;
-    height: 670px;
+    width: 600px !important;
+    height: 640px;
     margin: 0 auto;
     border-radius: 10px;
     box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.1);
-    font-size: 20px;
     font-family: "font_NanumSquare";
     display: flex;
     flex-direction: column;
@@ -47,25 +46,27 @@
 }
 
 .signUpTitle {
-    font-size: 50px;
+    font-size: 42px !important;
     font-family: "font_tennine";
     margin: 0px auto;
 }
 
 .signUpExplain {
-    font-size: 20px;
+    font-size: 18px !important;
     font-family: "font_NanumSquare";
     margin: 0px auto;
 }
 
 .form-label{
     font-weight: bold;
+    font-size: 18px;
 }
 
 .form-control {
     box-shadow: inset 4px 4px 4px rgba(0, 0, 0, 0.1);
-    padding: 10px;
+    padding: 7px 10px !important;
     padding-left: 20px;
+    height: 42px;
 }
 
 .form-control::placeholder {
@@ -112,6 +113,7 @@
     font-weight: bold;
     height: 50px;
     font-size: 25px;
+    margin-top: 20px !important;
 }
 
 .button-change {

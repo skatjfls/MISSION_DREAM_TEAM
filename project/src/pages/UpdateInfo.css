@@ -33,7 +33,7 @@
 
 .input {
     background-color: rgb(255, 255, 255);
-    width: 650px;
+    width: 600px !important;
     height: auto;
     margin: 0 auto;
     border-radius: 10px;
@@ -138,4 +138,23 @@
 .button-exit{
     background-color: white;
     font-size: 10px;
+    border-radius: 20px;
+    padding: 2px 7px;
+}
+
+.button-change-pw {
+    background-color: var(--main-color);
+    color: black;
+    border: 0;
+    font-family: "font_NanumSquare";
+    font-weight: bold;
+    padding: 0;
+}
+
+.newPwFalse {
+    background-color: var(--main-color);
+}
+
+.newPwTrue {
+    background-color: var(--sub-color3);
 }
