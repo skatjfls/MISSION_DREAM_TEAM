@@ -309,10 +309,10 @@ function MemberList({ members, memberMissionTables, toggleMissionTable, handlePh
                                     <table className="memberInfo" onClick={() => toggleMissionTable(id)}>
                                         <tbody>
                                             <tr>
-                                                <td style={{ width: '10%' }}><img className="img-profile" src={profileImage === '/img/default_profile.png' ? profileImage : profileImage.replace(/^..\/project\/public/, "")} alt="Profile" /></td>
-                                                <td className="MemberName" style={{ width: '50%' }}>{name}</td>
-                                                <td style={{ width: '15%' }}>{missionTotalCount - missionNotCompleteCount}/{missionTotalCount}</td>
-                                                <td style={{ width: '15%' }}>{missionTotalPoint === 0 ? '0' : (missionTotalPoint > 0 ? `-${missionTotalPoint}` : missionTotalPoint)}pt</td>
+                                                <td style={{ width: '20%' }}><img className="img-profile" src={profileImage === '/img/default_profile.png' ? profileImage : profileImage.replace(/^..\/project\/public/, "")} alt="Profile" /></td>
+                                                <td className="MemberName" style={{ width: '40%' }}>{name}</td>
+                                                <td style={{ width: '20%' }}>{missionTotalCount - missionNotCompleteCount}/{missionTotalCount}</td>
+                                                <td style={{ width: '20%' }}>{missionTotalPoint === 0 ? '0' : (missionTotalPoint > 0 ? `-${missionTotalPoint}` : missionTotalPoint)}pt</td>
                                             </tr>
                                         </tbody>
                                     </table>

@@ -208,10 +208,15 @@ div {
 
 .memberInfo {
   margin: 0 auto; /* 테이블을 상위 요소의 좌우 가운데에 배치 */
+  table-layout: fixed; /* 테이블 레이아웃 고정 */
+  width: 100%; /* 테이블 너비 설정 */
 }
 
-.memberInfo td {
+.memberInfo tbody tr td {
   padding: 5px; /* 셀 간의 간격을 설정 */
+  overflow: hidden; /* 내용이 넘칠 때 숨김 처리 */
+  text-overflow: ellipsis; /* 넘치는 텍스트에 ... 표시 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
 }
 
 .missionTable{
@@ -219,28 +224,33 @@ div {
   width: 100%;
   display: table;
   margin-top: 10px;
+  table-layout: fixed; /* 테이블 레이아웃 고정 */
 }
 
 .missionTable th,
 .missionTable td {
-    font-size: 15px;
+  font-size: 15px;
+  overflow: hidden; /* 내용이 넘칠 때 숨김 처리 */
+  text-overflow: ellipsis; /* 넘치는 텍스트에 ... 표시 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
 }
-
 
 .missionTable th:nth-child(1),
 .missionTable td:nth-child(1) {
-    width: 15%; /* 달성의 너비를 10%로 설정 */
+  width: 15%; /* 달성의 너비를 5%로 설정 */
 }
 
 .missionTable th:nth-child(2),
 .missionTable td:nth-child(2) {
-    width: 70%; /* 미션의 너비를 80%로 설정 */
+  width: 70%; /* 미션의 너비를 75%로 설정 */
 }
 
 .missionTable th:nth-child(3),
 .missionTable td:nth-child(3) {
-    width: 15%; /* 인증의 너비를 10%로 설정 */
+  width: 15%; /* 인증의 너비를 20%로 설정 */
 }
+
+
 
 .backOfWeek{
   background: transparent;
