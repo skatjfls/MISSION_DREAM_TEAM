@@ -4,8 +4,7 @@ import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import './UpdateInfo.css';
 
-
-function UpdateInfoForm(props){
+function UpdateInfoForm(props) {
     const navigate = useNavigate();
     const {
         formData, setFormData,
@@ -13,23 +12,24 @@ function UpdateInfoForm(props){
         isNameDuplicateChecked, setIsNameDuplicateChecked,
         formIsValid, setFormIsValid,
         showNewPasswordFields, setShowNewPasswordFields,
-        userName, setUserName,
         showModal, setShowModal,
         modalContent, setModalContent,
         modalImage, setModalImage,
         showConfirmModal, setShowConfirmModal
     } = useFormState();
 
+    let userName = props.userName;
+
     useEffect(() => {
         axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
-        .then(res => {
-            if(res.data === false){
-                navigate('/login');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching user login data:', error)
-        })
+            .then(res => {
+                if (res.data === false) {
+                    navigate('/login');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching user login data:', error);
+            });
     }, []);
 
     useEffect(() => {
@@ -37,8 +37,8 @@ function UpdateInfoForm(props){
     }, [formData, isNameDuplicateChecked]);
 
     useEffect(() => {
-        fetchUserInfo(setUserName, setFormData, setIsNameDuplicateChecked);
-    }, []);
+        fetchUserInfo(setFormData, setIsNameDuplicateChecked, userName);
+    }, [userName]);
 
     useEffect(() => {
         const handleKeyPress = (event) => {
@@ -46,25 +46,25 @@ function UpdateInfoForm(props){
                 if (!showConfirmModal) {
                     setShowModal(false);
                     if (modalContent === '회원정보 수정에 성공했어요!' || modalContent === '회원탈퇴가 완료되었어요. 잘가요!') {
-                        setTimeout(() => navigate('/login'), 0); // 성공 시 로그인 페이지로 이동
+                        setTimeout(() => navigate('/login'), 0);
                     }
                 }
             }
         };
-    
+
         window.addEventListener('keydown', handleKeyPress);
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
     }, [showConfirmModal, modalContent, navigate, setShowModal]);
-    
+
     useEffect(() => {
         const handleKeyPressConfirm = (event) => {
             if (event.key === 'Enter' && showConfirmModal) {
                 // 아무것도 안하기
             }
         };
-    
+
         window.addEventListener('keydown', handleKeyPressConfirm);
         return () => {
             window.removeEventListener('keydown', handleKeyPressConfirm);
@@ -77,13 +77,13 @@ function UpdateInfoForm(props){
                 handleCloseModal(setShowModal, modalContent, navigate);
             }
         };
-    
+
         window.addEventListener('keydown', handleKeyPressSuccess);
         return () => {
             window.removeEventListener('keydown', handleKeyPressSuccess);
         };
     }, [modalContent, setShowModal, navigate]);
-    
+
     return (
         <div className="background">
             <div className="input">
@@ -96,7 +96,7 @@ function UpdateInfoForm(props){
                             <Form.Text className="error-message">{formErrors.id}</Form.Text>
                         </div>
                         <Form.Control
-                            className="form-control" type="text" name="id" value={formData.id} onChange={(e) => handleChange(e, setFormData, userName, setIsNameDuplicateChecked, (name, value) => validateField(name, value, formData, formErrors, setFormErrors, () => validateForm(formData, setFormIsValid, isNameDuplicateChecked, showNewPasswordFields)))} disabled/>
+                            className="form-control" type="text" name="id" value={formData.id} onChange={(e) => handleChange(e, setFormData, userName, setIsNameDuplicateChecked, (name, value) => validateField(name, value, formData, formErrors, setFormErrors, () => validateForm(formData, setFormIsValid, isNameDuplicateChecked, showNewPasswordFields)))} disabled />
                     </Form.Group>
                     <Form.Group className="form-group" controlId="formBasicPassword">
                         <div className="labelAlign">
@@ -188,12 +188,11 @@ function UpdateInfoForm(props){
 const useFormState = () => {
     const [formData, setFormData] = useState({
         id: '',
-        CurPassword: '', 
+        CurPassword: '',
         newPassword: '',
         repassword: '',
         nickName: ''
     });
-    
 
     const [formErrors, setFormErrors] = useState({
         id: '',
@@ -206,7 +205,6 @@ const useFormState = () => {
     const [isNameDuplicateChecked, setIsNameDuplicateChecked] = useState(false);
     const [formIsValid, setFormIsValid] = useState(false);
     const [showNewPasswordFields, setShowNewPasswordFields] = useState(false);
-    const [userName, setUserName] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [modalContent, setModalContent] = useState('');
     const [modalImage, setModalImage] = useState('');
@@ -218,7 +216,6 @@ const useFormState = () => {
         isNameDuplicateChecked, setIsNameDuplicateChecked,
         formIsValid, setFormIsValid,
         showNewPasswordFields, setShowNewPasswordFields,
-        userName, setUserName,
         showModal, setShowModal,
         modalContent, setModalContent,
         modalImage, setModalImage,
@@ -226,11 +223,10 @@ const useFormState = () => {
     };
 };
 
-const fetchUserInfo = async (setUserName, setFormData, setIsNameDuplicateChecked) => {
+const fetchUserInfo = async (setFormData, setIsNameDuplicateChecked) => {
     try {
         const userRes = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetInfo.php');
         const userInfo = userRes.data;
-        setUserName(userInfo.name);
         setFormData(prevData => ({ ...prevData, nickName: userInfo.name }));
         const idRes = await axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/GetId.php');
         const userId = idRes.data;
@@ -282,7 +278,7 @@ const validateForm = (formData, setFormIsValid, isNameDuplicateChecked, showNewP
     const passwordIsValid = formData.CurPassword && formData.CurPassword.match(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,20}$/);
     const newPasswordIsValid = !showNewPasswordFields || (formData.newPassword === '' || (formData.newPassword.match(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,20}$/) && formData.repassword === formData.newPassword));
     const nickNameIsValid = formData.nickName === '' || (formData.nickName.match(/^(?=.*[a-zA-Z가-힣]).{2,10}$/) && isNameDuplicateChecked);
-    
+
     const isFormValid = passwordIsValid && newPasswordIsValid && nickNameIsValid;
     setFormIsValid(isFormValid);
 };
@@ -366,7 +362,6 @@ const handleSubmit = async (e, formData, formIsValid, setFormIsValid, navigate, 
     }
 };
 
-
 const handleMemberExit = async (setShowConfirmModal) => {
     setShowConfirmModal(true);
 };
@@ -391,6 +386,5 @@ const handleCloseModal = (setShowModal, modalContent, navigate) => {
         setTimeout(() => navigate('/login'), 0); // 성공 시 로그인 페이지로 이동
     }
 };
-
 
 export default UpdateInfoForm;
