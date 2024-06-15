@@ -127,7 +127,7 @@ function App() {
     <div className="App">
       <div className="content">
       <Routes>
-        <Route path="/login" element={ <LogIn navigate={navigate} showAlert={showAlert} setAlertContent={setAlertContent} setAlertImage={setAlertImage} setShowAlert={setShowAlert}/> }/>
+        <Route path="/login" element={ <LogIn navigate={navigate}/> }/>
         <Route path="/signup" element={ <SignUp/> }/>
         {isLoggedIn ? (
           <>
@@ -182,7 +182,7 @@ function App() {
             </div>
           }/>
           <Route path="/group/*" element={ <Group userName={userName} point={point} profileImage={profileImage} fetchProfileImage={fetchProfileImage}/> }/>
-          <Route path="/updateinfo" element={ <UpdateInfo/> }/>
+          <Route path="/updateinfo" element={ <UpdateInfo userName={userName}/> }/>
           </>
         ) : (
           <>
@@ -932,7 +932,6 @@ function AlertModal({showAlert, setShowAlert, alertContent, alertImage}) {
         window.removeEventListener('keydown', handleKeyPress);
     };
   }, [showAlert]);
-  
 
   return(
     <Modal className="modal" show={showAlert} onHide={() => {setShowAlert(false);}}>

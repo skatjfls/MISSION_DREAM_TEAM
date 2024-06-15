@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
@@ -12,6 +13,9 @@ function LogIn(props) {
     const dispatch = useDispatch();
     const userId = useSelector((state) => state.user.userId)
     const [showRightPanel, setShowRightPanel] = useState(false);
+    let [showAlert, setShowAlert] = useState(false);
+    const [alertContent, setAlertContent] = useState('');
+    const [alertImage, setAlertImage] = useState('');
 
     useEffect(() => {
         axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
@@ -39,8 +43,11 @@ function LogIn(props) {
                 if (!showRightPanel) {
                     setShowRightPanel(true);
                 }
-                else if (!props.showAlert){
+                else if (!showAlert){
                     onClickLogin(event);
+                }
+                else if (showAlert) {
+                    setShowAlert(false)
                 }
             }
         };
@@ -49,7 +56,7 @@ function LogIn(props) {
         return () => {
             document.removeEventListener('keypress', handleKeyPress);
         };
-    }, [props.setShowAlert, showRightPanel])
+    }, [showAlert, showRightPanel]);
     
     const onClickLogin = (event) => {
         event.preventDefault();
@@ -57,9 +64,9 @@ function LogIn(props) {
         const passwordIsEmpty = checkField('password');
 
         if (idIsEmpty || passwordIsEmpty) {
-            props.setAlertContent('아이디와 비밀번호를 확인해주세요!');
-            props.setAlertImage('/img/dream_X.gif');
-            props.setShowAlert(true);
+            setAlertContent('아이디 및 비밀번호를 입력해주세요!');
+            setAlertImage('/img/dream_X.gif');
+            setShowAlert(true);
         }
     
         if (!idIsEmpty && !passwordIsEmpty) {
@@ -75,11 +82,12 @@ function LogIn(props) {
             })
             .then((res)=>{
                 if (res.data == true) {
-                    alert('로그인에 성공했습니다.');
                     navigate('/');
                 }
                 else {
-                    alert('아이디 또는 비밀번호를 확인해주세요.')
+                    setAlertContent('아이디와 비밀번호를 확인해주세요!');
+                    setAlertImage('/img/dream_X.gif');
+                    setShowAlert(true);
                 }
             })
             .catch((err)=>{
@@ -125,7 +133,27 @@ function LogIn(props) {
                     </div>
                 </div>
             </div>
+            <AlertModal showAlert={showAlert} setShowAlert={setShowAlert} alertContent={alertContent} alertImage={alertImage}/>
         </div>
+    );
+}
+
+function AlertModal({showAlert, setShowAlert, alertContent, alertImage}) {
+    return(
+        <Modal className="modal" show={showAlert} onHide={() => {setShowAlert(false);}}>
+        <Modal.Header closeButton>
+            <Modal.Title></Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='text-center modalBody'>
+            <p>{alertContent}</p>
+            {alertImage && <img className="dreams" src={alertImage} alt="Result" style={{ width: '100px' }} />}
+        </Modal.Body>
+        <Modal.Footer>
+            <Button className="modalClose" variant="secondary" onClick={() => {setShowAlert(false);}}>
+                닫기
+            </Button>
+        </Modal.Footer>
+        </Modal>
     );
 }
 
