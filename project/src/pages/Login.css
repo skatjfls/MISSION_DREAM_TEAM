@@ -44,6 +44,7 @@
   width: 50%;
   transform: translateX(-50%);
 }
+
 .login-right {
   position: absolute;
   border-radius: 0 5px 5px 0;
@@ -161,6 +162,87 @@
 
 .img-cursor {
   width: 25px;
+  height: 100%;
+  object-fit: contain;
   z-index: 2;
   margin: 25px 0px -15px -30px;
+}
+
+@media only screen and (max-width: 600px) {
+  /* 폰 사이즈에서 */
+  body {
+    font-size: 14px;
+  }
+  .header {
+    padding: 10px;
+  }
+
+  .login-box {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    box-shadow: 10px 15px 10px rgba(0, 0, 0, 0.15);
+    background-color: white;
+    overflow: hidden;
+  }
+  .login-left,
+  .login-right {
+    transition: transform 0.5s ease-in-out, height 0.5s ease-in-out;
+  }
+
+  .login-left {
+    background: linear-gradient(to bottom right, var(--gra-color1), var(--gra-color2), var(--gra-color3));
+    border-radius: 5px 0 0 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+    transform: translateY(0);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .login-left.move-left {
+    width: 100%;
+    height: 50%;
+    transform: translateY(-50%);
+  }
+
+.login-right {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-radius: 0 5px 5px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+  transform: translateY(150%);
+  width: 100%;
+  height: 50%;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.login-box.show-right-panel .login-left {
+  width: 100%;
+  height: 50%;
+  transform: translateY(0%);
+}
+
+.login-box.show-right-panel .login-right {
+  transform: translateY(100%);
+  opacity: 1;
+  width: 100%;
+  height: 50%;
+  visibility: visible;
+}
+
 }
