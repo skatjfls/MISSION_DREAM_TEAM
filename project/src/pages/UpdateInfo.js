@@ -221,9 +221,10 @@ const confirmMemberExit = async (navigate, setShowModal, setModalContent, setMod
 const handleCloseModal = (setShowModal, modalContent, navigate) => {
     setShowModal(false);
     if (modalContent === '회원정보 수정에 성공했어요!' || modalContent === '회원탈퇴가 완료되었어요. 잘가요!') {
-        navigate('/login'); // 성공 시 로그인 페이지로 이동
+        setTimeout(() => navigate('/login'), 0); // 성공 시 로그인 페이지로 이동
     }
 };
+
 
 const UpdateInfoForm = () => {
     const navigate = useNavigate();
@@ -250,6 +251,50 @@ const UpdateInfoForm = () => {
         fetchUserInfo(setUserName, setFormData, setIsNameDuplicateChecked);
     }, []);
 
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Enter') {
+                if (!showConfirmModal) {
+                    setShowModal(false);
+                    if (modalContent === '회원정보 수정에 성공했어요!' || modalContent === '회원탈퇴가 완료되었어요. 잘가요!') {
+                        setTimeout(() => navigate('/login'), 0); // 성공 시 로그인 페이지로 이동
+                    }
+                }
+            }
+        };
+    
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [showConfirmModal, modalContent, navigate, setShowModal]);
+    
+    useEffect(() => {
+        const handleKeyPressConfirm = (event) => {
+            if (event.key === 'Enter' && showConfirmModal) {
+                // 아무것도 안하기
+            }
+        };
+    
+        window.addEventListener('keydown', handleKeyPressConfirm);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPressConfirm);
+        };
+    }, [showConfirmModal]);
+
+    useEffect(() => {
+        const handleKeyPressSuccess = (event) => {
+            if (event.key === 'Enter' && modalContent === '회원탈퇴가 완료되었어요. 잘가요!') {
+                handleCloseModal(setShowModal, modalContent, navigate);
+            }
+        };
+    
+        window.addEventListener('keydown', handleKeyPressSuccess);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPressSuccess);
+        };
+    }, [modalContent, setShowModal, navigate]);
+    
     return (
         <div className="background">
             <div className="input">

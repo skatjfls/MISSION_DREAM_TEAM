@@ -608,9 +608,24 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
         }
     }, [showConfirmModal])
 
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Enter') {
+                setShowResultModal(false);
+            }
+        };
+    
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [setShowResultModal]);
+    
+
     const handleCheckboxChange = (event) => {
         setIsChecked(event.target.checked);
     };
+    
 
     return (
         <>
@@ -807,6 +822,7 @@ function getModalTitle(memberName, missionName) {
         </>
     );
 }
+
 function PhotoModal({ showPhotoModal, setShowPhotoModal, modalPhotoSrc, memberName, missionName }) {
     const handlePhotoClose = () => {
         setShowPhotoModal(false);
@@ -814,6 +830,19 @@ function PhotoModal({ showPhotoModal, setShowPhotoModal, modalPhotoSrc, memberNa
 
     const modalTitle = getModalTitle(memberName, missionName); // 멤버 이름과 미션 이름 갖고 타이틀 생성
 
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Enter') {
+                setShowPhotoModal(false);
+            }
+        };
+    
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [setShowPhotoModal]);
+    
     return (
         <Modal show={showPhotoModal} onHide={handlePhotoClose} className="photoModal modal-large">
             <Modal.Header closeButton>
@@ -1082,7 +1111,7 @@ function UpdateGroup(props) {
     );
 }
 
-// 회원탈퇴 모달
+// 그룹탈퇴 모달
 function GroupExitModal({ showExitModal, setShowExitModal, group_name, exitCallback }) {
     const [calculationResult, setCalculationResult] = useState(null); // 탈퇴 결과 상태
 
@@ -1093,15 +1122,29 @@ function GroupExitModal({ showExitModal, setShowExitModal, group_name, exitCallb
             setCalculationResult('success'); // 탈퇴 성공 상태 설정
         } catch (err) {
             // 탈퇴 실패 시
-            console.error('그룹 탈퇴 실패!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 히히히', err);
+            console.error('그룹 탈퇴 실패', err);
             setCalculationResult('failure'); // 탈퇴 실패 상태 설정
         }
     };
 
     const handleCloseModal = () => {
-        // 모달을 닫을 때 app.js로 이동
+        setShowExitModal(false);
         exitCallback();
     };
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Enter' && calculationResult) {
+                setCalculationResult(null); // 성공/실패 모달 닫기
+                handleCloseModal(); // 모달 닫기 및 콜백 함수 호출
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [calculationResult]);
 
     return (
         <Modal show={showExitModal} onHide={() => setShowExitModal(false)} className='calculateModal'>
@@ -1159,5 +1202,6 @@ function GroupExitModal({ showExitModal, setShowExitModal, group_name, exitCallb
         </Modal>
     );
 }
+
 
 export default GroupPage;

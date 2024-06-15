@@ -64,7 +64,26 @@ const SignUpForm = () => {
         console.error('Error fetching user info:', error)
         })
     }, [])
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Enter') {
+                if (modalContent === '회원가입에 성공했어요!! 환영합니다!!') {
+                    setShowModal(false);
+                    window.removeEventListener('keydown', handleKeyPress); // 엔터키 이벤트 리스너 제거
+                    setTimeout(() => navigate('/login'), 0); // 로그인 페이지로 이동
+                } else {
+                    setShowModal(false);
+                }
+            }
+        };
     
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [setShowModal, modalContent, navigate]);
+
     return (
         <div className="background">
             <div className="input">
@@ -136,7 +155,6 @@ const SignUpForm = () => {
     );
 };
 
-
 const handleChange = (e, setFormData, validateField, setIsIDDuplicateChecked, setIsNameDuplicateChecked) => {
     const { name, value } = e.target;
     setFormData(prevData => ({ ...prevData, [name]: value }));
@@ -149,7 +167,6 @@ const handleChange = (e, setFormData, validateField, setIsIDDuplicateChecked, se
         setIsNameDuplicateChecked(false);
     }
 };
-
 
 const validateField = (fieldName, value, formData, formErrors, setFormErrors, validateForm) => {
     const errors = { ...formErrors };
@@ -213,7 +230,6 @@ const handleCheckDuplicateID = async (formData, setModalContent, setShowModal, s
     }
 };
 
-
 const handleCheckDuplicateNickName = async (formData, setModalContent, setShowModal, setIsNameDuplicateChecked, setModalImage) => {
     const nameValidationResult = formData.nickName.match(/^(?=.*[a-zA-Z가-힣]).{2,10}$/);
     if (nameValidationResult) {
@@ -247,7 +263,6 @@ const handleCheckDuplicateNickName = async (formData, setModalContent, setShowMo
         setIsNameDuplicateChecked(false);
     }
 };
-
 
 const handleCloseModal = (modalContent, setShowModal, navigate) => {
     if (modalContent === '회원가입에 성공했어요!! 환영합니다!!') {
@@ -291,7 +306,5 @@ const handleSubmit = async (e, formData, setModalContent, setModalImage, setShow
         console.log('Form is invalid, cannot submit.');
     }
 };
-
-
 
 export default SignUpForm;
