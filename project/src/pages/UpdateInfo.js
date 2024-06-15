@@ -272,7 +272,7 @@ const UpdateInfoForm = () => {
     useEffect(() => {
         const handleKeyPressConfirm = (event) => {
             if (event.key === 'Enter' && showConfirmModal) {
-                // Do nothing to prevent closing the confirm modal
+                // 아무것도 안하기
             }
         };
     
