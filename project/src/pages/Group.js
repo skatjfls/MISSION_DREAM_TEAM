@@ -121,6 +121,19 @@ function GroupPage(props) {
         setShowSettingModal(true);
     };
 
+
+    useEffect(() => {
+        axios.get('http://localhost/MISSION_DREAM_TEAM/PHP/CheckLoginState.php')
+        .then(res => {
+            if(res.data === false){
+                navigate('/login');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user login data:', error)
+        })
+    }, []);
+    
     const handlePhotoOpen = (photoPath, memberName, missionName) => {
         let absolutePath = photoPath.replace('../project/public/', '');
         absolutePath = absolutePath.replace('..', '');
@@ -578,7 +591,7 @@ function PointModal({ showModal, setShowModal, members, penalty_per_point, group
             '이름': member.name,
             '포인트': member.missionTotalPoint*(-1),
             '페널티 금액': penaltyString,
-            '총 벌금': (member.calculatedPoint)*(-1)?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+'원'
+            '총 벌금': (member.calculatedPoint*(-1))?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+'원'
         }));
         const worksheet = XLSX.utils.json_to_sheet(worksheetData);
         const workbook = XLSX.utils.book_new();
@@ -852,7 +865,7 @@ function PhotoModal({ showPhotoModal, setShowPhotoModal, modalPhotoSrc, memberNa
                 <img src={modalPhotoSrc} alt={`${memberName}의 ${missionName}`} style={{ width: '100%' }} />
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={handlePhotoClose}>
+                <Button variant="secondary" className="modalClose" onClick={handlePhotoClose}>
                     닫기
                 </Button>
             </Modal.Footer>

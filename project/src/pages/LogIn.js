@@ -31,10 +31,17 @@ function LogIn(props) {
         .catch(error => {
             console.error('Error fetching user count:', error)
         });
+    },[]);
 
+    useEffect(() => {
         const handleKeyPress = (event) => {
             if (event.key === 'Enter') {
-                onClickLogin(event);
+                if (!showRightPanel) {
+                    setShowRightPanel(true);
+                }
+                else if (!props.showAlert){
+                    onClickLogin(event);
+                }
             }
         };
 
@@ -42,12 +49,18 @@ function LogIn(props) {
         return () => {
             document.removeEventListener('keypress', handleKeyPress);
         };
-    },[]);
-
+    }, [props.setShowAlert, showRightPanel])
+    
     const onClickLogin = (event) => {
         event.preventDefault();
-        const idIsEmpty = checkField('id', '아이디를 입력해주세요.');
-        const passwordIsEmpty = checkField('password', '비밀번호를 입력해주세요.');
+        const idIsEmpty = checkField('id');
+        const passwordIsEmpty = checkField('password');
+
+        if (idIsEmpty || passwordIsEmpty) {
+            props.setAlertContent('아이디와 비밀번호를 확인해주세요!');
+            props.setAlertImage('/img/dream_X.gif');
+            props.setShowAlert(true);
+        }
     
         if (!idIsEmpty && !passwordIsEmpty) {
             const inputId = document.getElementById('id').value;
@@ -75,10 +88,9 @@ function LogIn(props) {
         }
     }
 
-    const checkField = (fieldId, checkText) => {
+    const checkField = (fieldId) => {
         let fieldValue = document.getElementById(fieldId).value;
         if (fieldValue == '') {
-            alert(checkText)
             return true
         }
         else{
