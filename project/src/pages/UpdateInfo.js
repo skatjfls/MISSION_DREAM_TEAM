@@ -247,7 +247,7 @@ const UpdateInfoForm = () => {
     }, [formData, isNameDuplicateChecked]);
 
     useEffect(() => {
-        checkLoginState(setIsLoggedIN);
+        checkLoginState(setIsLoggedIN, navigate);
         fetchUserInfo(setUserName, setFormData, setIsNameDuplicateChecked);
     }, []);
 

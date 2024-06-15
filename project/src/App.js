@@ -26,6 +26,9 @@ function App() {
   let [missionInput, setMissionInput] = useState('');
   let [profileImage, setProfileImage] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(null);
+  let [showAlert, setShowAlert] = useState(false);
+  const [alertContent, setAlertContent] = useState('');
+  const [alertImage, setAlertImage] = useState('');
   let [tap, setTap] = useState(0);
   let navigate = useNavigate();
 
@@ -119,12 +122,12 @@ function App() {
       console.error('Error adding mission:', error);
     }
   };
-  
+
   return (
     <div className="App">
       <div className="content">
       <Routes>
-        <Route path="/login" element={ <LogIn navigate={navigate}/> }/>
+        <Route path="/login" element={ <LogIn navigate={navigate} showAlert={showAlert} setAlertContent={setAlertContent} setAlertImage={setAlertImage} setShowAlert={setShowAlert}/> }/>
         <Route path="/signup" element={ <SignUp/> }/>
         {isLoggedIn ? (
           <>
@@ -170,7 +173,8 @@ function App() {
                 </Nav>
               </div>
               {
-                tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} setGroupList={setGroupList} navigate={navigate} userName={userName} point={point} profileImage={profileImage}/> : null
+                tap == 0 ? <ToDo setCreate={setCreate} setJoin={setJoin} groupList={groupList} missionList={missionList} setMissionList={setMissionList} setGroupList={setGroupList} navigate={navigate} userName={userName} point={point} profileImage={profileImage}
+                setAlertContent={setAlertContent} setAlertImage={setAlertImage} setShowAlert={setShowAlert}/> : null
               }
               {
                 tap == 1 ? <MyCalendar/> : null
@@ -194,6 +198,7 @@ function App() {
       <CreateGroup create={create} setCreate={setCreate} setGroupList={setGroupList}/>
       <JoinGroup join={join} setJoin={setJoin} groupList={groupList} setGroupList={setGroupList}/>
       <ChangeProfileImage change={change} setChange={setChange} profileImage={profileImage} setProfileImage={setProfileImage}/>
+      <AlertModal showAlert={showAlert} setShowAlert={setShowAlert} alertContent={alertContent} alertImage={alertImage}/>
       </div>
       {['/'].includes(window.location.pathname) && <Footer />}
     </div>
@@ -260,7 +265,9 @@ function ToDo(props) {
         console.error('Error deleting mission:', error);
       }
     } else {
-      alert("미션은 05:00~21:00에만 삭제 가능합니다!");
+      props.setAlertContent("미션은 05:00~21:00에만 삭제 가능합니다!");
+      props.setAlertImage('/img/dream_X.gif');
+      props.setShowAlert(true);
     }
   };
   
@@ -383,6 +390,19 @@ function ToDo(props) {
 function MissionPhoto(props) {
   const modalTitle = props.photoMissionName;
 
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            props.setPhoto(false);
+        }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+        window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [props.setPhoto]);
+
   return (
       <Modal show={props.photo} onHide={() => {props.setPhoto(false)}} className="main-modal">
           <Modal.Header closeButton>
@@ -391,6 +411,11 @@ function MissionPhoto(props) {
           <Modal.Body>
               <img src={props.photoSrc} alt={modalTitle} style={{ width: '100%' }} />
           </Modal.Body>
+          <Modal.Footer>
+                <Button variant="secondary" className="modalClose" onClick={() => {props.setPhoto(false)}}>
+                    닫기
+                </Button>
+            </Modal.Footer>
       </Modal>
   );
 }
@@ -894,4 +919,36 @@ function Page404(props) {
   );
 }
 
+function AlertModal({showAlert, setShowAlert, alertContent, alertImage}) {
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === 'Enter') {
+        setShowAlert(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+        window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [showAlert]);
+  
+
+  return(
+    <Modal className="modal" show={showAlert} onHide={() => {setShowAlert(false);}}>
+      <Modal.Header closeButton>
+          <Modal.Title></Modal.Title>
+      </Modal.Header>
+      <Modal.Body className='text-center modalBody'>
+          <p>{alertContent}</p>
+          {alertImage && <img className="dreams" src={alertImage} alt="Result" style={{ width: '100px' }} />}
+      </Modal.Body>
+      <Modal.Footer>
+          <Button className="modalClose" variant="secondary" onClick={() => {setShowAlert(false);}}>
+              닫기
+          </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
 export default App;
