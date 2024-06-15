@@ -195,9 +195,9 @@ function App() {
         )}
         <Route path="*" element={<Page404 navigate={navigate} isLoggedIn={isLoggedIn}/>}/>
       </Routes>
-      <CreateGroup create={create} setCreate={setCreate} setGroupList={setGroupList}/>
-      <JoinGroup join={join} setJoin={setJoin} groupList={groupList} setGroupList={setGroupList}/>
-      <ChangeProfileImage change={change} setChange={setChange} profileImage={profileImage} setProfileImage={setProfileImage}/>
+      <CreateGroup create={create} setCreate={setCreate} setGroupList={setGroupList} showAlert={showAlert} setShowAlert={setShowAlert} alertContent={alertContent} setAlertContent={setAlertContent} alertImage={alertImage} setAlertImage={setAlertImage}/>
+      <JoinGroup join={join} setJoin={setJoin} groupList={groupList} setGroupList={setGroupList} showAlert={showAlert} setShowAlert={setShowAlert} alertContent={alertContent} setAlertContent={setAlertContent} alertImage={alertImage} setAlertImage={setAlertImage}/>
+      <ChangeProfileImage change={change} setChange={setChange} profileImage={profileImage} setProfileImage={setProfileImage} showAlert={showAlert} setShowAlert={setShowAlert} alertContent={alertContent} setAlertContent={setAlertContent} alertImage={alertImage} setAlertImage={setAlertImage}/>
       <AlertModal showAlert={showAlert} setShowAlert={setShowAlert} alertContent={alertContent} alertImage={alertImage}/>
       </div>
       {['/'].includes(window.location.pathname) && <Footer />}
@@ -644,7 +644,9 @@ function CreateGroup(props) {
         group_password: groupPassword
       });
       if (response.data == true) {
-        alert('[ '+groupName+' ] 그룹이 생성되었습니다!')
+        props.setAlertContent('[ '+groupName+' ] 그룹이 생성되었습니다!');
+        props.setAlertImage('/img/dream_O.gif');
+        props.setShowAlert(true);
         props.setCreate(false);
         fetchGroups(props.setGroupList);
       }
@@ -733,6 +735,12 @@ function JoinGroup(props) {
     const nameIsEmpty = checkField('name', '그룹 이름을 입력해주세요.');
     const passwordIsEmpty = checkField('password', '비밀번호를 입력해주세요.');
     let groupNames = []
+
+    if (nameIsEmpty || passwordIsEmpty) {
+      props.setAlertContent('그룹 이름 및 비밀번호를 입력해주세요!');
+      props.setAlertImage('/img/dream_X.gif');
+      props.setShowAlert(true);
+    }
     
     if (props.groupList) {
       groupNames = props.groupList.map(group => group.groupName.group_name);
@@ -743,7 +751,9 @@ function JoinGroup(props) {
         const inputPw = document.getElementById('password').value;
         
         if (groupNames.includes(inputName)) {
-          alert('이미 가입된 그룹입니다.')
+          props.setAlertContent('이미 가입된 그룹입니다.');
+          props.setAlertImage('/img/dream_X.gif');
+          props.setShowAlert(true);
           props.setJoin(false)
         }
         else {
@@ -754,12 +764,16 @@ function JoinGroup(props) {
           })
           .then((res)=>{
               if (res.data == true) {
-                  alert('[ '+inputName+' ] 그룹에 가입되었습니다!')
+                  props.setAlertContent('[ '+inputName+' ] 그룹에 가입되었습니다!');
+                  props.setAlertImage('/img/dream_O.gif');
+                  props.setShowAlert(true);
                   props.setJoin(false)
                   fetchGroups(props.setGroupList);
               }
               else {
-                  alert('그룹 이름 또는 비밀번호를 확인해주세요.')
+                  props.setAlertContent('그룹 이름 또는 비밀번호를 확인해주세요.');
+                  props.setAlertImage('/img/dream_X.gif');
+                  props.setShowAlert(true);
               }
           })
           .catch((err)=>{
@@ -769,15 +783,11 @@ function JoinGroup(props) {
     }
   }
   
-  const checkField = (fieldId, checkText) => {
-    let fieldValue = document.getElementById(fieldId).value;
-    if (fieldValue == '') {
-        alert(checkText)
-        return true
+  const checkField = (fieldRef, checkText) => {
+    if (!fieldRef || !fieldRef.value) {
+      return true;
     }
-    else{
-        return false
-    }
+    return false
   }
 
   return (
@@ -799,6 +809,7 @@ function ChangeProfileImage(props) {
   const [selectedFile, setFile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [fileName, setFileName] = useState('');
+  const [showProfileConfirm, setShowProfileConfirm] = useState(false);
 
   useEffect(() => {
     if (!props.change) {
@@ -812,9 +823,15 @@ function ChangeProfileImage(props) {
     setFile(file);
   };
 
+  const handleRemove = async () => {
+    setShowProfileConfirm(true); // 확인 모달 보이기
+  };
+  
   const handleUpload = async () => {
     if (!selectedFile) {
-      alert('파일을 선택해주세요.');
+      props.setAlertContent('파일을 선택해주세요.');
+      props.setAlertImage('/img/dream_X.gif');
+      props.setShowAlert(true);
       return;
     }
 
@@ -828,7 +845,9 @@ function ChangeProfileImage(props) {
         }
       });
       if (res.data == true) {
-        alert("프로필 사진이 변경되었습니다!");
+        props.setAlertContent("프로필 사진이 변경되었습니다!");
+        props.setAlertImage('/img/dream_O.gif');
+        props.setShowAlert(true);
         props.setProfileImage('')
         props.setChange(false);
       }
@@ -840,17 +859,13 @@ function ChangeProfileImage(props) {
     }
   };
 
-  const handleRemove = async () => {
-    const confirmRemove = window.confirm('정말로 프로필 사진을 제거하시겠습니까?');
-
-    if (!confirmRemove) {
-      return;
-    }
-
+  const confirmRemoveHandler = async () => {
     try {
       const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/DeleteProfileImage.php');
       if (res.data) {
-        alert("프로필 사진이 제거되었습니다!");
+        props.setAlertContent("프로필 사진이 제거되었습니다!");
+        props.setAlertImage('/img/dream_O.gif');
+        props.setShowAlert(true);
         props.setProfileImage('')
         props.setChange(false);
       } else {
@@ -867,6 +882,7 @@ function ChangeProfileImage(props) {
   };
 
   return (
+    <>
     <Modal show={props.change} onHide={() => props.setChange(false) } className="main-modal">
       <Modal.Header closeButton>
         <Modal.Title className='main-modal-title'>프로필 사진</Modal.Title>
@@ -891,13 +907,31 @@ function ChangeProfileImage(props) {
           <>
             <img className="img-profile-change" src={props.profileImage}></img>
             <div className='modal-change-buttons'>
-              <button className='button-profile profile-remove' onClick={handleRemove}>제거</button>
+              <button className='button-profile profile-remove' onClick={props.profileImage !== '/img/default_profile.png' ? handleRemove : null}>제거</button>
               <button className='button-profile' onClick={()=> {setIsEditing(true);}}>변경</button>
             </div>
           </>
         )}
       </Modal.Body>
     </Modal>
+    <Modal show={showProfileConfirm} onHide={() => setShowProfileConfirm(false)} className='modal'>
+    <Modal.Header closeButton>
+          <Modal.Title></Modal.Title>
+    </Modal.Header>
+    <Modal.Body className='text-center modalBody'>
+        <p>정말로 프로필 사진을 제거하시겠습니까?</p>
+        <img className="dreams" src="/img/dream_loading_2.gif" alt="Result" style={{ width: '100px' }}/>
+    </Modal.Body>
+    <Modal.Footer>
+        <Button className="modalClose" variant="secondary" onClick={() => setShowProfileConfirm(false)}>
+            아니요
+        </Button>
+        <Button className="doCalculate" variant="primary" onClick={confirmRemoveHandler}>
+            예
+        </Button>
+    </Modal.Footer>
+  </Modal>
+  </>
   );
 }
 
