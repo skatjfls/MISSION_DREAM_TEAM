@@ -382,6 +382,8 @@ function MemberList({ members, memberMissionTables, toggleMissionTable, handlePh
     );
 }
 
+
+
 function GroupCalendar({ group_name, penaltyPerPoint, notice, isNoticeExpanded, toggleNoticeExpansion, startOfWeek, endOfWeek, daysOfWeek, datesOfWeek, members, membersOverall, handleBackOfWeekClick, handleFrontOfWeekClick, setCurrentWeekStart, calculateColorByRank, setUpdate }) {
     return (
         <div className="groupCalendar-container">
