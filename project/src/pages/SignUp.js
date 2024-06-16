@@ -99,21 +99,21 @@ const SignUpForm = () => {
                             <Col xs={8}>
                                 <Form.Control className="form-control" type="text" name="id" placeholder="ID 입력 (6~20자)" value={formData.id} onChange={(e) => handleChange(e, setFormData, (name, value) => validateField(name, value, formData, formErrors, setFormErrors, () => validateForm(formData, setFormIsValid, isIDDuplicateChecked, isNameDuplicateChecked)), setIsIDDuplicateChecked, setIsNameDuplicateChecked)} required />
                             </Col>
-                            <Col xs={4}>
+                            <Col xs={4} className="no-left-padding">
                                 <Button className={`check-duplicate ${isIDDuplicateChecked ? 'button-change' : ''}`} variant="secondary" onClick={() => handleCheckDuplicateID(formData, setModalContent, setShowModal, setIsIDDuplicateChecked, setModalImage)}><b>ID 중복 확인</b></Button>
                             </Col>
                         </Row>
                     </Form.Group>
                     <Form.Group className="form-group" controlId="formBasicPassword">
                         <div className="labelAlign">
-                            <Form.Label className="form-label"><span className='notion'>*</span> Password</Form.Label>
+                            <Form.Label className="form-label"><span className='notion'>*</span> Pw</Form.Label>
                             <Form.Text className="error-message">{formErrors.password}</Form.Text>
                         </div>
                         <Form.Control className="form-control" type="password" name="password" placeholder="PW 입력 (8~20자)" value={formData.password} onChange={(e) => handleChange(e, setFormData, (name, value) => validateField(name, value, formData, formErrors, setFormErrors, () => validateForm(formData, setFormIsValid, isIDDuplicateChecked, isNameDuplicateChecked)), setIsIDDuplicateChecked, setIsNameDuplicateChecked)} required />
                     </Form.Group>
                     <Form.Group className="form-group" controlId="formBasicConfirmPassword">
                         <div className="labelAlign">
-                            <Form.Label className="form-label"><span className='notion'>*</span> Password 확인</Form.Label>
+                            <Form.Label className="form-label"><span className='notion'>*</span> Pw 확인</Form.Label>
                             <Form.Text className="error-message">{formErrors.repassword}</Form.Text>
                         </div>
                         <Form.Control className="form-control" type="password" name="repassword" placeholder="PW 재입력" value={formData.repassword} onChange={(e) => handleChange(e, setFormData, (name, value) => validateField(name, value, formData, formErrors, setFormErrors, () => validateForm(formData, setFormIsValid, isIDDuplicateChecked, isNameDuplicateChecked)), setIsIDDuplicateChecked, setIsNameDuplicateChecked)} required />
@@ -127,7 +127,7 @@ const SignUpForm = () => {
                             <Col xs={8}>
                                 <Form.Control className="form-control" type="text" name="nickName" placeholder="닉네임 입력 (2~10자)" value={formData.nickName} onChange={(e) => handleChange(e, setFormData, (name, value) => validateField(name, value, formData, formErrors, setFormErrors, () => validateForm(formData, setFormIsValid, isIDDuplicateChecked, isNameDuplicateChecked)), setIsIDDuplicateChecked, setIsNameDuplicateChecked)} required />
                             </Col>
-                            <Col xs={4}>
+                            <Col xs={4} className="no-left-padding">
                                 <Button className={`check-duplicate ${isNameDuplicateChecked ? 'button-change' : ''}`} variant="secondary" onClick={() => handleCheckDuplicateNickName(formData, setModalContent, setShowModal, setIsNameDuplicateChecked, setModalImage)}><b>닉네임 중복 확인</b></Button>
                             </Col>
                         </Row>

@@ -33,7 +33,7 @@
 
 .input {
     background-color: rgb(255, 255, 255);
-    width: 600px !important;
+    width: 600px;
     height: auto;
     max-height: 100vh;
     margin: 0 auto;
@@ -50,13 +50,13 @@
 }
 
 .signUpTitle {
-    font-size: 50px;
+    font-size: 42px;
     font-family: "font_tennine";
     margin: 0px auto;
 }
 
 .signUpExplain {
-    font-size: 20px;
+    font-size: 18px;
     font-family: "font_NanumSquare";
     margin: 0px auto;
 }
@@ -67,7 +67,7 @@
 
 .form-control {
     box-shadow: inset 4px 4px 4px rgba(0, 0, 0, 0.1);
-    padding: 10px;
+    padding: 7px 10px;
     padding-left: 20px;
 }
 
@@ -102,7 +102,7 @@
 }
 
 .complete:disabled {
-    background-color: var(--sub-color3);
+    background-color: var(--sub-color4);
 }
 
 .complete {
@@ -115,6 +115,7 @@
     font-weight: bold;
     height: 50px;
     font-size: 25px;
+    margin-top: 20px;
 }
 
 .button-change {

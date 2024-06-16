@@ -33,7 +33,7 @@
 
 .input {
     background-color: rgb(255, 255, 255);
-    width: 600px !important;
+    width: 600px;
     height: 640px;
     margin: 0 auto;
     border-radius: 10px;
@@ -46,13 +46,13 @@
 }
 
 .signUpTitle {
-    font-size: 42px !important;
+    font-size: 42px;
     font-family: "font_tennine";
     margin: 0px auto;
 }
 
 .signUpExplain {
-    font-size: 18px !important;
+    font-size: 18px;
     font-family: "font_NanumSquare";
     margin: 0px auto;
 }
@@ -64,7 +64,7 @@
 
 .form-control {
     box-shadow: inset 4px 4px 4px rgba(0, 0, 0, 0.1);
-    padding: 7px 10px !important;
+    padding: 7px 10px;
     padding-left: 20px;
     height: 42px;
 }
@@ -100,7 +100,7 @@
 }
 
 .complete:disabled {
-    background-color: var(--sub-color4) !important;
+    background-color: var(--sub-color4);
 }
 
 .complete {
@@ -113,7 +113,7 @@
     font-weight: bold;
     height: 50px;
     font-size: 25px;
-    margin-top: 20px !important;
+    margin-top: 20px;
 }
 
 .button-change {
@@ -132,7 +132,7 @@
 }
 
 .dreams{
-    width: 300px !important;
+    width: 300px;
 }
 
 .modal{align-content: center;}
@@ -146,3 +146,49 @@
     background-color: var(--sub-color4) !important;
 }
 
+@media only screen and (max-width: 600px) {
+    .input {
+        width: 95% !important;
+        height: auto !important;
+        padding: 20px 0px !important;
+    }
+
+    .signUpTitle {
+        font-size: 36px !important;
+    }
+
+    .signUpExplain {
+        font-size:small !important;
+    }
+
+    .form-label{
+        font-size: small !important;
+    }
+
+    .form-control {
+        font-size: small !important;
+        height: 36px;
+        padding-left: 10px !important;
+    }
+
+    .form-group {
+        margin: 10px 0 !important;
+        width: 100% !important;
+    }
+
+    .labelAlign {
+        width: 100% !important;
+    }
+
+    .check-duplicate {
+        font-size: 11px !important;
+    }
+
+    .error-message {
+        font-size: 9px !important;
+    }
+
+    .no-left-padding {
+        padding-left: 0 !important;
+    }
+}
