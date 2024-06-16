@@ -21,7 +21,7 @@ div {
 .info-container {
   flex-direction: column;
   background-color: var(--sub-color1);
-  width: 23%;
+  width: 30%;
   height: calc(100vh - 80px);
   min-height: 100%;
   float: left;
@@ -98,13 +98,13 @@ div {
 .groupExit {
   color: #a1a1a1;
   text-align: left;
-  padding-top: 20px;
+  padding-top: 10px;
   padding-left: 30px;
 }
 
 .groupCalendar {
   float: right;
-  width: 77%;
+  width: 70%;
   height: calc(100vh - 80px);
   background-color: white;
   padding: 40px 55px;
