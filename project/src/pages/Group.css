@@ -552,3 +552,14 @@ div {
     text-align: center; /* 모든 헤더 셀과 데이터 셀을 가운데 정렬 */
   }
 }
+
+/* 큰 데스크탑 화면 스타일 */
+@media (min-width: 1500px) {
+  .info-container {
+    width: 25%;
+  }
+
+  .groupCalendar {
+    width: 75%;
+  }
+}
