@@ -40,6 +40,7 @@ function App() {
       } else {
         fetchUserInfo();
         fetchProfileImage();
+        setTap(0);
         setIsLoggedIn(true);
       }
     })
@@ -87,6 +88,7 @@ function App() {
     fetchProfileImage();
   }, [profileImage])
 
+  
   if (isLoggedIn === null) {
     return (
       <div className='page-loading'>
@@ -732,8 +734,8 @@ function CreateGroup(props) {
 function JoinGroup(props) {
   const onClickJoin = (event) => {
     event.preventDefault();
-    const nameIsEmpty = checkField('name', '그룹 이름을 입력해주세요.');
-    const passwordIsEmpty = checkField('password', '비밀번호를 입력해주세요.');
+    const nameIsEmpty = checkField('name');
+    const passwordIsEmpty = checkField('password');
     let groupNames = []
 
     if (nameIsEmpty || passwordIsEmpty) {
@@ -783,12 +785,15 @@ function JoinGroup(props) {
     }
   }
   
-  const checkField = (fieldRef, checkText) => {
-    if (!fieldRef || !fieldRef.value) {
-      return true;
-    }
+  const checkField = (fieldId) => {
+  let fieldValue = document.getElementById(fieldId).value;
+  if (fieldValue == '') {
+    return true
+  }
+  else{
     return false
   }
+}
 
   return (
     <Modal show={props.join} onHide={() => props.setJoin(false)} className="main-modal">
