@@ -30,6 +30,7 @@ function App() {
   const [alertContent, setAlertContent] = useState('');
   const [alertImage, setAlertImage] = useState('');
   let [tap, setTap] = useState(0);
+  const [showProfileConfirm, setShowProfileConfirm] = useState(false);
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -199,8 +200,8 @@ function App() {
       </Routes>
       <CreateGroup create={create} setCreate={setCreate} setGroupList={setGroupList} showAlert={showAlert} setShowAlert={setShowAlert} alertContent={alertContent} setAlertContent={setAlertContent} alertImage={alertImage} setAlertImage={setAlertImage}/>
       <JoinGroup join={join} setJoin={setJoin} groupList={groupList} setGroupList={setGroupList} showAlert={showAlert} setShowAlert={setShowAlert} alertContent={alertContent} setAlertContent={setAlertContent} alertImage={alertImage} setAlertImage={setAlertImage}/>
-      <ChangeProfileImage change={change} setChange={setChange} profileImage={profileImage} setProfileImage={setProfileImage} showAlert={showAlert} setShowAlert={setShowAlert} alertContent={alertContent} setAlertContent={setAlertContent} alertImage={alertImage} setAlertImage={setAlertImage}/>
-      <AlertModal showAlert={showAlert} setShowAlert={setShowAlert} alertContent={alertContent} alertImage={alertImage}/>
+      <ChangeProfileImage change={change} setChange={setChange} profileImage={profileImage} setProfileImage={setProfileImage} showAlert={showAlert} setShowAlert={setShowAlert} alertContent={alertContent} setAlertContent={setAlertContent} alertImage={alertImage} setAlertImage={setAlertImage} showProfileConfirm={showProfileConfirm} setShowProfileConfirm={setShowProfileConfirm}/>
+      <AlertModal showAlert={showAlert} setShowAlert={setShowAlert} alertContent={alertContent} alertImage={alertImage} showProfileConfirm={showProfileConfirm} setShowProfileConfirm={setShowProfileConfirm}/>
       </div>
       {['/'].includes(window.location.pathname) && <Footer />}
     </div>
@@ -814,7 +815,6 @@ function ChangeProfileImage(props) {
   const [selectedFile, setFile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [fileName, setFileName] = useState('');
-  const [showProfileConfirm, setShowProfileConfirm] = useState(false);
 
   useEffect(() => {
     if (!props.change) {
@@ -829,7 +829,7 @@ function ChangeProfileImage(props) {
   };
 
   const handleRemove = async () => {
-    setShowProfileConfirm(true); // 확인 모달 보이기
+    props.setShowProfileConfirm(true); // 확인 모달 보이기
   };
   
   const handleUpload = async () => {
@@ -919,7 +919,7 @@ function ChangeProfileImage(props) {
         )}
       </Modal.Body>
     </Modal>
-    <Modal show={showProfileConfirm} onHide={() => setShowProfileConfirm(false)} className='modal'>
+    <Modal show={props.showProfileConfirm} onHide={() => props.setShowProfileConfirm(false)} className='modal'>
     <Modal.Header closeButton>
           <Modal.Title></Modal.Title>
     </Modal.Header>
@@ -928,7 +928,7 @@ function ChangeProfileImage(props) {
         <img className="dreams" src="/img/dream_loading_2.gif" alt="Result" style={{ width: '100px' }}/>
     </Modal.Body>
     <Modal.Footer>
-        <Button className="modalClose" variant="secondary" onClick={() => setShowProfileConfirm(false)}>
+        <Button className="modalClose" variant="secondary" onClick={() => props.setShowProfileConfirm(false)}>
             아니요
         </Button>
         <Button className="doCalculate" variant="primary" onClick={confirmRemoveHandler}>
@@ -958,11 +958,17 @@ function Page404(props) {
   );
 }
 
-function AlertModal({showAlert, setShowAlert, alertContent, alertImage}) {
+function AlertModal({showAlert, setShowAlert, alertContent, alertImage, showProfileConfirm, setShowProfileConfirm}) {
+  const closeAlert = () => {
+    setShowAlert(false);
+    if (showProfileConfirm) {
+      setShowProfileConfirm(false);
+    }
+  }
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.key === 'Enter') {
-        setShowAlert(false);
+        closeAlert();
       }
     };
 
@@ -973,7 +979,7 @@ function AlertModal({showAlert, setShowAlert, alertContent, alertImage}) {
   }, [showAlert]);
 
   return(
-    <Modal className="modal" show={showAlert} onHide={() => {setShowAlert(false);}}>
+    <Modal className="modal" show={showAlert} onHide={closeAlert}>
       <Modal.Header closeButton>
           <Modal.Title></Modal.Title>
       </Modal.Header>
@@ -982,7 +988,7 @@ function AlertModal({showAlert, setShowAlert, alertContent, alertImage}) {
           {alertImage && <img className="dreams" src={alertImage} alt="Result" style={{ width: '100px' }} />}
       </Modal.Body>
       <Modal.Footer>
-          <Button className="modalClose" variant="secondary" onClick={() => {setShowAlert(false);}}>
+          <Button className="modalClose" variant="secondary" onClick={closeAlert}>
               닫기
           </Button>
       </Modal.Footer>

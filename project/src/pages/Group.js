@@ -36,6 +36,11 @@ function GroupPage(props) {
     const [update, setUpdate] = useState(false); // 그룹 수정 모달 상태
     const [showExitModal, setShowExitModal] = useState(false);
 
+    let [showAlert, setShowAlert] = useState(false);
+    const [alertContent, setAlertContent] = useState('');
+    const [alertImage, setAlertImage] = useState('');
+    const [showProfileConfirm, setShowProfileConfirm] = useState(false);
+
     startOfWeek.setDate(startOfWeek.getDate() - ((startOfWeek.getDay() + 6) % 7)); // 주의 시작일을 월요일로 설정
     endOfWeek.setDate(endOfWeek.getDate() + 6); // 주의 마지막 날을 일요일로 설정
 
@@ -241,19 +246,35 @@ function GroupPage(props) {
                 fetchPenaltyPerPoint={fetchPenaltyPerPoint}
                 fetchNotice={fetchNotice}
             />
-            <ChangeProfileImage
-                change={change}
-                setChange={setChange}
-                profileImage={profileImage}
-                fetchProfileImage = {fetchProfileImage}
-                fetchGroupMemberList={fetchGroupMemberList}
-            />
             <GroupExitModal
                 showExitModal={showExitModal}
                 setShowExitModal={setShowExitModal}
                 group_name={group_name}
                 exitCallback={handleExitCallback}
                 navigate={navigate}
+            />
+            <ChangeProfileImage
+                change={change}
+                setChange={setChange}
+                profileImage={profileImage}
+                showAlert={showAlert}
+                setShowAlert={setShowAlert}
+                alertContent={alertContent}
+                setAlertContent={setAlertContent}
+                alertImage={alertImage}
+                setAlertImage={setAlertImage}
+                showProfileConfirm={showProfileConfirm}
+                setShowProfileConfirm={setShowProfileConfirm}
+                fetchProfileImage = {fetchProfileImage}
+                fetchGroupMemberList={fetchGroupMemberList}
+            />
+            <AlertModal
+                showAlert={showAlert}
+                setShowAlert={setShowAlert}
+                alertContent={alertContent}
+                alertImage={alertImage}
+                showProfileConfirm={showProfileConfirm}
+                setShowProfileConfirm={setShowProfileConfirm}
             />
         </div>
     );
@@ -892,9 +913,15 @@ function ChangeProfileImage(props) {
       setFile(file);
     };
   
+    const handleRemove = async () => {
+      props.setShowProfileConfirm(true); // 확인 모달 보이기
+    };
+    
     const handleUpload = async () => {
       if (!selectedFile) {
-        alert('파일을 선택해주세요.');
+        props.setAlertContent('파일을 선택해주세요.');
+        props.setAlertImage('/img/dream_X.gif');
+        props.setShowAlert(true);
         return;
       }
   
@@ -908,7 +935,9 @@ function ChangeProfileImage(props) {
           }
         });
         if (res.data == true) {
-          alert("프로필 사진이 변경되었습니다!");
+          props.setAlertContent("프로필 사진이 변경되었습니다!");
+          props.setAlertImage('/img/dream_O.gif');
+          props.setShowAlert(true);
           props.fetchProfileImage();
           props.setChange(false);
           props.fetchGroupMemberList();
@@ -921,19 +950,16 @@ function ChangeProfileImage(props) {
       }
     };
   
-    const handleRemove = async () => {
-      const confirmRemove = window.confirm('정말로 프로필 사진을 제거하시겠습니까?');
-  
-      if (!confirmRemove) {
-        return;
-      }
-  
+    const confirmRemoveHandler = async () => {
       try {
         const res = await axios.post('http://localhost/MISSION_DREAM_TEAM/PHP/DeleteProfileImage.php');
         if (res.data) {
-          alert("프로필 사진이 제거되었습니다!");
+          props.setAlertContent("프로필 사진이 제거되었습니다!");
+          props.setAlertImage('/img/dream_O.gif');
+          props.setShowAlert(true);
           props.fetchProfileImage();
           props.setChange(false);
+          props.fetchGroupMemberList();
         } else {
           console.log(res.data.error);
         }
@@ -948,6 +974,7 @@ function ChangeProfileImage(props) {
     };
   
     return (
+      <>
       <Modal show={props.change} onHide={() => props.setChange(false) } className="main-modal">
         <Modal.Header closeButton>
           <Modal.Title className='main-modal-title'>프로필 사진</Modal.Title>
@@ -972,13 +999,31 @@ function ChangeProfileImage(props) {
             <>
               <img className="img-profile-change" src={props.profileImage}></img>
               <div className='modal-change-buttons'>
-                <button className='button-profile profile-remove' onClick={handleRemove}>제거</button>
+                <button className='button-profile profile-remove' onClick={props.profileImage !== '/img/default_profile.png' ? handleRemove : null}>제거</button>
                 <button className='button-profile' onClick={()=> {setIsEditing(true);}}>변경</button>
               </div>
             </>
           )}
         </Modal.Body>
       </Modal>
+      <Modal show={props.showProfileConfirm} onHide={() => props.setShowProfileConfirm(false)} className='modal'>
+      <Modal.Header closeButton>
+            <Modal.Title></Modal.Title>
+      </Modal.Header>
+      <Modal.Body className='text-center modalBody'>
+          <p>정말로 프로필 사진을 제거하시겠습니까?</p>
+          <img className="dreams" src="/img/dream_loading_2.gif" alt="Result" style={{ width: '100px' }}/>
+      </Modal.Body>
+      <Modal.Footer>
+          <Button className="modalClose" variant="secondary" onClick={() => props.setShowProfileConfirm(false)}>
+              아니요
+          </Button>
+          <Button className="doCalculate" variant="primary" onClick={confirmRemoveHandler}>
+              예
+          </Button>
+      </Modal.Footer>
+    </Modal>
+    </>
     );
   }
 
@@ -1218,5 +1263,41 @@ function GroupExitModal({ showExitModal, setShowExitModal, group_name, exitCallb
     );
 }
 
-
+function AlertModal({showAlert, setShowAlert, alertContent, alertImage, showProfileConfirm, setShowProfileConfirm}) {
+    const closeAlert = () => {
+      setShowAlert(false);
+      if (showProfileConfirm) {
+        setShowProfileConfirm(false);
+      }
+    }
+    useEffect(() => {
+      const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+          closeAlert();
+        }
+      };
+  
+      window.addEventListener('keydown', handleKeyPress);
+      return () => {
+          window.removeEventListener('keydown', handleKeyPress);
+      };
+    }, [showAlert]);
+  
+    return(
+      <Modal className="modal" show={showAlert} onHide={closeAlert}>
+        <Modal.Header closeButton>
+            <Modal.Title></Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='text-center modalBody'>
+            <p>{alertContent}</p>
+            {alertImage && <img className="dreams" src={alertImage} alt="Result" style={{ width: '100px' }} />}
+        </Modal.Body>
+        <Modal.Footer>
+            <Button className="modalClose" variant="secondary" onClick={closeAlert}>
+                닫기
+            </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 export default GroupPage;
