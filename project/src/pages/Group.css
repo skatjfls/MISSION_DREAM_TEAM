@@ -528,6 +528,12 @@ div {
   max-width: 100%;
 }
 
+.mobileRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 @media (min-width: 768px) {
   /* 웹 화면에서만 적용될 스타일 */
   .mobileRow {
